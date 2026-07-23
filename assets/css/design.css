@@ -1,0 +1,71 @@
+/* Themezur global design tokens (applied via :root vars)
+----------------------------------------------------------------- */
+
+body {
+	font-family: var(--themezur-font, system-ui, sans-serif);
+	font-size: var(--themezur-font-size, 16px);
+	line-height: var(--themezur-line-height, 1.65);
+	color: var(--themezur-text, #0f172a);
+	background-color: var(--themezur-bg, #ffffff);
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: var(--themezur-font-heading, var(--themezur-font, system-ui, sans-serif));
+	color: var(--themezur-primary, #0f172a);
+}
+
+a {
+	color: var(--themezur-link, var(--themezur-accent, #2563eb));
+}
+
+a:hover,
+a:focus {
+	color: var(--themezur-link-hover, #1d4ed8);
+}
+
+.tz-container {
+	max-width: var(--themezur-container, 1200px);
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 1.15rem;
+	padding-right: 1.15rem;
+}
+
+.tz-btn,
+button.tz-btn,
+a.tz-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	padding: 0.55rem 1.1rem;
+	border: 0;
+	border-radius: var(--themezur-btn-radius, var(--themezur-radius, 8px));
+	background: var(--themezur-btn-bg, var(--themezur-accent, #2563eb));
+	color: var(--themezur-btn-text, #ffffff) !important;
+	font-weight: 700;
+	font-size: 0.92rem;
+	line-height: 1.2;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.tz-btn:hover,
+.tz-btn:focus,
+a.tz-btn:hover,
+a.tz-btn:focus {
+	filter: brightness(1.05);
+	color: var(--themezur-btn-text, #ffffff) !important;
+}
+
+.tz-btn--ghost {
+	background: transparent;
+	color: var(--themezur-link, var(--themezur-accent, #2563eb)) !important;
+	border: 1px solid var(--themezur-border, #e2e8f0);
+}
+
+.tz-surface {
+	background: var(--themezur-surface, #f8fafc);
+	border: 1px solid var(--themezur-border, #e2e8f0);
+	border-radius: var(--themezur-radius, 8px);
+}

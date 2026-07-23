@@ -1,0 +1,53 @@
+/* Themezur breadcrumbs
+----------------------------------------------------------------- */
+
+.tz-breadcrumbs {
+	max-width: var(--themezur-container, 1200px);
+	margin: 0 auto;
+	padding: 0.85rem 1.15rem 0;
+}
+
+.tz-breadcrumbs__list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.35rem 0.45rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.82rem;
+	color: var(--themezur-muted, #64748b);
+}
+
+.tz-breadcrumbs__item:not(:last-child)::after {
+	content: "/";
+	margin-left: 0.45rem;
+	opacity: 0.55;
+}
+
+.tz-breadcrumbs__item a {
+	color: var(--themezur-muted, #64748b);
+	text-decoration: none;
+}
+
+.tz-breadcrumbs__item a:hover,
+.tz-breadcrumbs__item a:focus {
+	color: var(--themezur-accent, #2563eb);
+}
+
+.tz-breadcrumbs__item.is-current span {
+	color: var(--themezur-text, #0f172a);
+	font-weight: 600;
+}
+
+.tz-blog .tz-breadcrumbs,
+.tz-page .tz-breadcrumbs {
+	padding-left: 0;
+	padding-right: 0;
+	margin-bottom: 1rem;
+	max-width: none;
+}
+
+.woocommerce .tz-breadcrumbs {
+	margin-bottom: 1rem;
+}

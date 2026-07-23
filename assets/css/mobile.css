@@ -1,0 +1,118 @@
+/* Themezur mobile polish pass
+----------------------------------------------------------------- */
+
+@media (max-width: 991px) {
+	.tz-nav-toggle {
+		min-width: 44px;
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.tz-header-mobile {
+		padding: 0.5rem 1rem 1.25rem;
+	}
+
+	.tz-header-mobile .tz-nav-list > li > a {
+		min-height: 44px;
+		display: flex;
+		align-items: center;
+		padding: 0.75rem 0.15rem;
+		font-size: 1rem;
+	}
+
+	.tz-header-middle__actions a,
+	.tz-header-middle__actions button {
+		min-width: 40px;
+		min-height: 40px;
+	}
+
+	.tz-header-middle__search-wrap {
+		width: 100%;
+		margin-top: 0.65rem;
+	}
+
+	.tz-header-middle__search input[type="search"] {
+		min-height: 44px;
+		font-size: 16px; /* prevent iOS zoom */
+	}
+
+	.tz-blog {
+		padding: 1.75rem 0 2.5rem;
+	}
+
+	.tz-blog-card__body {
+		padding: 1rem 1rem 1.15rem;
+	}
+
+	.tz-blog-card__more {
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.tz-footer-newsletter__row {
+		flex-direction: column;
+	}
+
+	.tz-footer-newsletter input[type="email"],
+	.tz-footer-newsletter button {
+		width: 100%;
+		min-height: 44px;
+	}
+
+	.tz-page-search {
+		flex-direction: column;
+	}
+
+	.tz-page-search input[type="search"],
+	.tz-page-search .tz-btn {
+		width: 100%;
+		min-height: 44px;
+	}
+
+	.tz-btt {
+		right: max(0.85rem, env(safe-area-inset-right));
+		bottom: max(0.85rem, env(safe-area-inset-bottom));
+		width: 2.85rem;
+		height: 2.85rem;
+	}
+
+	.tz-woo .woocommerce ul.products {
+		gap: 0.85rem;
+	}
+
+	.tz-woo .woocommerce ul.products li.product .button {
+		min-height: 42px;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.tz-breadcrumbs {
+		padding-left: 1rem;
+		padding-right: 1rem;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.tz-breadcrumbs__list {
+		flex-wrap: nowrap;
+		white-space: nowrap;
+	}
+}
+
+@media (max-width: 520px) {
+	.tz-header-top__inner {
+		gap: 0.5rem;
+	}
+
+	.tz-blog-single__title {
+		font-size: 1.55rem;
+	}
+
+	.tz-blog-author {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}

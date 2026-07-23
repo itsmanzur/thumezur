@@ -1,0 +1,40 @@
+---
+description: Themezur advanced header roadmap — all planned features must eventually be built
+alwaysApply: true
+---
+
+# Themezur Advanced Header Roadmap
+
+The Themezur child theme header must become a full advanced store header. **All items below are required over time** — do not treat unfinished items as optional ideas.
+
+## Done
+
+- 3-row header (top / middle / bottom) with panel colors + typography
+- Logo from Themezur panel (not Customizer)
+- Social icons repeater (multi-network)
+- Date or custom right-side text
+- Scroll behavior: shrink / bottom sticky / transparent→solid
+- Categories mega dropdown (WooCommerce product categories)
+- Smart search: product-only AJAX live suggestions
+- Dismissible announcement bar (cookie + version key)
+- Per-element mobile / desktop visibility controls
+- Conditional headers (Home / Shop / Blog overrides + deeper assignment scopes)
+- Account / login icon (WooCommerce My Account, WP login fallback)
+- Phone / hotline in top bar (tel: link)
+- Spacing / height / container width controls (Header → Layout)
+- Multi-promo rotating messages on top bar
+- Cart AJAX count via WooCommerce fragments
+- Wishlist / Compare icons (URL + YITH wishlist auto-detect)
+- Header presets (Midnight / Clean Light / Amber Store)
+- Scroll progress line
+
+## Still required
+
+_(none — advanced header roadmap complete)_
+
+## Rules when extending header
+
+- Every new feature: Themezur admin controls + Help/Docs accordion entry
+- Prefer single `themezur_options` autoloaded option
+- Keep Alpine only on admin; frontend stays vanilla/light
+- WooCommerce features degrade gracefully when WC is inactive

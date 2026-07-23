@@ -1,0 +1,44 @@
+---
+description: Themezur phased roadmap after header/footer — blog → tokens → 404/search → WooCommerce
+alwaysApply: true
+---
+
+# Themezur Post–Header/Footer Roadmap
+
+Build in this order. Do not skip ahead unless the user asks.
+
+## Phase 1 — Blog Archive + Single
+
+- [x] Themezur blog mode vs Hello default
+- [x] Archive: grid/list, columns, meta, excerpt, read more, pagination
+- [x] Single post: image, meta, tags, author box, prev/next, related, comments
+- [x] Panel tab + Help docs
+
+## Phase 2 — Global design tokens
+
+- [x] Expanded color + typography + radius + container + button tokens
+- [x] `:root` CSS variables + `design.css` base application
+- [x] General panel controls + Help docs
+
+## Phase 3 — 404 + Search results
+
+- [x] Native 404 + search templates
+- [x] Panel tab + Help docs
+
+## Phase 4 — WooCommerce shop templates
+
+- [x] Shop columns / per page / card style / catalog tools
+- [x] Related & upsells counts
+- [x] Token-based CSS polish + panel + Help docs
+- [ ] Deeper single-product template overrides (optional polish)
+
+## Status
+
+All four planned phases after header/footer are implemented. Iterate from user feedback next.
+
+## Rules
+
+- Every feature: Themezur admin controls + Help/Docs entry
+- Single `themezur_options` option
+- Alpine admin only; frontend vanilla/light
+- Respect Elementor Theme Builder locations when present
