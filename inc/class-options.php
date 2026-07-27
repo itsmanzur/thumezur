@@ -428,10 +428,34 @@ class Themezur_Options {
 					'card_style'        => 'soft',
 					'show_result_count' => true,
 					'show_ordering'     => true,
+					'hover_image'       => true,
+					'new_badge_days'    => 14,
+					'wishlist_on_card'  => true,
+					'sidebar'           => 'none',
 				),
 				'single' => array(
-					'related_count' => 4,
-					'upsells_count' => 4,
+					'layout'         => 'classic',
+					'sale_percent'   => true,
+					'show_rating'    => true,
+					'show_sku'       => true,
+					'show_stock'     => true,
+					'sticky_atc'     => true,
+					'trust_note'     => '',
+					'show_related'   => true,
+					'related_count'  => 4,
+					'show_upsells'   => true,
+					'upsells_count'  => 4,
+				),
+				'cart'     => array(
+					'mini_cart'   => true,
+					'open_on_add' => true,
+				),
+				'checkout' => array(
+					'trust_note'    => '',
+					'sticky_review' => true,
+				),
+				'account'  => array(
+					'density' => 'comfortable',
 				),
 			),
 			'assignments' => array(
@@ -1144,22 +1168,57 @@ class Themezur_Options {
 		$mode  = isset( $raw['mode'] ) ? sanitize_key( $raw['mode'] ) : $d['mode'];
 		$shop  = isset( $raw['shop'] ) && is_array( $raw['shop'] ) ? $raw['shop'] : array();
 		$sing  = isset( $raw['single'] ) && is_array( $raw['single'] ) ? $raw['single'] : array();
+		$cart  = isset( $raw['cart'] ) && is_array( $raw['cart'] ) ? $raw['cart'] : array();
+		$chk   = isset( $raw['checkout'] ) && is_array( $raw['checkout'] ) ? $raw['checkout'] : array();
+		$acc   = isset( $raw['account'] ) && is_array( $raw['account'] ) ? $raw['account'] : array();
 		$ds    = $d['shop'];
 		$dsi   = $d['single'];
+		$dc    = $d['cart'];
+		$dck   = $d['checkout'];
+		$da    = $d['account'];
 		$style = isset( $shop['card_style'] ) ? sanitize_key( $shop['card_style'] ) : $ds['card_style'];
+		$layout = isset( $sing['layout'] ) ? sanitize_key( $sing['layout'] ) : $dsi['layout'];
+		$layouts = array( 'classic', 'stacked', 'gallery_wide' );
+		$sidebar = isset( $shop['sidebar'] ) ? sanitize_key( $shop['sidebar'] ) : $ds['sidebar'];
+		$new_days = isset( $shop['new_badge_days'] ) ? absint( $shop['new_badge_days'] ) : (int) $ds['new_badge_days'];
+		$density = isset( $acc['density'] ) ? sanitize_key( $acc['density'] ) : $da['density'];
 
 		return array(
-			'mode'   => in_array( $mode, array( 'theme', 'default' ), true ) ? $mode : 'theme',
-			'shop'   => array(
+			'mode'     => in_array( $mode, array( 'theme', 'default' ), true ) ? $mode : 'theme',
+			'shop'     => array(
 				'columns'           => max( 2, min( 4, isset( $shop['columns'] ) ? absint( $shop['columns'] ) : (int) $ds['columns'] ) ),
 				'products_per_page' => max( 4, min( 48, isset( $shop['products_per_page'] ) ? absint( $shop['products_per_page'] ) : (int) $ds['products_per_page'] ) ),
 				'card_style'        => in_array( $style, array( 'soft', 'minimal' ), true ) ? $style : 'soft',
 				'show_result_count' => ! empty( $shop['show_result_count'] ),
 				'show_ordering'     => ! empty( $shop['show_ordering'] ),
+				'hover_image'       => ! empty( $shop['hover_image'] ),
+				'new_badge_days'    => max( 0, min( 90, $new_days ) ),
+				'wishlist_on_card'  => ! empty( $shop['wishlist_on_card'] ),
+				'sidebar'           => in_array( $sidebar, array( 'none', 'left', 'right' ), true ) ? $sidebar : 'none',
 			),
-			'single' => array(
+			'single'   => array(
+				'layout'        => in_array( $layout, $layouts, true ) ? $layout : 'classic',
+				'sale_percent'  => ! empty( $sing['sale_percent'] ),
+				'show_rating'   => ! empty( $sing['show_rating'] ),
+				'show_sku'      => ! empty( $sing['show_sku'] ),
+				'show_stock'    => ! empty( $sing['show_stock'] ),
+				'sticky_atc'    => ! empty( $sing['sticky_atc'] ),
+				'trust_note'    => isset( $sing['trust_note'] ) ? sanitize_text_field( $sing['trust_note'] ) : '',
+				'show_related'  => ! empty( $sing['show_related'] ),
 				'related_count' => max( 0, min( 8, isset( $sing['related_count'] ) ? absint( $sing['related_count'] ) : (int) $dsi['related_count'] ) ),
+				'show_upsells'  => ! empty( $sing['show_upsells'] ),
 				'upsells_count' => max( 0, min( 8, isset( $sing['upsells_count'] ) ? absint( $sing['upsells_count'] ) : (int) $dsi['upsells_count'] ) ),
+			),
+			'cart'     => array(
+				'mini_cart'   => ! empty( $cart['mini_cart'] ),
+				'open_on_add' => ! empty( $cart['open_on_add'] ),
+			),
+			'checkout' => array(
+				'trust_note'    => isset( $chk['trust_note'] ) ? sanitize_text_field( $chk['trust_note'] ) : '',
+				'sticky_review' => ! empty( $chk['sticky_review'] ),
+			),
+			'account'  => array(
+				'density' => in_array( $density, array( 'comfortable', 'compact' ), true ) ? $density : 'comfortable',
 			),
 		);
 	}

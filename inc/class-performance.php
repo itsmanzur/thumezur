@@ -119,6 +119,25 @@ class Themezur_Performance {
 				'note'    => class_exists( 'WooCommerce' ) ? 'woocommerce.css' : __( 'WooCommerce inactive', 'themezur' ),
 			),
 			array(
+				'handle'  => 'themezur-woocommerce',
+				'type'    => 'js',
+				'when'    => __( 'Sticky ATC / filters / mini-cart', 'themezur' ),
+				'status'  => (
+					'theme' === $woo_mode
+					&& class_exists( 'WooCommerce' )
+					&& ! empty( $scripts_on )
+					&& (
+						! empty( $options['woocommerce']['single']['sticky_atc'] )
+						|| (
+							isset( $options['woocommerce']['shop']['sidebar'] )
+							&& in_array( $options['woocommerce']['shop']['sidebar'], array( 'left', 'right' ), true )
+						)
+						|| ! empty( $options['woocommerce']['cart']['mini_cart'] )
+					)
+				) ? 'cond' : 'off',
+				'note'    => 'woocommerce.js',
+			),
+			array(
 				'handle'  => 'themezur-mobile',
 				'type'    => 'css',
 				'when'    => __( 'Always', 'themezur' ),

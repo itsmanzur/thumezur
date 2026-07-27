@@ -344,7 +344,15 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 					<?php endif; ?>
 
 					<?php if ( ! empty( $middle['show_cart'] ) ) : ?>
-						<a class="tz-icon-btn tz-cart-btn<?php echo $vis['cart'] ? ' ' . esc_attr( $vis['cart'] ) : ''; ?>" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php echo esc_attr__( 'Cart', 'themezur' ); ?>">
+						<?php
+						$mini_cart_on = class_exists( 'Themezur_WooCommerce' ) && Themezur_WooCommerce::mini_cart_enabled();
+						?>
+						<a
+							class="tz-icon-btn tz-cart-btn<?php echo $vis['cart'] ? ' ' . esc_attr( $vis['cart'] ) : ''; ?>"
+							href="<?php echo esc_url( $cart_url ); ?>"
+							aria-label="<?php echo esc_attr__( 'Cart', 'themezur' ); ?>"
+							<?php echo $mini_cart_on ? ' data-tz-mini-cart-open' : ''; ?>
+						>
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 7h15l-1.5 9h-12z"/><path d="M6 7L5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/></svg>
 							<span class="tz-cart-btn__count" data-tz-cart-count><?php echo esc_html( (string) $cart_count ); ?></span>
 						</a>
