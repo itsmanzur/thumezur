@@ -419,6 +419,9 @@ class Themezur_Options {
 						'newsletter_placeholder' => 'Your email',
 						'newsletter_button'      => 'Subscribe',
 						'newsletter_action'      => '',
+						'newsletter_email_name'  => 'EMAIL',
+						'newsletter_shortcode'   => '',
+					),
 					'5' => array(
 						'enabled'     => false,
 						'title'       => 'Newsletter',
