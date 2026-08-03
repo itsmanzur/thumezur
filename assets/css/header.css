@@ -387,18 +387,29 @@
 	transform: translateY(-50%);
 	width: 34px;
 	height: 34px;
+	padding: 0;
+	margin: 0;
 	border: none;
 	border-radius: 50%;
 	background: var(--tz-mid-accent);
 	color: #fff;
-	display: grid;
-	place-items: center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	cursor: pointer;
+	line-height: 1;
 	transition: filter 140ms ease;
 }
 
 .tz-header-middle__search-btn:hover {
 	filter: brightness(1.1);
+}
+
+.tz-header-middle__search-btn svg,
+.tz-icon-btn svg {
+	display: block;
+	margin: auto;
+	flex-shrink: 0;
 }
 
 /* Header Action Icons */
@@ -410,10 +421,14 @@
 
 .tz-icon-btn {
 	position: relative;
-	display: grid;
-	place-items: center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	width: 40px;
 	height: 40px;
+	padding: 0;
+	margin: 0;
+	line-height: 1;
 	border: 1px solid var(--tz-mid-border);
 	border-radius: 50%;
 	background: var(--themezur-bg, #fff);
@@ -430,12 +445,19 @@
 }
 
 /* Mobile / Drawer Toggle Hamburger Icon */
+.tz-nav-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .tz-nav-toggle__bars {
 	position: relative;
 	width: 16px;
 	height: 2px;
 	background: currentColor;
 	display: block;
+	margin: 0 auto;
 	transition: background 140ms ease;
 }
 
@@ -471,6 +493,7 @@
 	top: 0;
 	transform: rotate(-45deg);
 }
+
 
 /* Count Badges */
 .tz-cart-btn__count,
