@@ -116,6 +116,43 @@ class Themezur_Footer {
 	}
 
 	/**
+	 * Print Trust Badges section (Pre-Footer Bar).
+	 *
+	 * @return void
+	 */
+	public static function render_trust_badges() {
+		$tb = Themezur_Options::get( 'footer.trust_badges', array() );
+		if ( empty( $tb['enabled'] ) || empty( $tb['items'] ) || ! is_array( $tb['items'] ) ) {
+			return;
+		}
+
+		$icons = array(
+			'shipping' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+			'return'   => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
+			'secure'   => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+			'support'  => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+		);
+
+		echo '<div class="tz-trust-badges"><div class="tz-trust-badges__inner">';
+		foreach ( $tb['items'] as $item ) {
+			if ( empty( $item['title'] ) ) {
+				continue;
+			}
+			$key = isset( $item['icon'] ) ? $item['icon'] : 'shipping';
+			$svg = $icons[ $key ] ?? $icons['shipping'];
+			echo '<div class="tz-trust-badge">';
+			echo '<div class="tz-trust-badge__icon">' . $svg . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<div class="tz-trust-badge__info">';
+			echo '<h4 class="tz-trust-badge__title">' . esc_html( $item['title'] ) . '</h4>';
+			if ( ! empty( $item['subtitle'] ) ) {
+				echo '<p class="tz-trust-badge__desc">' . esc_html( $item['subtitle'] ) . '</p>';
+			}
+			echo '</div></div>';
+		}
+		echo '</div></div>';
+	}
+
+	/**
 	 * Print SVG Payment Method Badges.
 	 *
 	 * @return void
@@ -127,7 +164,7 @@ class Themezur_Footer {
 		}
 		$methods = ! empty( $bottom['payments'] ) && is_array( $bottom['payments'] )
 			? $bottom['payments']
-			: array( 'visa', 'mastercard', 'amex', 'paypal', 'applepay', 'bkash', 'nagad' );
+			: array( 'bkash', 'nagad', 'rocket', 'cod', 'visa', 'mastercard', 'amex', 'paypal' );
 
 		if ( empty( $methods ) ) {
 			return;
@@ -155,6 +192,8 @@ class Themezur_Footer {
 			'applepay'   => 'Apple Pay',
 			'bkash'      => 'bKash',
 			'nagad'      => 'Nagad',
+			'rocket'     => 'Rocket',
+			'cod'        => 'Cash on Delivery',
 		);
 		$label = $labels[ $key ] ?? ucfirst( $key );
 
@@ -166,8 +205,11 @@ class Themezur_Footer {
 			'applepay'   => '<svg class="tz-pay-badge tz-pay-badge--apple" width="38" height="24" viewBox="0 0 38 24" fill="none" aria-label="Apple Pay"><rect width="38" height="24" rx="4" fill="#000"/><text x="19" y="15" font-family="sans-serif" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle">Pay</text></svg>',
 			'bkash'      => '<svg class="tz-pay-badge tz-pay-badge--bkash" width="38" height="24" viewBox="0 0 38 24" fill="none" aria-label="bKash"><rect width="38" height="24" rx="4" fill="#E2136E"/><text x="19" y="15" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#fff" text-anchor="middle">bKash</text></svg>',
 			'nagad'      => '<svg class="tz-pay-badge tz-pay-badge--nagad" width="38" height="24" viewBox="0 0 38 24" fill="none" aria-label="Nagad"><rect width="38" height="24" rx="4" fill="#F7941D"/><text x="19" y="15" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#fff" text-anchor="middle">নগদ</text></svg>',
+			'rocket'     => '<svg class="tz-pay-badge tz-pay-badge--rocket" width="38" height="24" viewBox="0 0 38 24" fill="none" aria-label="Rocket"><rect width="38" height="24" rx="4" fill="#8C3494"/><text x="19" y="15" font-family="sans-serif" font-size="8" font-weight="bold" fill="#fff" text-anchor="middle">Rocket</text></svg>',
+			'cod'        => '<svg class="tz-pay-badge tz-pay-badge--cod" width="38" height="24" viewBox="0 0 38 24" fill="none" aria-label="Cash on Delivery"><rect width="38" height="24" rx="4" fill="#059669"/><text x="19" y="15" font-family="sans-serif" font-size="8" font-weight="bold" fill="#fff" text-anchor="middle">COD</text></svg>',
 		);
 
 		return $svgs[ $key ] ?? '<span class="tz-pay-badge">' . esc_html( $label ) . '</span>';
 	}
+}
 }

@@ -18,7 +18,7 @@ $logo_id = Themezur_Options::get_logo_id();
 $site_name = get_bloginfo( 'name' );
 
 $active_cols = array();
-foreach ( array( '1', '2', '3', '4' ) as $key ) {
+foreach ( array( '1', '2', '3', '4', '5' ) as $key ) {
 	if ( ! empty( $columns[ $key ]['enabled'] ) ) {
 		$active_cols[ $key ] = $columns[ $key ];
 	}
@@ -285,13 +285,38 @@ $render_col = static function ( $col ) use ( $logo_id, $site_name ) {
 		echo '</form>';
 	}
 };
+Themezur_Footer::render_trust_badges();
 ?>
 <footer
 	id="themezur-footer"
-	class="tz-site-footer tz-site-footer--columns4"
+	class="tz-site-footer tz-site-footer--columns<?php echo esc_attr( (string) max( 1, $col_count ) ); ?>"
 	data-tz-footer
 	data-tz-footer-cols="<?php echo esc_attr( (string) max( 1, $col_count ) ); ?>"
 >
+	<?php
+	$nl_row = isset( $f['newsletter_row'] ) && is_array( $f['newsletter_row'] ) ? $f['newsletter_row'] : array();
+	if ( ! empty( $nl_row['enabled'] ) ) :
+		$action      = ! empty( $nl_row['action'] ) ? $nl_row['action'] : '#';
+		$placeholder = ! empty( $nl_row['placeholder'] ) ? $nl_row['placeholder'] : __( 'Enter your email address', 'themezur' );
+		$button      = ! empty( $nl_row['button'] ) ? $nl_row['button'] : __( 'Subscribe Now', 'themezur' );
+		?>
+		<div class="tz-footer-newsletter-row">
+			<div class="tz-footer-newsletter-row__inner">
+				<div class="tz-footer-newsletter-row__text">
+					<?php if ( ! empty( $nl_row['title'] ) ) : ?>
+						<h3 class="tz-footer-newsletter-row__title"><?php echo esc_html( $nl_row['title'] ); ?></h3>
+					<?php endif; ?>
+					<?php if ( ! empty( $nl_row['subtitle'] ) ) : ?>
+						<p class="tz-footer-newsletter-row__subtitle"><?php echo esc_html( $nl_row['subtitle'] ); ?></p>
+					<?php endif; ?>
+				</div>
+				<form class="tz-footer-newsletter-row__form" method="post" action="<?php echo esc_url( $action ); ?>">
+					<input type="email" name="EMAIL" placeholder="<?php echo esc_attr( $placeholder ); ?>" required autocomplete="email" />
+					<button type="submit" class="tz-btn"><?php echo esc_html( $button ); ?></button>
+				</form>
+			</div>
+		</div>
+	<?php endif; ?>
 	<?php if ( $col_count > 0 ) : ?>
 		<div class="tz-footer-main">
 			<div class="tz-footer-main__inner">
@@ -324,6 +349,7 @@ $render_col = static function ( $col ) use ( $logo_id, $site_name ) {
 				$site_name ? $site_name : 'Themezur',
 				wp_date( 'Y' )
 			);
+		$copy = str_replace( array( '{year}', '{site_name}' ), array( wp_date( 'Y' ), $site_name ? $site_name : 'Themezur' ), $copy );
 		$bottom_menu = '';
 		if ( ! empty( $bottom['show_menu'] ) && ! empty( $bottom['menu_id'] ) ) {
 			$bottom_menu = wp_nav_menu(

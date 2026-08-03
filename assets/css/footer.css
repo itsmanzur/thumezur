@@ -44,9 +44,9 @@
 .tz-footer-col__title {
 	margin: 0 0 0.45rem;
 	font-size: 0.95rem;
-	font-weight: 750;
+	font-weight: 400;
 	letter-spacing: 0.03em;
-	text-transform: uppercase;
+	text-transform: capitalize;
 	color: var(--tz-ft-text);
 }
 
@@ -453,3 +453,129 @@
 		gap: 0.75rem;
 	}
 }
+
+/* -----------------------------------------------------------------
+ * Trust Badges / Pre-Footer Features Bar
+ * ----------------------------------------------------------------- */
+.tz-trust-badges {
+	background: color-mix(in srgb, var(--tz-ft-bg, #0f172a) 92%, #ffffff);
+	border-top: 1px solid var(--tz-ft-border, #1e293b);
+	border-bottom: 1px solid var(--tz-ft-border, #1e293b);
+	padding: 1.5rem 0;
+}
+
+.tz-trust-badges__inner {
+	max-width: var(--tz-ft-container, 1200px);
+	margin: 0 auto;
+	padding: 0 var(--tz-ft-side-pad, 1.15rem);
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1.5rem;
+}
+
+.tz-trust-badge {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.tz-trust-badge__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	background: color-mix(in srgb, var(--tz-ft-accent, #2563eb) 12%, transparent);
+	color: var(--tz-ft-accent, #2563eb);
+	flex-shrink: 0;
+	transition: transform 180ms ease, background 180ms ease;
+}
+
+.tz-trust-badge:hover .tz-trust-badge__icon {
+	transform: scale(1.08);
+	background: var(--tz-ft-accent, #2563eb);
+	color: #ffffff;
+}
+
+.tz-trust-badge__title {
+	margin: 0;
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: var(--tz-ft-text, #ffffff);
+}
+
+.tz-trust-badge__desc {
+	margin: 0.2rem 0 0;
+	font-size: 0.8rem;
+	color: var(--tz-ft-muted, #94a3b8);
+}
+
+/* -----------------------------------------------------------------
+ * Full-Width Pre-Footer Newsletter Banner
+ * ----------------------------------------------------------------- */
+.tz-footer-newsletter-row {
+	padding: 2.25rem 0;
+	border-bottom: 1px solid var(--tz-ft-border, #1e293b);
+	background: color-mix(in srgb, var(--tz-ft-bg, #0f172a) 96%, #ffffff);
+}
+
+.tz-footer-newsletter-row__inner {
+	max-width: var(--tz-ft-container, 1200px);
+	margin: 0 auto;
+	padding: 0 var(--tz-ft-side-pad, 1.15rem);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.5rem;
+	flex-wrap: wrap;
+}
+
+.tz-footer-newsletter-row__title {
+	margin: 0;
+	font-size: 1.25rem;
+	font-weight: 800;
+	color: var(--tz-ft-text, #ffffff);
+}
+
+.tz-footer-newsletter-row__subtitle {
+	margin: 0.25rem 0 0;
+	font-size: 0.88rem;
+	color: var(--tz-ft-muted, #94a3b8);
+}
+
+.tz-footer-newsletter-row__form {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: min(100%, 26rem);
+}
+
+.tz-footer-newsletter-row__form input[type="email"] {
+	flex: 1;
+	height: 44px;
+	padding: 0 1rem;
+	border-radius: 8px;
+	border: 1px solid var(--tz-ft-border, #1e293b);
+	background: color-mix(in srgb, var(--tz-ft-bg, #0f172a) 80%, #ffffff);
+	color: var(--tz-ft-text, #ffffff);
+	font-size: 0.9rem;
+}
+
+.tz-footer-newsletter-row__form button {
+	height: 44px;
+	padding: 0 1.25rem;
+	border-radius: 8px;
+	background: var(--tz-ft-accent, #2563eb);
+	color: #ffffff;
+	font-weight: 700;
+	border: none;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: filter 140ms ease;
+}
+
+.tz-footer-newsletter-row__form button:hover {
+	filter: brightness(1.1);
+}
+

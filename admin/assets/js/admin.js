@@ -107,6 +107,65 @@
 							show_search: true,
 							show_cart: true,
 							show_account: true
+					if (!this.options.footer) { this.options.footer = {}; }
+					if (!this.options.footer.trust_badges) {
+						this.options.footer.trust_badges = {
+							enabled: true,
+							items: [
+								{ icon: 'shipping', title: 'Free Shipping', subtitle: 'On orders over $50' },
+								{ icon: 'return', title: '7 Days Return', subtitle: 'Money back guarantee' },
+								{ icon: 'secure', title: '100% Secure', subtitle: 'Protected payments' },
+								{ icon: 'support', title: '24/7 Support', subtitle: 'Dedicated help center' }
+							]
+						};
+					}
+					if (!this.options.footer.newsletter_row) {
+						this.options.footer.newsletter_row = {
+							enabled: false,
+							title: 'Subscribe to our Newsletter',
+							subtitle: 'Get 10% off your first order and stay updated with latest deals!',
+							action: '',
+							placeholder: 'Enter your email address',
+							button: 'Subscribe Now'
+						};
+					}
+					if (this.options.footer.columns && !this.options.footer.columns['5']) {
+						this.options.footer.columns['5'] = {
+							enabled: false,
+							title: 'Newsletter',
+							subtitle: '',
+							type: 'newsletter',
+							text: 'Subscribe for exclusive offers.',
+							logo_source: 'none',
+							logo_id: 0,
+							show_logo: false,
+							show_social: true,
+							cta_label: '',
+							cta_url: '',
+							menu_id: 0,
+							links: [],
+							address: '',
+							phone: '',
+							email: '',
+							whatsapp: '',
+							hours: '',
+							map_url: '',
+							posts_count: 3,
+							posts_show_thumb: true,
+							posts_show_date: true,
+							posts_category: 0,
+							products_count: 3,
+							products_source: 'recent',
+							products_show_thumb: true,
+							products_show_price: true,
+							shortcode: '',
+							newsletter_mode: 'form',
+							newsletter_text: '',
+							newsletter_placeholder: 'Your email',
+							newsletter_button: 'Subscribe',
+							newsletter_action: '',
+							newsletter_email_name: 'EMAIL',
+							newsletter_shortcode: ''
 						};
 					}
 				},

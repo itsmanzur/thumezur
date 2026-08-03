@@ -221,11 +221,45 @@ class Themezur_Options {
 				'layout'      => 'columns4',
 				'bg'          => '#0f172a',
 				'text'        => '#e2e8f0',
+				'heading'     => '#ffffff',
 				'muted'       => '#94a3b8',
 				'accent'      => '#f59e0b',
 				'border'      => '#1e293b',
 				'container_width' => '1200px',
 				'side_padding'    => '1.15rem',
+				'trust_badges' => array(
+					'enabled' => true,
+					'items'   => array(
+						array(
+							'icon'     => 'shipping',
+							'title'    => 'Free Shipping',
+							'subtitle' => 'On orders over $50',
+						),
+						array(
+							'icon'     => 'return',
+							'title'    => '7 Days Return',
+							'subtitle' => 'Money back guarantee',
+						),
+						array(
+							'icon'     => 'secure',
+							'title'    => '100% Secure',
+							'subtitle' => 'Protected payments',
+						),
+						array(
+							'icon'     => 'support',
+							'title'    => '24/7 Support',
+							'subtitle' => 'Dedicated help center',
+						),
+					),
+				),
+				'newsletter_row' => array(
+					'enabled'     => false,
+					'title'       => 'Subscribe to our Newsletter',
+					'subtitle'    => 'Get 10% off your first order and stay updated with latest deals!',
+					'action'      => '',
+					'placeholder' => 'Enter your email address',
+					'button'      => 'Subscribe Now',
+				),
 				'columns'     => array(
 					'1' => array(
 						'enabled'     => true,
@@ -385,6 +419,40 @@ class Themezur_Options {
 						'newsletter_placeholder' => 'Your email',
 						'newsletter_button'      => 'Subscribe',
 						'newsletter_action'      => '',
+					'5' => array(
+						'enabled'     => false,
+						'title'       => 'Newsletter',
+						'subtitle'    => '',
+						'type'        => 'newsletter',
+						'text'        => 'Subscribe for exclusive offers.',
+						'logo_source' => 'none',
+						'logo_id'     => 0,
+						'show_logo'   => false,
+						'show_social' => true,
+						'cta_label'   => '',
+						'cta_url'     => '',
+						'menu_id'     => 0,
+						'links'       => array(),
+						'address'     => '',
+						'phone'       => '',
+						'email'       => '',
+						'whatsapp'    => '',
+						'hours'       => '',
+						'map_url'     => '',
+						'posts_count'            => 3,
+						'posts_show_thumb'       => true,
+						'posts_show_date'        => true,
+						'posts_category'         => 0,
+						'products_count'         => 3,
+						'products_source'        => 'recent',
+						'products_show_thumb'    => true,
+						'products_show_price'    => true,
+						'shortcode'              => '',
+						'newsletter_mode'        => 'form',
+						'newsletter_text'        => '',
+						'newsletter_placeholder' => 'Your email',
+						'newsletter_button'      => 'Subscribe',
+						'newsletter_action'      => '',
 						'newsletter_email_name'  => 'EMAIL',
 						'newsletter_shortcode'   => '',
 					),
@@ -395,7 +463,7 @@ class Themezur_Options {
 					'show_menu'     => true,
 					'menu_id'       => 0,
 					'show_payments' => true,
-					'payments'      => array( 'visa', 'mastercard', 'amex', 'paypal', 'applepay', 'bkash', 'nagad' ),
+					'payments'      => array( 'bkash', 'nagad', 'rocket', 'cod', 'visa', 'mastercard', 'amex', 'paypal' ),
 				),
 				'back_to_top' => array(
 					'enabled'   => true,
@@ -1094,7 +1162,7 @@ class Themezur_Options {
 		$product_sources = array( 'recent', 'featured', 'on_sale', 'top_rated' );
 		$nl_modes        = array( 'form', 'shortcode' );
 		$out             = array();
-		foreach ( array( '1', '2', '3', '4' ) as $key ) {
+		foreach ( array( '1', '2', '3', '4', '5' ) as $key ) {
 			$row = isset( $raw[ $key ] ) && is_array( $raw[ $key ] ) ? $raw[ $key ] : ( isset( $raw[ (int) $key ] ) && is_array( $raw[ (int) $key ] ) ? $raw[ (int) $key ] : array() );
 			$def = $d[ $key ];
 			$type = isset( $row['type'] ) ? sanitize_key( $row['type'] ) : $def['type'];

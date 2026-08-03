@@ -69,6 +69,68 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		</div>
 
+		<!-- Trust Badges (Pre-Footer Bar) -->
+		<div class="tz-group">
+			<div class="tz-group__head">
+				<div>
+					<h3 class="tz-group__title"><?php esc_html_e( '🛡️ Trust Badges / Pre-Footer Features Bar', 'themezur' ); ?></h3>
+					<p class="tz-group__desc"><?php esc_html_e( 'Display feature highlights (Free Shipping, Return Policy, Secure Payment, Support) above footer columns.', 'themezur' ); ?></p>
+				</div>
+				<label class="tz-field--row" style="margin:0;padding:0;border:0;">
+					<input type="checkbox" x-model="options.footer.trust_badges.enabled">
+					<span><?php esc_html_e( 'Enabled', 'themezur' ); ?></span>
+				</label>
+			</div>
+			<div class="tz-group__body" x-show="options.footer.trust_badges.enabled">
+				<template x-for="(badge, idx) in options.footer.trust_badges.items" :key="'tb-' + idx">
+					<div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+						<select x-model="badge.icon" style="width:140px;">
+							<option value="shipping"><?php esc_html_e( '🚚 Shipping', 'themezur' ); ?></option>
+							<option value="return"><?php esc_html_e( '🔄 Return', 'themezur' ); ?></option>
+							<option value="secure"><?php esc_html_e( '🛡️ Secure', 'themezur' ); ?></option>
+							<option value="support"><?php esc_html_e( '💬 Support', 'themezur' ); ?></option>
+						</select>
+						<input type="text" x-model="badge.title" placeholder="Title" style="flex:1;">
+						<input type="text" x-model="badge.subtitle" placeholder="Subtitle" style="flex:1.5;">
+					</div>
+				</template>
+			</div>
+		</div>
+
+		<!-- Pre-Footer Newsletter Banner -->
+		<div class="tz-group">
+			<div class="tz-group__head">
+				<div>
+					<h3 class="tz-group__title"><?php esc_html_e( '✉️ Full-Width Pre-Footer Newsletter Banner', 'themezur' ); ?></h3>
+					<p class="tz-group__desc"><?php esc_html_e( 'Stylish full-width newsletter subscription row right above footer columns.', 'themezur' ); ?></p>
+				</div>
+				<label class="tz-field--row" style="margin:0;padding:0;border:0;">
+					<input type="checkbox" x-model="options.footer.newsletter_row.enabled">
+					<span><?php esc_html_e( 'Enabled', 'themezur' ); ?></span>
+				</label>
+			</div>
+			<div class="tz-group__body" x-show="options.footer.newsletter_row.enabled">
+				<div class="tz-field-grid">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Banner Title', 'themezur' ); ?></label>
+						<input type="text" x-model="options.footer.newsletter_row.title" placeholder="Subscribe to our Newsletter">
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Banner Subtitle', 'themezur' ); ?></label>
+						<input type="text" x-model="options.footer.newsletter_row.subtitle" placeholder="Get 10% off your first order!">
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Form Action URL (Mailchimp / CPT)', 'themezur' ); ?></label>
+						<input type="text" x-model="options.footer.newsletter_row.action" placeholder="https://...">
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Button Text', 'themezur' ); ?></label>
+						<input type="text" x-model="options.footer.newsletter_row.button" placeholder="Subscribe Now">
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="tz-group">
 			<div class="tz-group__head">
 				<div>
@@ -77,7 +139,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 			<div class="tz-ft-overview">
-				<template x-for="colKey in ['1','2','3','4']" :key="'ov-' + colKey">
+				<template x-for="colKey in ['1','2','3','4','5']" :key="'ov-' + colKey">
 					<button
 						type="button"
 						class="tz-ft-overview__card"
@@ -107,7 +169,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		</div>
 
-		<template x-for="colKey in ['1','2','3','4']" :key="'ed-' + colKey">
+		<template x-for="colKey in ['1','2','3','4','5']" :key="'ed-' + colKey">
 			<div class="tz-group" x-show="footerSubTab === colKey" x-cloak>
 				<div class="tz-group__head">
 					<div>
@@ -407,7 +469,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="tz-group__body" x-show="options.footer.bottom.enabled">
 				<div class="tz-field">
 					<label><?php esc_html_e( 'Copyright text', 'themezur' ); ?></label>
-					<input type="text" x-model="options.footer.bottom.copyright" placeholder="<?php esc_attr_e( 'Leave empty for automatic © Site Year', 'themezur' ); ?>">
+					<input type="text" x-model="options.footer.bottom.copyright" placeholder="<?php esc_attr_e( 'e.g. © {year} {site_name}. All rights reserved.', 'themezur' ); ?>">
+					<p class="tz-hint"><?php esc_html_e( 'Use {year} for current year and {site_name} for website title.', 'themezur' ); ?></p>
 				</div>
 				<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.footer.bottom.show_menu"> <?php esc_html_e( 'Show secondary menu', 'themezur' ); ?></label></div>
 				<div class="tz-field" x-show="options.footer.bottom.show_menu">
@@ -419,7 +482,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</template>
 					</select>
 				</div>
-				<div class="tz-field tz-field--row" style="margin-top:12px;"><label><input type="checkbox" x-model="options.footer.bottom.show_payments"> <?php esc_html_e( 'Show payment method badges (Visa, Mastercard, Amex, PayPal, Apple Pay, bKash, Nagad)', 'themezur' ); ?></label></div>
+				<div class="tz-field tz-field--row" style="margin-top:12px;"><label><input type="checkbox" x-model="options.footer.bottom.show_payments"> <?php esc_html_e( 'Show payment method badges (bKash, Nagad, Rocket, Cash on Delivery, Visa, Mastercard, AMEX, PayPal)', 'themezur' ); ?></label></div>
 			</div>
 		</div>
 
