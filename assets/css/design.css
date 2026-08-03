@@ -4,6 +4,7 @@
 body {
 	font-family: var(--themezur-font, system-ui, sans-serif);
 	font-size: var(--themezur-font-size, 16px);
+	font-weight: var(--themezur-font-weight, 400);
 	line-height: var(--themezur-line-height, 1.65);
 	color: var(--themezur-text, #0f172a);
 	background-color: var(--themezur-bg, #ffffff);
@@ -11,6 +12,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
 	font-family: var(--themezur-font-heading, var(--themezur-font, system-ui, sans-serif));
+	font-weight: var(--themezur-heading-weight, 700);
 	color: var(--themezur-primary, #0f172a);
 }
 

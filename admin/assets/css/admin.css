@@ -1199,3 +1199,50 @@
 		width: 100%;
 	}
 }
+
+/* ─── Font weight row ─────────────────────────────────────────── */
+
+.tz-weight-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin-top: 8px;
+}
+
+.tz-weight-label {
+	font-size: var(--tz-fs-xs);
+	color: var(--tz-muted);
+	margin-right: 4px;
+	white-space: nowrap;
+}
+
+.tz-weight-check {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: var(--tz-fs-xs);
+	font-weight: 500;
+	padding: 3px 8px;
+	border: 1px solid var(--tz-border);
+	border-radius: 6px;
+	cursor: pointer;
+	transition: border-color 0.15s, background 0.15s;
+	background: var(--tz-surface-2);
+	color: var(--tz-text);
+	user-select: none;
+}
+
+.tz-weight-check input[type="checkbox"] {
+	display: none;
+}
+
+.tz-weight-check:has(input:checked) {
+	border-color: var(--tz-accent);
+	background: color-mix(in srgb, var(--tz-accent) 15%, var(--tz-surface-2));
+	color: var(--tz-accent);
+}
+
+.tz-weight-check:hover {
+	border-color: var(--tz-accent);
+}

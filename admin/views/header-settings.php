@@ -517,8 +517,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 				<div class="tz-group__body">
 					<div class="tz-field">
-						<label><?php esc_html_e( 'Font family (CSS stack)', 'themezur' ); ?></label>
-						<input type="text" x-model="options.header.typo.font_family">
+					<label><?php esc_html_e( 'Header font', 'themezur' ); ?></label>
+					<select x-model="options.header.typo.font_id" @change="onHeaderFontChange()">
+						<option value="inherit"><?php esc_html_e( 'Inherit — use global body font', 'themezur' ); ?></option>
+						<template x-for="f in fontCatalog.filter(f => f.id !== 'custom')" :key="'hf-' + f.id">
+							<option :value="f.id" x-text="f.label" :style="f.family ? 'font-family:' + f.family : ''"></option>
+						</template>
+						<option value="custom"><?php esc_html_e( 'Custom stack…', 'themezur' ); ?></option>
+					</select>
+					<p class="tz-hint" x-show="options.header.typo.font_id !== 'inherit' && options.header.typo.font_id !== 'system' && options.header.typo.font_id !== 'custom'" :style="getFontStyle(options.header.typo.font_id)">
+						<?php esc_html_e( 'Header preview text — শিরোনাম', 'themezur' ); ?>
+					</p>
+				</div>
+				<div class="tz-field" x-show="options.header.typo.font_id === 'custom'">
+					<label><?php esc_html_e( 'Custom font stack (CSS)', 'themezur' ); ?></label>
+					<input type="text" x-model="options.header.typo.font_family" placeholder='&quot;MyFont&quot;, system-ui, sans-serif'>
 					</div>
 					<div class="tz-field-grid">
 						<div class="tz-field">

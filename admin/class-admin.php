@@ -159,7 +159,7 @@ class Themezur_Admin {
 				'socialNetworks'  => $networks,
 				'menus'           => $menus,
 				'categories'      => $categories,
-				'fontCatalog'     => class_exists( 'Themezur_Fonts' ) ? Themezur_Fonts::catalog() : array(),
+				'fontCatalog'     => class_exists( 'Themezur_Fonts' ) ? Themezur_Fonts::catalog_for_js() : array(),
 				'i18n'            => array(
 					'saved'         => __( 'Settings saved.', 'themezur' ),
 					'error'         => __( 'Something went wrong. Please try again.', 'themezur' ),

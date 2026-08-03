@@ -393,8 +393,14 @@ class Themezur_Frontend {
 	public static function output_css_vars() {
 		$g = Themezur_Options::get( 'general', array() );
 
+		// Resolve body/heading weights to a single representative value for CSS var.
+		$body_weights = ! empty( $g['font_body_weights'] ) && is_array( $g['font_body_weights'] ) ? $g['font_body_weights'] : array( '400' );
+		$head_weights = ! empty( $g['font_heading_weights'] ) && is_array( $g['font_heading_weights'] ) ? $g['font_heading_weights'] : array( '700' );
+		$body_weight_val = in_array( '400', $body_weights, true ) ? '400' : $body_weights[0];
+		$head_weight_val = in_array( '700', $head_weights, true ) ? '700' : end( $head_weights );
+
 		$css = sprintf(
-			':root{--themezur-primary:%1$s;--themezur-accent:%2$s;--themezur-text:%3$s;--themezur-muted:%4$s;--themezur-bg:%5$s;--themezur-surface:%6$s;--themezur-border:%7$s;--themezur-link:%8$s;--themezur-link-hover:%9$s;--themezur-font:%10$s;--themezur-font-heading:%11$s;--themezur-font-size:%12$s;--themezur-line-height:%13$s;--themezur-radius:%14$s;--themezur-container:%15$s;--themezur-btn-bg:%16$s;--themezur-btn-text:%17$s;--themezur-btn-radius:%18$s;}',
+			':root{--themezur-primary:%1$s;--themezur-accent:%2$s;--themezur-text:%3$s;--themezur-muted:%4$s;--themezur-bg:%5$s;--themezur-surface:%6$s;--themezur-border:%7$s;--themezur-link:%8$s;--themezur-link-hover:%9$s;--themezur-font:%10$s;--themezur-font-heading:%11$s;--themezur-font-size:%12$s;--themezur-line-height:%13$s;--themezur-radius:%14$s;--themezur-container:%15$s;--themezur-btn-bg:%16$s;--themezur-btn-text:%17$s;--themezur-btn-radius:%18$s;--themezur-font-weight:%19$s;--themezur-heading-weight:%20$s;}',
 			esc_attr( $g['primary_color'] ?? '#0f172a' ),
 			esc_attr( $g['accent_color'] ?? '#2563eb' ),
 			esc_attr( $g['text_color'] ?? '#0f172a' ),
@@ -412,7 +418,9 @@ class Themezur_Frontend {
 			esc_attr( $g['container_width'] ?? '1200px' ),
 			esc_attr( $g['button_bg'] ?? '#2563eb' ),
 			esc_attr( $g['button_text'] ?? '#ffffff' ),
-			esc_attr( $g['button_radius'] ?? '8px' )
+			esc_attr( $g['button_radius'] ?? '8px' ),
+			esc_attr( $body_weight_val ),
+			esc_attr( $head_weight_val )
 		);
 
 		wp_add_inline_style( 'themezur-style', $css );
@@ -428,6 +436,14 @@ class Themezur_Frontend {
 			$typo     = Themezur_Options::get( 'header.typo', array() );
 			$spacing  = Themezur_Options::get( 'header.spacing', array() );
 			$announce = Themezur_Options::get( 'header.announce', array() );
+
+			// Resolve header font: 'inherit' uses global body font, otherwise use catalog entry.
+			$header_font_id = $typo['font_id'] ?? 'inherit';
+			if ( 'inherit' === $header_font_id || ! Themezur_Fonts::get( $header_font_id ) ) {
+				$resolved_header_font = $g['font_body'] ?? 'system-ui,sans-serif';
+			} else {
+				$resolved_header_font = Themezur_Fonts::family( $header_font_id );
+			}
 
 			$header_css = sprintf(
 				'.tz-site-header--triple{--tz-announce-bg:%1$s;--tz-announce-text:%2$s;--tz-top-bg:%3$s;--tz-top-text:%4$s;--tz-top-muted:%5$s;--tz-top-accent:%6$s;--tz-mid-bg:%7$s;--tz-mid-text:%8$s;--tz-mid-muted:%9$s;--tz-mid-accent:%10$s;--tz-mid-border:%11$s;--tz-bot-bg:%12$s;--tz-bot-text:%13$s;--tz-bot-muted:%14$s;--tz-bot-accent:%15$s;--tz-bot-accent-text:%16$s;--tz-font:%17$s;--tz-top-size:%18$s;--tz-top-weight:%19$s;--tz-mid-size:%20$s;--tz-mid-weight:%21$s;--tz-nav-size:%22$s;--tz-nav-weight:%23$s;--tz-logo-max-h:%24$s;--tz-container:%25$s;--tz-side-pad:%26$s;--tz-top-min-h:%27$s;--tz-mid-min-h:%28$s;--tz-bot-min-h:%29$s;}',
@@ -447,7 +463,7 @@ class Themezur_Frontend {
 				esc_attr( $bottom['muted'] ?? '#cbd5e1' ),
 				esc_attr( $bottom['accent'] ?? '#f59e0b' ),
 				esc_attr( $bottom['accent_text'] ?? '#111827' ),
-				esc_attr( $typo['font_family'] ?? 'system-ui,sans-serif' ),
+				esc_attr( $resolved_header_font ),
 				esc_attr( $typo['top_size'] ?? '13px' ),
 				esc_attr( $typo['top_weight'] ?? '500' ),
 				esc_attr( $typo['mid_size'] ?? '14px' ),

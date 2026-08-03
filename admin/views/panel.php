@@ -455,19 +455,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<div class="tz-field-grid">
 									<div class="tz-field">
 										<label><?php esc_html_e( 'Body font', 'themezur' ); ?></label>
-										<select x-model="options.general.font_body_id">
+										<select x-model="options.general.font_body_id" @change="onFontBodyChange()">
 											<template x-for="f in fontCatalog" :key="'fb-' + f.id">
-												<option :value="f.id" x-text="f.label"></option>
+												<option :value="f.id" x-text="f.label" :style="f.family ? 'font-family:' + f.family : ''"></option>
 											</template>
 										</select>
+										<p class="tz-hint" x-show="options.general.font_body_id !== 'system'" :style="getFontStyle(options.general.font_body_id)">
+											<?php esc_html_e( 'The quick brown fox — সুন্দর বাংলা ফন্ট', 'themezur' ); ?>
+										</p>
+										<div class="tz-weight-row" x-show="options.general.font_body_id !== 'system'">
+											<span class="tz-weight-label"><?php esc_html_e( 'Body weights:', 'themezur' ); ?></span>
+											<template x-for="w in getFontWeights(options.general.font_body_id)" :key="'bw-' + w">
+												<label class="tz-weight-check">
+													<input type="checkbox" :value="w" x-model="options.general.font_body_weights">
+													<span x-text="w"></span>
+												</label>
+											</template>
+										</div>
 									</div>
 									<div class="tz-field">
 										<label><?php esc_html_e( 'Heading font', 'themezur' ); ?></label>
-										<select x-model="options.general.font_heading_id">
+										<select x-model="options.general.font_heading_id" @change="onFontHeadingChange()">
 											<template x-for="f in fontCatalog" :key="'fh-' + f.id">
-												<option :value="f.id" x-text="f.label"></option>
+												<option :value="f.id" x-text="f.label" :style="f.family ? 'font-family:' + f.family : ''"></option>
 											</template>
 										</select>
+										<p class="tz-hint" x-show="options.general.font_heading_id !== 'system'" :style="getFontStyle(options.general.font_heading_id)">
+											<?php esc_html_e( 'Bold Heading — শিরোনাম', 'themezur' ); ?>
+										</p>
+										<div class="tz-weight-row" x-show="options.general.font_heading_id !== 'system'">
+											<span class="tz-weight-label"><?php esc_html_e( 'Heading weights:', 'themezur' ); ?></span>
+											<template x-for="w in getFontWeights(options.general.font_heading_id)" :key="'hw-' + w">
+												<label class="tz-weight-check">
+													<input type="checkbox" :value="w" x-model="options.general.font_heading_weights">
+													<span x-text="w"></span>
+												</label>
+											</template>
+										</div>
 									</div>
 								</div>
 								<div class="tz-field" x-show="options.general.font_body_id === 'custom'">

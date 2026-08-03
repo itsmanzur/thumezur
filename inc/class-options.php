@@ -40,10 +40,12 @@ class Themezur_Options {
 				'border_color'    => '#e2e8f0',
 				'link_color'      => '#2563eb',
 				'link_hover'      => '#1d4ed8',
-				'font_body_id'    => 'system',
-				'font_heading_id' => 'system',
-				'font_body'       => 'system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif',
-				'font_heading'    => 'system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif',
+				'font_body_id'      => 'system',
+				'font_heading_id'   => 'system',
+				'font_body'         => 'system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif',
+				'font_heading'      => 'system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif',
+				'font_body_weights'    => array( '400' ),
+				'font_heading_weights' => array( '700' ),
 				'font_size'       => '16px',
 				'line_height'     => '1.65',
 				'radius'          => '8px',
@@ -78,6 +80,7 @@ class Themezur_Options {
 					'version'     => '1',
 				),
 				'typo'        => array(
+					'font_id'     => 'inherit',
 					'font_family' => 'system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif',
 					'top_size'    => '13px',
 					'top_weight'  => '500',
@@ -645,6 +648,14 @@ class Themezur_Options {
 		if ( 'custom' === $head_id ) {
 			$clean['general']['font_heading'] = self::sanitize_font_stack( $g['font_heading'] ?? '', $defaults['general']['font_heading'] );
 		}
+		// Font weights — filter to valid numeric weight strings.
+		$allowed_weights = array( '100', '200', '300', '400', '500', '600', '700', '800', '900' );
+		$raw_bw = isset( $g['font_body_weights'] ) && is_array( $g['font_body_weights'] ) ? $g['font_body_weights'] : array( '400' );
+		$raw_hw = isset( $g['font_heading_weights'] ) && is_array( $g['font_heading_weights'] ) ? $g['font_heading_weights'] : array( '700' );
+		$clean_bw = array_values( array_intersect( array_map( 'strval', $raw_bw ), $allowed_weights ) );
+		$clean_hw = array_values( array_intersect( array_map( 'strval', $raw_hw ), $allowed_weights ) );
+		$clean['general']['font_body_weights']    = ! empty( $clean_bw ) ? $clean_bw : array( '400' );
+		$clean['general']['font_heading_weights'] = ! empty( $clean_hw ) ? $clean_hw : array( '700' );
 		$clean['general']['font_size']       = self::sanitize_css_size( $g['font_size'] ?? '', $defaults['general']['font_size'] );
 		$clean['general']['line_height']     = self::sanitize_unitless_number( $g['line_height'] ?? '', $defaults['general']['line_height'] );
 		$clean['general']['radius']          = self::sanitize_css_size( $g['radius'] ?? '', $defaults['general']['radius'] );
@@ -812,7 +823,13 @@ class Themezur_Options {
 	 * @return array
 	 */
 	private static function sanitize_header_typo( array $raw, array $d ) {
+		// 'inherit' means "use the global body font" — any valid catalog id is also allowed.
+		$font_id = isset( $raw['font_id'] ) ? sanitize_key( $raw['font_id'] ) : ( $d['font_id'] ?? 'inherit' );
+		if ( 'inherit' !== $font_id && ! Themezur_Fonts::get( $font_id ) ) {
+			$font_id = 'inherit';
+		}
 		return array(
+			'font_id'     => $font_id,
 			'font_family' => isset( $raw['font_family'] ) ? sanitize_text_field( $raw['font_family'] ) : $d['font_family'],
 			'top_size'    => self::sanitize_css_size( $raw['top_size'] ?? '', $d['top_size'] ),
 			'top_weight'  => self::sanitize_font_weight( $raw['top_weight'] ?? '', $d['top_weight'] ),

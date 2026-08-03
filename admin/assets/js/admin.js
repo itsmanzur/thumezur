@@ -67,8 +67,99 @@
 					if (!this.options.general.font_heading_id) {
 						this.options.general.font_heading_id = 'system';
 					}
+					if (!this.options.general.font_body_weights || !Array.isArray(this.options.general.font_body_weights)) {
+						this.options.general.font_body_weights = ['400'];
+					}
+					if (!this.options.general.font_heading_weights || !Array.isArray(this.options.general.font_heading_weights)) {
+						this.options.general.font_heading_weights = ['700'];
+					}
 					if (typeof this.options.general.breadcrumbs === 'undefined') {
 						this.options.general.breadcrumbs = true;
+					}
+					// Ensure header typo has font_id.
+					if (!this.options.header) { this.options.header = {}; }
+					if (!this.options.header.typo) { this.options.header.typo = {}; }
+					if (!this.options.header.typo.font_id) {
+						this.options.header.typo.font_id = 'inherit';
+					}
+				},
+
+				/**
+				 * Get the available weights for a font id.
+				 */
+				getFontWeights: function (fontId) {
+					var catalog = this.fontCatalog || [];
+					for (var i = 0; i < catalog.length; i++) {
+						if (catalog[i].id === fontId) {
+							return catalog[i].weights || ['300', '400', '500', '600', '700'];
+						}
+					}
+					return ['300', '400', '500', '600', '700'];
+				},
+
+				/**
+				 * Return an inline style string to render preview text in the selected font.
+				 */
+				getFontStyle: function (fontId) {
+					var catalog = this.fontCatalog || [];
+					for (var i = 0; i < catalog.length; i++) {
+						if (catalog[i].id === fontId && catalog[i].family) {
+							return 'font-family:' + catalog[i].family + ';font-size:0.95em;';
+						}
+					}
+					return '';
+				},
+
+				/**
+				 * Inject a Google Fonts link into the admin <head> for live preview.
+				 */
+				loadFontPreview: function (fontId) {
+					var catalog = this.fontCatalog || [];
+					var font = null;
+					for (var i = 0; i < catalog.length; i++) {
+						if (catalog[i].id === fontId) { font = catalog[i]; break; }
+					}
+					if (!font || !font.google) { return; }
+					var linkId = 'tz-preview-' + fontId;
+					if (document.getElementById(linkId)) { return; } // already loaded
+					var link = document.createElement('link');
+					link.id = linkId;
+					link.rel = 'stylesheet';
+					link.href = 'https://fonts.googleapis.com/css2?family=' + font.google + ':wght@400;700&display=swap';
+					document.head.appendChild(link);
+				},
+
+				/**
+				 * Called when the body font picker changes.
+				 * Resets weights to the font's sensible defaults and loads preview.
+				 */
+				onFontBodyChange: function () {
+					var id = this.options.general.font_body_id;
+					var weights = this.getFontWeights(id);
+					// Default to 400 if available, else first weight.
+					this.options.general.font_body_weights = weights.indexOf('400') !== -1 ? ['400'] : [weights[0]];
+					this.loadFontPreview(id);
+				},
+
+				/**
+				 * Called when the heading font picker changes.
+				 * Resets weights to the font's sensible defaults and loads preview.
+				 */
+				onFontHeadingChange: function () {
+					var id = this.options.general.font_heading_id;
+					var weights = this.getFontWeights(id);
+					// Default to 700 if available, else last weight.
+					this.options.general.font_heading_weights = weights.indexOf('700') !== -1 ? ['700'] : [weights[weights.length - 1]];
+					this.loadFontPreview(id);
+				},
+
+				/**
+				 * Called when the header font picker changes.
+				 */
+				onHeaderFontChange: function () {
+					var id = this.options.header.typo.font_id;
+					if (id && id !== 'inherit' && id !== 'custom') {
+						this.loadFontPreview(id);
 					}
 				},
 
