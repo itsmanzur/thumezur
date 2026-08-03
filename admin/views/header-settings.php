@@ -403,7 +403,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 				</div>
 				<div class="tz-group__body">
-					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.middle.show_menu"> <?php esc_html_e( 'Show main navigation menu in middle bar', 'themezur' ); ?></label></div>
+					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.middle.show_menu"> <?php esc_html_e( 'Show navigation menu in middle bar', 'themezur' ); ?></label></div>
+					<div class="tz-field" x-show="options.header.middle.show_menu">
+						<label><?php esc_html_e( 'Select Menu', 'themezur' ); ?></label>
+						<select x-model.number="options.header.middle.menu_id">
+							<option value="0"><?php esc_html_e( 'Primary Menu (Default Theme Location)', 'themezur' ); ?></option>
+							<template x-for="m in menus" :key="'mid-m-' + m.id">
+								<option :value="m.id" x-text="m.name"></option>
+							</template>
+						</select>
+					</div>
 					<div class="tz-vis" x-show="options.header.middle.show_menu">
 						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_menu"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
 						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_menu"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
@@ -508,11 +517,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<label class="tz-field--row" style="margin:0;padding:0;border:0;"><input type="checkbox" x-model="options.header.bottom.show_menu"></label>
 				</div>
 				<div class="tz-group__body" x-show="options.header.bottom.show_menu">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Select Menu', 'themezur' ); ?></label>
+						<select x-model.number="options.header.bottom.menu_id">
+							<option value="0"><?php esc_html_e( 'Primary Menu (Default Theme Location)', 'themezur' ); ?></option>
+							<template x-for="m in menus" :key="'bot-m-' + m.id">
+								<option :value="m.id" x-text="m.name"></option>
+							</template>
+						</select>
+					</div>
 					<div class="tz-vis">
 						<label><input type="checkbox" x-model="options.header.bottom.hide_mobile_menu"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
 						<label><input type="checkbox" x-model="options.header.bottom.hide_desktop_menu"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
 					</div>
-					<p class="tz-hint"><?php esc_html_e( '“Hide on mobile” affects the desktop bottom-bar nav only. The hamburger menu still opens the mobile drawer.', 'themezur' ); ?></p>
+					<p class="tz-hint"><?php esc_html_e( 'Select any saved menu from Appearance → Menus.', 'themezur' ); ?></p>
 				</div>
 			</div>
 

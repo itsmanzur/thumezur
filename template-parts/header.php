@@ -32,16 +32,20 @@ $announce_days   = isset( $announce['cookie_days'] ) ? (int) $announce['cookie_d
 
 $nav_menu = '';
 if ( ! empty( $bottom['show_menu'] ) ) {
-	$nav_menu = wp_nav_menu(
-		array(
-			'theme_location' => 'menu-1',
-			'fallback_cb'    => false,
-			'container'      => false,
-			'menu_class'     => 'tz-nav-list',
-			'echo'           => false,
-			'depth'          => 3,
-		)
+	$bot_menu_id = isset( $bottom['menu_id'] ) ? absint( $bottom['menu_id'] ) : 0;
+	$bot_args    = array(
+		'fallback_cb' => false,
+		'container'   => false,
+		'menu_class'  => 'tz-nav-list',
+		'echo'        => false,
+		'depth'       => 3,
 	);
+	if ( $bot_menu_id > 0 ) {
+		$bot_args['menu'] = $bot_menu_id;
+	} else {
+		$bot_args['theme_location'] = 'menu-1';
+	}
+	$nav_menu = wp_nav_menu( $bot_args );
 }
 
 $cart_count = 0;
@@ -331,16 +335,20 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 						<?php endif; ?>
 					<?php if ( ! empty( $middle['show_menu'] ) ) : ?>
 					<?php
-					$middle_nav = wp_nav_menu(
-						array(
-							'theme_location' => 'menu-1',
-							'fallback_cb'    => false,
-							'container'      => false,
-							'menu_class'     => 'tz-nav-list tz-header-middle__nav-list',
-							'echo'           => false,
-							'depth'          => 3,
-						)
+					$mid_menu_id = isset( $middle['menu_id'] ) ? absint( $middle['menu_id'] ) : 0;
+					$mid_args    = array(
+						'fallback_cb' => false,
+						'container'   => false,
+						'menu_class'  => 'tz-nav-list tz-header-middle__nav-list',
+						'echo'        => false,
+						'depth'       => 3,
 					);
+					if ( $mid_menu_id > 0 ) {
+						$mid_args['menu'] = $mid_menu_id;
+					} else {
+						$mid_args['theme_location'] = 'menu-1';
+					}
+					$middle_nav = wp_nav_menu( $mid_args );
 					?>
 					<?php if ( $middle_nav ) : ?>
 						<nav class="tz-header-middle__nav<?php echo $vis['middle_menu'] ? ' ' . esc_attr( $vis['middle_menu'] ) : ''; ?>">

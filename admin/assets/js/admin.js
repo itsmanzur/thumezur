@@ -86,13 +86,21 @@
 					if (typeof this.options.header.middle.show_menu === 'undefined') {
 						this.options.header.middle.show_menu = false;
 					}
+					if (typeof this.options.header.middle.menu_id === 'undefined') {
+						this.options.header.middle.menu_id = 0;
+					}
 					if (typeof this.options.header.middle.show_button === 'undefined') {
 						this.options.header.middle.show_button = false;
 						this.options.header.middle.button_text = 'Order Now';
 						this.options.header.middle.button_url = '';
 						this.options.header.middle.button_target = '_self';
 					}
+					if (!this.options.header.bottom) { this.options.header.bottom = {}; }
+					if (typeof this.options.header.bottom.menu_id === 'undefined') {
+						this.options.header.bottom.menu_id = 0;
+					}
 				},
+
 
 
 				/**
