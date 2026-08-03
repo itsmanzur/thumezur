@@ -333,7 +333,10 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 								data-tz-search-suggest
 							></div>
 						<?php endif; ?>
-					<?php if ( ! empty( $middle['show_menu'] ) ) : ?>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( ! empty( $middle['show_menu'] ) ) : ?>
 					<?php
 					$mid_menu_id = isset( $middle['menu_id'] ) ? absint( $middle['menu_id'] ) : 0;
 					$mid_args    = array(
