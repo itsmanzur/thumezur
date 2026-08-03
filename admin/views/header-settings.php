@@ -703,6 +703,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 				</div>
 			</div>
+
+			<div class="tz-group">
+				<div class="tz-group__head">
+					<div>
+						<h3 class="tz-group__title"><?php esc_html_e( 'Header Scroll & Transparent Overlay Effects', 'themezur' ); ?></h3>
+						<p class="tz-group__desc"><?php esc_html_e( 'Configure sticky, smart auto-hide, or hero overlay transparent header behavior.', 'themezur' ); ?></p>
+					</div>
+				</div>
+				<div class="tz-group__body">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Scroll Behavior', 'themezur' ); ?></label>
+						<select x-model="options.header.scroll.behavior">
+							<option value="none"><?php esc_html_e( 'None (Static Header)', 'themezur' ); ?></option>
+							<option value="sticky"><?php esc_html_e( 'Standard Sticky Header', 'themezur' ); ?></option>
+							<option value="shrink"><?php esc_html_e( 'Sticky with Shrink Height Effect', 'themezur' ); ?></option>
+							<option value="bottom_sticky"><?php esc_html_e( 'Bottom Bar Only Sticky', 'themezur' ); ?></option>
+							<option value="auto_hide"><?php esc_html_e( '📜 Smart Auto-Hide (Hide on scroll down, show on scroll up)', 'themezur' ); ?></option>
+							<option value="transparent_solid"><?php esc_html_e( '👻 Transparent Hero Overlay (Transparent on top, solid on scroll)', 'themezur' ); ?></option>
+						</select>
+					</div>
+					<div class="tz-field" style="margin-top:12px;">
+						<label><?php esc_html_e( 'Scroll Trigger Offset (px)', 'themezur' ); ?></label>
+						<input type="number" x-model.number="options.header.scroll.offset" placeholder="40">
+					</div>
+					<div class="tz-field tz-field--row" style="margin-top:12px;">
+						<label><input type="checkbox" x-model="options.header.scroll.progress"> <?php esc_html_e( 'Show Reading Scroll Progress Bar at top', 'themezur' ); ?></label>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>

@@ -1136,3 +1136,76 @@ body.tz-mini-cart-open {
 .tz-mini-cart__close:hover {
 	background: #f8fafc;
 }
+
+/* -----------------------------------------------------------------
+ * Menu Badges (HOT, NEW, SALE, etc.)
+ * ----------------------------------------------------------------- */
+.tz-menu-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.65rem;
+	font-weight: 800;
+	line-height: 1;
+	padding: 2px 6px;
+	border-radius: 999px;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	margin-left: 6px;
+	vertical-align: middle;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.tz-menu-badge--hot,
+.tz-menu-badge--sale {
+	background: #ef4444;
+	color: #ffffff;
+}
+
+.tz-menu-badge--new {
+	background: #10b981;
+	color: #ffffff;
+}
+
+.tz-menu-badge--accent {
+	background: var(--tz-mid-accent, #2563eb);
+	color: #ffffff;
+}
+
+/* -----------------------------------------------------------------
+ * Smart Auto-Hide Header (Hide on scroll down, show on scroll up)
+ * ----------------------------------------------------------------- */
+.tz-scroll--auto_hide {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1), background 200ms ease, box-shadow 200ms ease;
+}
+
+.tz-scroll--auto_hide.is-hidden {
+	transform: translateY(-100%);
+}
+
+.tz-scroll--auto_hide.is-scrolled {
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* -----------------------------------------------------------------
+ * Transparent Hero Overlay Header
+ * ----------------------------------------------------------------- */
+.tz-scroll--transparent_solid {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	background: transparent !important;
+	transition: background 260ms ease, box-shadow 260ms ease;
+}
+
+.tz-scroll--transparent_solid.is-solid {
+	position: sticky;
+	background: var(--tz-mid-bg, #ffffff) !important;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+

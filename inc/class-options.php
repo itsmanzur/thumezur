@@ -792,7 +792,7 @@ class Themezur_Options {
 	 * @return array
 	 */
 	private static function sanitize_header_scroll( array $raw, array $d ) {
-		$allowed  = array( 'none', 'sticky', 'shrink', 'bottom_sticky', 'transparent_solid' );
+		$allowed  = array( 'none', 'sticky', 'shrink', 'bottom_sticky', 'transparent_solid', 'auto_hide' );
 		$behavior = isset( $raw['behavior'] ) ? sanitize_key( $raw['behavior'] ) : $d['behavior'];
 		$offset   = isset( $raw['offset'] ) ? absint( $raw['offset'] ) : (int) $d['offset'];
 		return array(

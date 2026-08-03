@@ -26,6 +26,48 @@ class Themezur_Frontend {
 		add_action( 'init', array( __CLASS__, 'apply_early_performance' ) );
 		add_filter( 'woocommerce_add_to_cart_fragments', array( __CLASS__, 'cart_count_fragment' ) );
 		add_action( 'wp_footer', array( 'Themezur_Footer', 'render_back_to_top' ), 40 );
+		add_filter( 'nav_menu_item_title', array( __CLASS__, 'format_menu_badges' ), 10, 4 );
+	}
+
+	/**
+	 * Automatically format menu badges like [HOT], [NEW], [SALE], [50% OFF] or class badge-hot, badge-new.
+	 *
+	 * @param string   $title The menu item's title.
+	 * @param WP_Post  $item  The current menu item.
+	 * @param stdClass $args  An object of wp_nav_menu() arguments.
+	 * @param int      $depth Depth of menu item.
+	 * @return string
+	 */
+	public static function format_menu_badges( $title, $item, $args, $depth ) {
+		if ( preg_match( '/\[(HOT|NEW|SALE|50% OFF|POPULAR|PROMO|[A-Za-z0-9%\s]+)\]/i', $title, $matches ) ) {
+			$badge_text  = esc_html( strtoupper( trim( $matches[1] ) ) );
+			$badge_class = 'tz-menu-badge';
+			$lower       = strtolower( $badge_text );
+			if ( in_array( $lower, array( 'hot', 'sale', '50% off' ), true ) ) {
+				$badge_class .= ' tz-menu-badge--hot';
+			} elseif ( 'new' === $lower ) {
+				$badge_class .= ' tz-menu-badge--new';
+			} else {
+				$badge_class .= ' tz-menu-badge--accent';
+			}
+
+			$badge_html = sprintf( '<span class="%s">%s</span>', esc_attr( $badge_class ), $badge_text );
+			$title      = str_replace( $matches[0], $badge_html, $title );
+		}
+
+		if ( ! empty( $item->classes ) && is_array( $item->classes ) ) {
+			foreach ( $item->classes as $cls ) {
+				if ( 0 === strpos( $cls, 'badge-' ) ) {
+					$raw_tag     = str_replace( 'badge-', '', $cls );
+					$badge_text  = esc_html( strtoupper( $raw_tag ) );
+					$badge_class = 'tz-menu-badge tz-menu-badge--' . sanitize_html_class( $raw_tag );
+					$title      .= sprintf( ' <span class="%s">%s</span>', esc_attr( $badge_class ), $badge_text );
+					break;
+				}
+			}
+		}
+
+		return $title;
 	}
 
 	/**

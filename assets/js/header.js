@@ -195,6 +195,7 @@
 		var offset   = parseInt(header.getAttribute('data-tz-scroll-offset') || '40', 10);
 		if (behavior === 'none') return;
 
+		var lastY   = 0;
 		var ticking = false;
 		function apply() {
 			var y      = window.scrollY || window.pageYOffset || 0;
@@ -210,6 +211,14 @@
 			if (behavior === 'bottom_sticky') {
 				header.classList.toggle('is-bottom-stuck', active);
 			}
+			if (behavior === 'auto_hide') {
+				if (y > offset && y > lastY + 10) {
+					header.classList.add('is-hidden');
+				} else if (y < lastY - 5 || y <= offset) {
+					header.classList.remove('is-hidden');
+				}
+			}
+			lastY = y;
 		}
 
 		window.addEventListener('scroll', function () {
