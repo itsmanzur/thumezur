@@ -160,6 +160,27 @@ class Themezur_Performance {
 				'status'  => empty( $perf['disable_wp_embed'] ) ? 'on' : 'off',
 				'note'    => __( 'oEmbed script', 'themezur' ),
 			),
+			array(
+				'handle'  => 'wp-block-library',
+				'type'    => 'css',
+				'when'    => __( 'Gutenberg Block CSS', 'themezur' ),
+				'status'  => empty( $perf['disable_gutenberg_css'] ) ? 'on' : 'off',
+				'note'    => __( 'Block editor CSS', 'themezur' ),
+			),
+			array(
+				'handle'  => 'wc-cart-fragments',
+				'type'    => 'js',
+				'when'    => __( 'WooCommerce non-shop pages', 'themezur' ),
+				'status'  => ! empty( $perf['opt_cart_fragments'] ) ? 'off' : 'on',
+				'note'    => __( 'Cart Fragments (+300ms speed boost)', 'themezur' ),
+			),
+			array(
+				'handle'  => 'jquery-migrate',
+				'type'    => 'js',
+				'when'    => __( 'jQuery core', 'themezur' ),
+				'status'  => ! empty( $perf['disable_jquery_migrate'] ) ? 'off' : 'on',
+				'note'    => __( 'Legacy jQuery compatibility', 'themezur' ),
+			),
 		);
 
 		/**

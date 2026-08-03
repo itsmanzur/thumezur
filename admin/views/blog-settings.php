@@ -46,6 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<button type="button" class="tz-subtabs__btn" :class="{ 'is-active': blogSubTab === 'single' }" @click="blogSubTab = 'single'"><?php esc_html_e( 'Single post', 'themezur' ); ?></button>
 		</div>
 
+		<!-- Archive tab -->
 		<div class="tz-group" x-show="blogSubTab === 'archive'" x-cloak>
 			<div class="tz-group__head">
 				<div>
@@ -71,6 +72,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</select>
 					</div>
 					<div class="tz-field">
+						<label><?php esc_html_e( 'Card style', 'themezur' ); ?></label>
+						<select x-model="options.blog.archive.card_style">
+							<option value="soft"><?php esc_html_e( 'Soft cards', 'themezur' ); ?></option>
+							<option value="bordered"><?php esc_html_e( 'Bordered cards', 'themezur' ); ?></option>
+							<option value="minimal"><?php esc_html_e( 'Minimal', 'themezur' ); ?></option>
+						</select>
+					</div>
+					<div class="tz-field">
 						<label><?php esc_html_e( 'Excerpt length (words)', 'themezur' ); ?></label>
 						<input type="number" min="5" max="80" x-model.number="options.blog.archive.excerpt_length">
 					</div>
@@ -80,18 +89,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 				</div>
 				<div class="tz-toggles" style="margin-top:12px;">
+					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.featured_hero"><span><?php esc_html_e( 'Featured Hero (first post featured on top)', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_title"><span><?php esc_html_e( 'Archive title', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_description"><span><?php esc_html_e( 'Archive description', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_image"><span><?php esc_html_e( 'Featured image', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_badge"><span><?php esc_html_e( 'Category badge on image', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_excerpt"><span><?php esc_html_e( 'Excerpt', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_date"><span><?php esc_html_e( 'Date', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_author"><span><?php esc_html_e( 'Author', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_category"><span><?php esc_html_e( 'Category', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_reading_time"><span><?php esc_html_e( 'Estimated reading time', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.archive.show_read_more"><span><?php esc_html_e( 'Read more link', 'themezur' ); ?></span></label>
 				</div>
 			</div>
 		</div>
 
+		<!-- Single post tab -->
 		<div class="tz-group" x-show="blogSubTab === 'single'" x-cloak>
 			<div class="tz-group__head">
 				<div>
@@ -100,20 +113,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 			<div class="tz-group__body">
+				<div class="tz-field-grid" style="margin-bottom:12px;">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Single layout', 'themezur' ); ?></label>
+						<select x-model="options.blog.single.layout">
+							<option value="standard"><?php esc_html_e( 'Standard (centered column)', 'themezur' ); ?></option>
+							<option value="sidebar"><?php esc_html_e( 'With right sidebar', 'themezur' ); ?></option>
+						</select>
+					</div>
+					<div class="tz-field" x-show="options.blog.single.show_related">
+						<label><?php esc_html_e( 'Related posts count', 'themezur' ); ?></label>
+						<input type="number" min="1" max="6" x-model.number="options.blog.single.related_count">
+					</div>
+				</div>
 				<div class="tz-toggles">
+					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_progress_bar"><span><?php esc_html_e( 'Scroll reading progress bar', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_toc"><span><?php esc_html_e( 'Auto Table of Contents (from H2/H3 headings)', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_social_share"><span><?php esc_html_e( 'Social share buttons (FB, X, LinkedIn, WhatsApp, Copy)', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_reading_time"><span><?php esc_html_e( 'Estimated reading time', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_image"><span><?php esc_html_e( 'Featured image', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_date"><span><?php esc_html_e( 'Date', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_author"><span><?php esc_html_e( 'Author in meta', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_category"><span><?php esc_html_e( 'Category', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_tags"><span><?php esc_html_e( 'Tags', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_author_box"><span><?php esc_html_e( 'Author box', 'themezur' ); ?></span></label>
-					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_nav"><span><?php esc_html_e( 'Previous / next posts', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_nav"><span><?php esc_html_e( 'Previous / next posts nav', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_related"><span><?php esc_html_e( 'Related posts', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.blog.single.show_comments"><span><?php esc_html_e( 'Comments', 'themezur' ); ?></span></label>
-				</div>
-				<div class="tz-field" style="margin-top:12px;" x-show="options.blog.single.show_related">
-					<label><?php esc_html_e( 'Related posts count', 'themezur' ); ?></label>
-					<input type="number" min="1" max="6" x-model.number="options.blog.single.related_count">
 				</div>
 			</div>
 		</div>

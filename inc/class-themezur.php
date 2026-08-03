@@ -56,6 +56,7 @@ final class Themezur {
 		require_once THEMEZUR_DIR . '/inc/class-performance.php';
 		require_once THEMEZUR_DIR . '/inc/class-frontend.php';
 		require_once THEMEZUR_DIR . '/inc/class-woocommerce.php';
+		require_once THEMEZUR_DIR . '/inc/class-wishlist.php';
 		require_once THEMEZUR_DIR . '/inc/class-ajax.php';
 
 		if ( is_admin() ) {
@@ -73,6 +74,7 @@ final class Themezur {
 		Themezur_Frontend::init();
 		Themezur_Breadcrumbs::init();
 		Themezur_WooCommerce::init();
+		Themezur_Wishlist::init();
 		Themezur_Ajax::init();
 
 		if ( is_admin() ) {

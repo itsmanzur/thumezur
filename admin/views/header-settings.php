@@ -386,11 +386,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_compare"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
 					</div>
 					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.middle.show_cart"> <?php esc_html_e( 'Show cart icon', 'themezur' ); ?></label></div>
+					<div class="tz-field tz-field--row" x-show="options.header.middle.show_cart && woocommerce"><label><input type="checkbox" x-model="options.header.middle.mini_cart"> <?php esc_html_e( 'Open mini-cart drawer', 'themezur' ); ?></label></div>
 					<div class="tz-vis" x-show="options.header.middle.show_cart">
 						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_cart"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
 						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_cart"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
 					</div>
-					<p class="tz-hint"><?php esc_html_e( 'Cart count updates via WooCommerce AJAX fragments when WooCommerce is active.', 'themezur' ); ?></p>
+					<p class="tz-hint"><?php esc_html_e( 'Cart count and mini-cart contents stay synchronized with classic WooCommerce and Cart Blocks.', 'themezur' ); ?></p>
 				</div>
 			</div>
 		</div>

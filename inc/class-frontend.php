@@ -39,8 +39,61 @@ class Themezur_Frontend {
 		if ( function_exists( 'WC' ) && WC()->cart ) {
 			$count = (int) WC()->cart->get_cart_contents_count();
 		}
-		$fragments['span.tz-cart-btn__count'] = '<span class="tz-cart-btn__count" data-tz-cart-count>' . esc_html( (string) $count ) . '</span>';
+		$fragments['span.tz-cart-btn__count'] = self::cart_count_markup( $count );
+		if ( Themezur_Options::get( 'header.middle.mini_cart', true ) ) {
+			$fragments['div.widget_shopping_cart_content'] = self::mini_cart_markup();
+		}
 		return $fragments;
+	}
+
+	/**
+	 * Render WooCommerce mini-cart contents in the standard fragment wrapper.
+	 *
+	 * @return string
+	 */
+	public static function mini_cart_markup() {
+		if ( ! function_exists( 'woocommerce_mini_cart' ) ) {
+			return '<div class="widget_shopping_cart_content"></div>';
+		}
+
+		ob_start();
+		woocommerce_mini_cart();
+		$content = ob_get_clean();
+
+		return '<div class="widget_shopping_cart_content">' . $content . '</div>';
+	}
+
+	/**
+	 * Render the visual and screen-reader cart count.
+	 *
+	 * @param int $count Cart item count.
+	 * @return string
+	 */
+	public static function cart_count_markup( $count ) {
+		$count = max( 0, (int) $count );
+		$label = self::cart_count_label( $count );
+
+		return sprintf(
+			'<span class="tz-cart-btn__count" data-tz-cart-count><span aria-hidden="true">%1$s</span><span class="screen-reader-text">%2$s</span></span>',
+			esc_html( (string) $count ),
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * Get the localized accessible cart label.
+	 *
+	 * @param int $count Cart item count.
+	 * @return string
+	 */
+	public static function cart_count_label( $count ) {
+		$count = max( 0, (int) $count );
+
+		return sprintf(
+			/* translators: %s: number of products in the cart. */
+			_n( 'Cart, %s item', 'Cart, %s items', $count, 'themezur' ),
+			number_format_i18n( $count )
+		);
 	}
 
 	/**
@@ -499,6 +552,72 @@ class Themezur_Frontend {
 					wp_deregister_script( 'wp-embed' );
 				},
 				1
+			);
+		}
+
+		if ( ! empty( $perf['preload_google_fonts'] ) ) {
+			add_filter(
+				'wp_resource_hints',
+				static function ( $urls, $relation_type ) {
+					if ( 'preconnect' === $relation_type ) {
+						$urls[] = array(
+							'href'        => 'https://fonts.gstatic.com',
+							'crossorigin' => 'anonymous',
+						);
+					}
+					return $urls;
+				},
+				10,
+				2
+			);
+		}
+
+		if ( ! empty( $perf['disable_gutenberg_css'] ) ) {
+			add_action(
+				'wp_enqueue_scripts',
+				static function () {
+					wp_dequeue_style( 'wp-block-library' );
+					wp_dequeue_style( 'wp-block-library-theme' );
+					wp_dequeue_style( 'wc-blocks-style' );
+				},
+				100
+			);
+		}
+
+		if ( ! empty( $perf['opt_cart_fragments'] ) ) {
+			add_action(
+				'wp_enqueue_scripts',
+				static function () {
+					if ( function_exists( 'is_woocommerce' ) && ! is_woocommerce() && ! is_cart() && ! is_checkout() ) {
+						wp_dequeue_script( 'wc-cart-fragments' );
+					}
+				},
+				100
+			);
+		}
+
+		if ( ! empty( $perf['remove_query_strings'] ) ) {
+			$strip_ver = static function ( $src ) {
+				if ( strpos( (string) $src, 'ver=' ) ) {
+					$src = remove_query_arg( 'ver', $src );
+				}
+				return $src;
+			};
+			add_filter( 'script_loader_src', $strip_ver, 15 );
+			add_filter( 'style_loader_src', $strip_ver, 15 );
+		}
+
+		if ( ! empty( $perf['disable_jquery_migrate'] ) ) {
+			add_action(
+				'wp_default_scripts',
+				static function ( $scripts ) {
+					if ( ! is_admin() && ! empty( $scripts->registered['jquery'] ) ) {
+						$jquery = $scripts->registered['jquery'];
+						if ( isset( $jquery->deps ) && is_array( $jquery->deps ) ) {
+							$jquery->deps = array_diff( $jquery->deps, array( 'jquery-migrate' ) );
+						}
+					}
+				}
 			);
 		}
 	}

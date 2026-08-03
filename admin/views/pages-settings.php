@@ -53,6 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="tz-toggles">
 					<label class="tz-toggle"><input type="checkbox" x-model="options.pages.not_found.show_search"><span><?php esc_html_e( 'Show search form', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.pages.not_found.show_home_btn"><span><?php esc_html_e( 'Show home button', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.pages.not_found.show_quick_links"><span><?php esc_html_e( 'Show Quick Navigation Links (Home, Shop, Blog)', 'themezur' ); ?></span></label>
 				</div>
 			</div>
 		</div>
@@ -74,7 +75,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="tz-toggles" style="margin-top:10px;">
 					<label class="tz-toggle"><input type="checkbox" x-model="options.pages.search.show_image"><span><?php esc_html_e( 'Show image', 'themezur' ); ?></span></label>
 					<label class="tz-toggle"><input type="checkbox" x-model="options.pages.search.show_excerpt"><span><?php esc_html_e( 'Show excerpt', 'themezur' ); ?></span></label>
-					<label class="tz-toggle"><input type="checkbox" x-model="options.pages.search.show_type"><span><?php esc_html_e( 'Show content type', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.pages.search.show_type"><span><?php esc_html_e( 'Show content type badge', 'themezur' ); ?></span></label>
+					<label class="tz-toggle"><input type="checkbox" x-model="options.pages.search.show_product_details"><span><?php esc_html_e( 'Show product price & Add to Cart button (WooCommerce)', 'themezur' ); ?></span></label>
 				</div>
 			</div>
 		</div>

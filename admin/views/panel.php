@@ -297,6 +297,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<input type="checkbox" x-model="options.performance.disable_wp_embed">
 							<span><?php esc_html_e( 'Disable wp-embed script', 'themezur' ); ?></span>
 						</label>
+						<label class="tz-toggle">
+							<input type="checkbox" x-model="options.performance.preload_google_fonts">
+							<span><?php esc_html_e( 'Preconnect & Preload Google Fonts (fonts.gstatic.com)', 'themezur' ); ?></span>
+						</label>
+						<label class="tz-toggle">
+							<input type="checkbox" x-model="options.performance.opt_cart_fragments">
+							<span><?php esc_html_e( 'Optimize WooCommerce Cart Fragments (dequeue on non-shop pages for +300ms speed)', 'themezur' ); ?></span>
+						</label>
+						<label class="tz-toggle">
+							<input type="checkbox" x-model="options.performance.remove_query_strings">
+							<span><?php esc_html_e( 'Remove version query strings (?ver=x.y) for better static caching', 'themezur' ); ?></span>
+						</label>
+						<label class="tz-toggle">
+							<input type="checkbox" x-model="options.performance.disable_jquery_migrate">
+							<span><?php esc_html_e( 'Disable jQuery Migrate script on frontend', 'themezur' ); ?></span>
+						</label>
+						<label class="tz-toggle">
+							<input type="checkbox" x-model="options.performance.disable_gutenberg_css">
+							<span><?php esc_html_e( 'Disable Block Library CSS (wp-block-library.css)', 'themezur' ); ?></span>
+						</label>
 					</div>
 
 					<div class="tz-group" style="margin-top:18px;">

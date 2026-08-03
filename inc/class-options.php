@@ -160,6 +160,7 @@ class Themezur_Options {
 					'hide_mobile_compare'   => false,
 					'hide_desktop_compare'  => false,
 					'show_cart'             => true,
+					'mini_cart'             => true,
 					'hide_mobile_cart'      => false,
 					'hide_desktop_cart'     => false,
 				),
@@ -363,10 +364,12 @@ class Themezur_Options {
 					),
 				),
 				'bottom'      => array(
-					'enabled'   => true,
-					'copyright' => '',
-					'show_menu' => true,
-					'menu_id'   => 0,
+					'enabled'       => true,
+					'copyright'     => '',
+					'show_menu'     => true,
+					'menu_id'       => 0,
+					'show_payments' => true,
+					'payments'      => array( 'visa', 'mastercard', 'amex', 'paypal', 'applepay', 'bkash', 'nagad' ),
 				),
 				'back_to_top' => array(
 					'enabled'   => true,
@@ -377,61 +380,77 @@ class Themezur_Options {
 				'mode'             => 'theme',
 				'container_width'  => '1100px',
 				'archive'          => array(
-					'layout'           => 'grid',
-					'columns'          => 3,
-					'show_title'       => true,
-					'show_description' => true,
-					'show_image'       => true,
-					'show_excerpt'     => true,
-					'excerpt_length'   => 22,
-					'show_date'        => true,
-					'show_author'      => false,
-					'show_category'    => true,
-					'show_read_more'   => true,
-					'read_more_text'   => 'Read more',
+					'layout'            => 'grid',
+					'columns'           => 3,
+					'card_style'        => 'soft',
+					'featured_hero'     => true,
+					'show_title'        => true,
+					'show_description'  => true,
+					'show_image'        => true,
+					'show_excerpt'      => true,
+					'excerpt_length'    => 22,
+					'show_date'         => true,
+					'show_author'       => false,
+					'show_category'     => true,
+					'show_reading_time' => true,
+					'show_badge'        => true,
+					'show_read_more'    => true,
+					'read_more_text'    => 'Read more',
 				),
 				'single'           => array(
-					'content_width'   => '720px',
-					'show_image'      => true,
-					'show_date'       => true,
-					'show_author'     => true,
-					'show_category'   => true,
-					'show_tags'       => true,
-					'show_author_box' => true,
-					'show_nav'        => true,
-					'show_related'    => true,
-					'related_count'   => 3,
-					'show_comments'   => true,
+					'layout'            => 'standard',
+					'content_width'     => '720px',
+					'show_progress_bar' => true,
+					'show_toc'          => true,
+					'show_social_share' => true,
+					'show_reading_time' => true,
+					'show_image'        => true,
+					'show_date'         => true,
+					'show_author'       => true,
+					'show_category'     => true,
+					'show_tags'         => true,
+					'show_author_box'   => true,
+					'show_nav'          => true,
+					'show_related'      => true,
+					'related_count'     => 3,
+					'show_comments'     => true,
 				),
 			),
 			'pages'       => array(
 				'mode'      => 'theme',
 				'not_found' => array(
-					'title'         => 'Page not found',
-					'text'          => 'The page you are looking for may have been moved or no longer exists.',
-					'show_search'   => true,
-					'show_home_btn' => true,
-					'home_label'    => 'Back to home',
+					'title'            => 'Page not found',
+					'text'             => 'The page you are looking for may have been moved or no longer exists.',
+					'show_search'      => true,
+					'show_home_btn'    => true,
+					'home_label'       => 'Back to home',
+					'show_quick_links' => true,
 				),
 				'search'    => array(
-					'layout'       => 'list',
-					'show_image'   => true,
-					'show_excerpt' => true,
-					'show_type'    => true,
+					'layout'               => 'list',
+					'show_image'           => true,
+					'show_excerpt'         => true,
+					'show_type'            => true,
+					'show_product_details' => true,
+					'show_tabs'            => true,
 				),
 			),
 			'woocommerce' => array(
 				'mode'   => 'theme',
 				'shop'   => array(
-					'columns'           => 3,
-					'products_per_page' => 12,
-					'card_style'        => 'soft',
-					'show_result_count' => true,
-					'show_ordering'     => true,
+					'columns'            => 3,
+					'products_per_page'  => 12,
+					'card_style'         => 'soft',
+					'show_result_count'  => true,
+					'show_ordering'      => true,
+					'quick_view'         => true,
+					'wishlist'           => true,
 				),
 				'single' => array(
-					'related_count' => 4,
-					'upsells_count' => 4,
+					'related_count'      => 4,
+					'upsells_count'      => 4,
+					'sticky_cart'        => true,
+					'quantity_stepper'   => true,
 				),
 			),
 			'assignments' => array(
@@ -467,6 +486,11 @@ class Themezur_Options {
 				'disable_hello_header_footer_css' => false,
 				'disable_emoji'                   => false,
 				'disable_wp_embed'                => false,
+				'disable_gutenberg_css'           => false,
+				'opt_cart_fragments'              => true,
+				'remove_query_strings'            => false,
+				'disable_jquery_migrate'          => false,
+				'preload_google_fonts'            => true,
 			),
 		);
 	}
@@ -922,6 +946,7 @@ class Themezur_Options {
 			'hide_mobile_compare'  => ! empty( $raw['hide_mobile_compare'] ),
 			'hide_desktop_compare' => ! empty( $raw['hide_desktop_compare'] ),
 			'show_cart'            => ! empty( $raw['show_cart'] ),
+			'mini_cart'            => ! empty( $raw['mini_cart'] ),
 			'hide_mobile_cart'     => ! empty( $raw['hide_mobile_cart'] ),
 			'hide_desktop_cart'    => ! empty( $raw['hide_desktop_cart'] ),
 		);
@@ -1110,11 +1135,16 @@ class Themezur_Options {
 	 * @return array
 	 */
 	private static function sanitize_footer_bottom( array $raw, array $d ) {
+		$raw_payments = isset( $raw['payments'] ) && is_array( $raw['payments'] ) ? $raw['payments'] : $d['payments'];
+		$clean_payments = array_values( array_unique( array_map( 'sanitize_key', $raw_payments ) ) );
+
 		return array(
-			'enabled'   => ! empty( $raw['enabled'] ),
-			'copyright' => isset( $raw['copyright'] ) ? sanitize_text_field( $raw['copyright'] ) : '',
-			'show_menu' => ! empty( $raw['show_menu'] ),
-			'menu_id'   => isset( $raw['menu_id'] ) ? absint( $raw['menu_id'] ) : 0,
+			'enabled'       => ! empty( $raw['enabled'] ),
+			'copyright'     => isset( $raw['copyright'] ) ? sanitize_text_field( $raw['copyright'] ) : '',
+			'show_menu'     => ! empty( $raw['show_menu'] ),
+			'menu_id'       => isset( $raw['menu_id'] ) ? absint( $raw['menu_id'] ) : 0,
+			'show_payments' => isset( $raw['show_payments'] ) ? (bool) $raw['show_payments'] : (bool) $d['show_payments'],
+			'payments'      => $clean_payments,
 		);
 	}
 
@@ -1151,15 +1181,19 @@ class Themezur_Options {
 		return array(
 			'mode'   => in_array( $mode, array( 'theme', 'default' ), true ) ? $mode : 'theme',
 			'shop'   => array(
-				'columns'           => max( 2, min( 4, isset( $shop['columns'] ) ? absint( $shop['columns'] ) : (int) $ds['columns'] ) ),
-				'products_per_page' => max( 4, min( 48, isset( $shop['products_per_page'] ) ? absint( $shop['products_per_page'] ) : (int) $ds['products_per_page'] ) ),
-				'card_style'        => in_array( $style, array( 'soft', 'minimal' ), true ) ? $style : 'soft',
-				'show_result_count' => ! empty( $shop['show_result_count'] ),
-				'show_ordering'     => ! empty( $shop['show_ordering'] ),
+				'columns'            => max( 2, min( 5, isset( $shop['columns'] ) ? absint( $shop['columns'] ) : (int) $ds['columns'] ) ),
+				'products_per_page'  => max( 4, min( 48, isset( $shop['products_per_page'] ) ? absint( $shop['products_per_page'] ) : (int) $ds['products_per_page'] ) ),
+				'card_style'         => in_array( $style, array( 'soft', 'minimal', 'bordered' ), true ) ? $style : 'soft',
+				'show_result_count'  => ! empty( $shop['show_result_count'] ),
+				'show_ordering'      => ! empty( $shop['show_ordering'] ),
+				'quick_view'         => isset( $shop['quick_view'] ) ? (bool) $shop['quick_view'] : (bool) $ds['quick_view'],
+				'wishlist'           => isset( $shop['wishlist'] ) ? (bool) $shop['wishlist'] : (bool) $ds['wishlist'],
 			),
 			'single' => array(
-				'related_count' => max( 0, min( 8, isset( $sing['related_count'] ) ? absint( $sing['related_count'] ) : (int) $dsi['related_count'] ) ),
-				'upsells_count' => max( 0, min( 8, isset( $sing['upsells_count'] ) ? absint( $sing['upsells_count'] ) : (int) $dsi['upsells_count'] ) ),
+				'related_count'    => max( 0, min( 8, isset( $sing['related_count'] ) ? absint( $sing['related_count'] ) : (int) $dsi['related_count'] ) ),
+				'upsells_count'    => max( 0, min( 8, isset( $sing['upsells_count'] ) ? absint( $sing['upsells_count'] ) : (int) $dsi['upsells_count'] ) ),
+				'sticky_cart'      => isset( $sing['sticky_cart'] ) ? (bool) $sing['sticky_cart'] : (bool) $dsi['sticky_cart'],
+				'quantity_stepper' => isset( $sing['quantity_stepper'] ) ? (bool) $sing['quantity_stepper'] : (bool) $dsi['quantity_stepper'],
 			),
 		);
 	}
@@ -1172,27 +1206,30 @@ class Themezur_Options {
 	 * @return array
 	 */
 	private static function sanitize_pages( array $raw, array $d ) {
-		$mode = isset( $raw['mode'] ) ? sanitize_key( $raw['mode'] ) : $d['mode'];
-		$nf   = isset( $raw['not_found'] ) && is_array( $raw['not_found'] ) ? $raw['not_found'] : array();
-		$sr   = isset( $raw['search'] ) && is_array( $raw['search'] ) ? $raw['search'] : array();
-		$dnf  = $d['not_found'];
-		$dsr  = $d['search'];
+		$mode   = isset( $raw['mode'] ) ? sanitize_key( $raw['mode'] ) : $d['mode'];
+		$nf     = isset( $raw['not_found'] ) && is_array( $raw['not_found'] ) ? $raw['not_found'] : array();
+		$sr     = isset( $raw['search'] ) && is_array( $raw['search'] ) ? $raw['search'] : array();
+		$dnf    = $d['not_found'];
+		$dsr    = $d['search'];
 		$layout = isset( $sr['layout'] ) ? sanitize_key( $sr['layout'] ) : $dsr['layout'];
 
 		return array(
 			'mode'      => in_array( $mode, array( 'theme', 'default' ), true ) ? $mode : 'theme',
 			'not_found' => array(
-				'title'         => isset( $nf['title'] ) ? sanitize_text_field( $nf['title'] ) : $dnf['title'],
-				'text'          => isset( $nf['text'] ) ? sanitize_textarea_field( $nf['text'] ) : $dnf['text'],
-				'show_search'   => ! empty( $nf['show_search'] ),
-				'show_home_btn' => ! empty( $nf['show_home_btn'] ),
-				'home_label'    => isset( $nf['home_label'] ) ? sanitize_text_field( $nf['home_label'] ) : $dnf['home_label'],
+				'title'            => isset( $nf['title'] ) ? sanitize_text_field( $nf['title'] ) : $dnf['title'],
+				'text'             => isset( $nf['text'] ) ? sanitize_textarea_field( $nf['text'] ) : $dnf['text'],
+				'show_search'      => ! empty( $nf['show_search'] ),
+				'show_home_btn'    => ! empty( $nf['show_home_btn'] ),
+				'home_label'       => isset( $nf['home_label'] ) ? sanitize_text_field( $nf['home_label'] ) : $dnf['home_label'],
+				'show_quick_links' => isset( $nf['show_quick_links'] ) ? (bool) $nf['show_quick_links'] : (bool) $dnf['show_quick_links'],
 			),
 			'search'    => array(
-				'layout'       => in_array( $layout, array( 'list', 'grid' ), true ) ? $layout : 'list',
-				'show_image'   => ! empty( $sr['show_image'] ),
-				'show_excerpt' => ! empty( $sr['show_excerpt'] ),
-				'show_type'    => ! empty( $sr['show_type'] ),
+				'layout'               => in_array( $layout, array( 'list', 'grid' ), true ) ? $layout : 'list',
+				'show_image'           => ! empty( $sr['show_image'] ),
+				'show_excerpt'         => ! empty( $sr['show_excerpt'] ),
+				'show_type'            => ! empty( $sr['show_type'] ),
+				'show_product_details' => isset( $sr['show_product_details'] ) ? (bool) $sr['show_product_details'] : (bool) $dsr['show_product_details'],
+				'show_tabs'            => isset( $sr['show_tabs'] ) ? (bool) $sr['show_tabs'] : (bool) $dsr['show_tabs'],
 			),
 		);
 	}
@@ -1212,41 +1249,53 @@ class Themezur_Options {
 		$da     = $d['archive'];
 		$ds     = $d['single'];
 
-		$layout  = isset( $arch['layout'] ) ? sanitize_key( $arch['layout'] ) : $da['layout'];
-		$columns = isset( $arch['columns'] ) ? absint( $arch['columns'] ) : (int) $da['columns'];
+		$layout        = isset( $arch['layout'] ) ? sanitize_key( $arch['layout'] ) : $da['layout'];
+		$columns       = isset( $arch['columns'] ) ? absint( $arch['columns'] ) : (int) $da['columns'];
+		$card_style    = isset( $arch['card_style'] ) ? sanitize_key( $arch['card_style'] ) : $da['card_style'];
+		$single_layout = isset( $single['layout'] ) ? sanitize_key( $single['layout'] ) : $ds['layout'];
 
 		return array(
 			'mode'            => in_array( $mode, $modes, true ) ? $mode : 'theme',
 			'container_width' => self::sanitize_css_size( $raw['container_width'] ?? '', $d['container_width'] ),
 			'archive'         => array(
-				'layout'           => in_array( $layout, array( 'grid', 'list' ), true ) ? $layout : 'grid',
-				'columns'          => max( 2, min( 4, $columns ) ),
-				'show_title'       => ! empty( $arch['show_title'] ),
-				'show_description' => ! empty( $arch['show_description'] ),
-				'show_image'       => ! empty( $arch['show_image'] ),
-				'show_excerpt'     => ! empty( $arch['show_excerpt'] ),
-				'excerpt_length'   => max( 5, min( 80, isset( $arch['excerpt_length'] ) ? absint( $arch['excerpt_length'] ) : (int) $da['excerpt_length'] ) ),
-				'show_date'        => ! empty( $arch['show_date'] ),
-				'show_author'      => ! empty( $arch['show_author'] ),
-				'show_category'    => ! empty( $arch['show_category'] ),
-				'show_read_more'   => ! empty( $arch['show_read_more'] ),
-				'read_more_text'   => isset( $arch['read_more_text'] ) ? sanitize_text_field( $arch['read_more_text'] ) : $da['read_more_text'],
+				'layout'            => in_array( $layout, array( 'grid', 'list' ), true ) ? $layout : 'grid',
+				'columns'           => max( 2, min( 4, $columns ) ),
+				'card_style'        => in_array( $card_style, array( 'soft', 'bordered', 'minimal' ), true ) ? $card_style : 'soft',
+				'featured_hero'     => isset( $arch['featured_hero'] ) ? (bool) $arch['featured_hero'] : (bool) $da['featured_hero'],
+				'show_title'        => ! empty( $arch['show_title'] ),
+				'show_description'  => ! empty( $arch['show_description'] ),
+				'show_image'        => ! empty( $arch['show_image'] ),
+				'show_excerpt'      => ! empty( $arch['show_excerpt'] ),
+				'excerpt_length'    => max( 5, min( 80, isset( $arch['excerpt_length'] ) ? absint( $arch['excerpt_length'] ) : (int) $da['excerpt_length'] ) ),
+				'show_date'         => ! empty( $arch['show_date'] ),
+				'show_author'       => ! empty( $arch['show_author'] ),
+				'show_category'     => ! empty( $arch['show_category'] ),
+				'show_reading_time' => isset( $arch['show_reading_time'] ) ? (bool) $arch['show_reading_time'] : (bool) $da['show_reading_time'],
+				'show_badge'        => isset( $arch['show_badge'] ) ? (bool) $arch['show_badge'] : (bool) $da['show_badge'],
+				'show_read_more'    => ! empty( $arch['show_read_more'] ),
+				'read_more_text'    => isset( $arch['read_more_text'] ) ? sanitize_text_field( $arch['read_more_text'] ) : $da['read_more_text'],
 			),
 			'single'          => array(
-				'content_width'   => self::sanitize_css_size( $single['content_width'] ?? '', $ds['content_width'] ),
-				'show_image'      => ! empty( $single['show_image'] ),
-				'show_date'       => ! empty( $single['show_date'] ),
-				'show_author'     => ! empty( $single['show_author'] ),
-				'show_category'   => ! empty( $single['show_category'] ),
-				'show_tags'       => ! empty( $single['show_tags'] ),
-				'show_author_box' => ! empty( $single['show_author_box'] ),
-				'show_nav'        => ! empty( $single['show_nav'] ),
-				'show_related'    => ! empty( $single['show_related'] ),
-				'related_count'   => max( 1, min( 6, isset( $single['related_count'] ) ? absint( $single['related_count'] ) : (int) $ds['related_count'] ) ),
-				'show_comments'   => ! empty( $single['show_comments'] ),
+				'layout'            => in_array( $single_layout, array( 'standard', 'sidebar' ), true ) ? $single_layout : 'standard',
+				'content_width'     => self::sanitize_css_size( $single['content_width'] ?? '', $ds['content_width'] ),
+				'show_progress_bar' => isset( $single['show_progress_bar'] ) ? (bool) $single['show_progress_bar'] : (bool) $ds['show_progress_bar'],
+				'show_toc'          => isset( $single['show_toc'] ) ? (bool) $single['show_toc'] : (bool) $ds['show_toc'],
+				'show_social_share' => isset( $single['show_social_share'] ) ? (bool) $single['show_social_share'] : (bool) $ds['show_social_share'],
+				'show_reading_time' => isset( $single['show_reading_time'] ) ? (bool) $single['show_reading_time'] : (bool) $ds['show_reading_time'],
+				'show_image'        => ! empty( $single['show_image'] ),
+				'show_date'         => ! empty( $single['show_date'] ),
+				'show_author'       => ! empty( $single['show_author'] ),
+				'show_category'     => ! empty( $single['show_category'] ),
+				'show_tags'         => ! empty( $single['show_tags'] ),
+				'show_author_box'   => ! empty( $single['show_author_box'] ),
+				'show_nav'          => ! empty( $single['show_nav'] ),
+				'show_related'      => ! empty( $single['show_related'] ),
+				'related_count'     => max( 1, min( 6, isset( $single['related_count'] ) ? absint( $single['related_count'] ) : (int) $ds['related_count'] ) ),
+				'show_comments'     => ! empty( $single['show_comments'] ),
 			),
 		);
 	}
+
 
 	/**
 	 * @param string $color    Input.

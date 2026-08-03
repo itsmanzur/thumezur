@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'THEMEZUR_VERSION', '2.6.3' );
+define( 'THEMEZUR_VERSION', '2.8.1' );
 define( 'THEMEZUR_DIR', get_stylesheet_directory() );
 define( 'THEMEZUR_URI', get_stylesheet_directory_uri() );
 
@@ -149,6 +149,19 @@ function themezur_enqueue_scripts_styles() {
 			array( 'themezur-style' ),
 			THEMEZUR_VERSION
 		);
+
+		if ( Themezur_Options::get( 'general.scripts_enabled', true ) ) {
+			wp_enqueue_script(
+				'themezur-blog',
+				THEMEZUR_URI . '/assets/js/blog.js',
+				array(),
+				THEMEZUR_VERSION,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+		}
 	}
 
 	$pages_on = class_exists( 'Themezur_Options' ) && 'theme' === Themezur_Options::get( 'pages.mode', 'theme' );
@@ -161,14 +174,75 @@ function themezur_enqueue_scripts_styles() {
 		);
 	}
 
-	$woo_on = class_exists( 'Themezur_WooCommerce' ) && Themezur_WooCommerce::is_enabled() && class_exists( 'WooCommerce' );
-	if ( $woo_on && ( is_shop() || is_product_taxonomy() || is_product() || is_cart() || is_checkout() || is_account_page() ) ) {
+	$woo_on = class_exists( 'Themezur_WooCommerce' ) && Themezur_WooCommerce::should_enqueue_assets();
+	if ( $woo_on ) {
 		wp_enqueue_style(
 			'themezur-woocommerce',
 			THEMEZUR_URI . '/assets/css/woocommerce.css',
 			array( 'themezur-design' ),
 			THEMEZUR_VERSION
 		);
+
+		$scripts_on = Themezur_Options::get( 'general.scripts_enabled', true );
+
+		if ( $scripts_on && class_exists( 'Themezur_WooCommerce' ) && Themezur_WooCommerce::quick_view_enabled() ) {
+			wp_enqueue_script(
+				'themezur-quick-view',
+				THEMEZUR_URI . '/assets/js/quick-view.js',
+				array(),
+				THEMEZUR_VERSION,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+			// Share ajaxUrl + nonce with quick-view (header.js may not be loaded if header mode = elementor).
+			if ( ! wp_script_is( 'themezur-header', 'enqueued' ) ) {
+				wp_localize_script(
+					'themezur-quick-view',
+					'themezurFront',
+					array(
+						'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
+						'nonce'               => wp_create_nonce( 'themezur_front' ),
+						'i18nError'           => __( 'Error loading product.', 'themezur' ),
+						'i18nAddWishlist'     => __( 'Add to Wishlist', 'themezur' ),
+						'i18nRemoveWishlist'  => __( 'Remove from Wishlist', 'themezur' ),
+					)
+				);
+			} else {
+				wp_add_inline_script(
+					'themezur-quick-view',
+					'if(window.themezurFront){themezurFront.i18nError="' . esc_js( __( 'Error loading product.', 'themezur' ) ) . '";}',
+					'before'
+				);
+			}
+		}
+
+		if ( $scripts_on && class_exists( 'Themezur_WooCommerce' ) && Themezur_WooCommerce::wishlist_enabled() ) {
+			wp_enqueue_script(
+				'themezur-wishlist',
+				THEMEZUR_URI . '/assets/js/wishlist.js',
+				array(),
+				THEMEZUR_VERSION,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+			// wishlist.js uses window.themezurFront — ensure it's available.
+			if ( ! wp_script_is( 'themezur-header', 'enqueued' ) && ! wp_script_is( 'themezur-quick-view', 'enqueued' ) ) {
+				wp_localize_script(
+					'themezur-wishlist',
+					'themezurFront',
+					array(
+						'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
+						'nonce'              => wp_create_nonce( 'themezur_front' ),
+						'i18nAddWishlist'    => __( 'Add to Wishlist', 'themezur' ),
+						'i18nRemoveWishlist' => __( 'Remove from Wishlist', 'themezur' ),
+					)
+				);
+			}
+		}
 	}
 }
 add_action( 'wp_enqueue_scripts', 'themezur_enqueue_scripts_styles', 20 );

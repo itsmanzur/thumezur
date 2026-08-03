@@ -346,6 +346,7 @@ $render_col = static function ( $col ) use ( $logo_id, $site_name ) {
 						<?php echo $bottom_menu; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</nav>
 				<?php endif; ?>
+				<?php Themezur_Footer::render_payment_icons(); ?>
 			</div>
 		</div>
 	<?php endif; ?>

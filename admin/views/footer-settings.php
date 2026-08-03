@@ -419,6 +419,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</template>
 					</select>
 				</div>
+				<div class="tz-field tz-field--row" style="margin-top:12px;"><label><input type="checkbox" x-model="options.footer.bottom.show_payments"> <?php esc_html_e( 'Show payment method badges (Visa, Mastercard, Amex, PayPal, Apple Pay, bKash, Nagad)', 'themezur' ); ?></label></div>
 			</div>
 		</div>
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Themezur triple-row site header.
+ * Themezur triple-row site header with Off-Canvas Drawer.
  *
  * @package Themezur
  */
@@ -9,14 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$h       = Themezur_Options::get( 'header', array() );
-$top     = isset( $h['top'] ) && is_array( $h['top'] ) ? $h['top'] : array();
-$middle  = isset( $h['middle'] ) && is_array( $h['middle'] ) ? $h['middle'] : array();
-$bottom  = isset( $h['bottom'] ) && is_array( $h['bottom'] ) ? $h['bottom'] : array();
-$scroll  = isset( $h['scroll'] ) && is_array( $h['scroll'] ) ? $h['scroll'] : array();
-$announce = isset( $h['announce'] ) && is_array( $h['announce'] ) ? $h['announce'] : array();
-$sticky  = ! empty( $h['sticky'] );
-$logo_id = Themezur_Options::get_logo_id();
+$h         = Themezur_Options::get( 'header', array() );
+$top       = isset( $h['top'] ) && is_array( $h['top'] ) ? $h['top'] : array();
+$middle    = isset( $h['middle'] ) && is_array( $h['middle'] ) ? $h['middle'] : array();
+$bottom    = isset( $h['bottom'] ) && is_array( $h['bottom'] ) ? $h['bottom'] : array();
+$scroll    = isset( $h['scroll'] ) && is_array( $h['scroll'] ) ? $h['scroll'] : array();
+$announce  = isset( $h['announce'] ) && is_array( $h['announce'] ) ? $h['announce'] : array();
+$sticky    = ! empty( $h['sticky'] );
+$logo_id   = Themezur_Options::get_logo_id();
 $site_name = get_bloginfo( 'name' );
 
 $scroll_behavior = isset( $scroll['behavior'] ) ? $scroll['behavior'] : 'none';
@@ -26,7 +26,7 @@ if ( 'none' === $scroll_behavior && $sticky ) {
 	$scroll_behavior = 'sticky';
 }
 
-$show_announce = Themezur_Frontend::should_show_announce();
+$show_announce   = Themezur_Frontend::should_show_announce();
 $announce_cookie = Themezur_Frontend::announce_cookie_name( $announce['version'] ?? '1' );
 $announce_days   = isset( $announce['cookie_days'] ) ? (int) $announce['cookie_days'] : 7;
 
@@ -39,16 +39,18 @@ if ( ! empty( $bottom['show_menu'] ) ) {
 			'container'      => false,
 			'menu_class'     => 'tz-nav-list',
 			'echo'           => false,
-			'depth'          => 2,
+			'depth'          => 3,
 		)
 	);
 }
 
 $cart_count = 0;
 $cart_url   = '';
+$mini_cart  = false;
 if ( ! empty( $middle['show_cart'] ) && function_exists( 'WC' ) && WC()->cart ) {
 	$cart_count = (int) WC()->cart->get_cart_contents_count();
 	$cart_url   = wc_get_cart_url();
+	$mini_cart  = ! empty( $middle['mini_cart'] );
 } elseif ( ! empty( $middle['show_cart'] ) ) {
 	$cart_url = home_url( '/cart/' );
 }
@@ -87,13 +89,13 @@ $cat_cols = isset( $bottom['categories_columns'] ) ? (int) $bottom['categories_c
 
 $smart_search = ! empty( $middle['smart_search'] ) && ! empty( $middle['show_search'] );
 
-$header_classes = array( 'tz-site-header', 'tz-site-header--triple' );
+$header_classes   = array( 'tz-site-header', 'tz-site-header--triple' );
 $header_classes[] = 'tz-scroll--' . sanitize_html_class( $scroll_behavior );
 if ( in_array( $scroll_behavior, array( 'sticky', 'shrink', 'bottom_sticky', 'transparent_solid' ), true ) ) {
 	$header_classes[] = 'is-sticky-ready';
 }
 
-$vis = array(
+$vis            = array(
 	'trending'   => Themezur_Frontend::visibility_classes( $top, 'trending' ),
 	'social'     => Themezur_Frontend::visibility_classes( $top, 'social' ),
 	'phone'      => Themezur_Frontend::visibility_classes( $top, 'phone' ),
@@ -133,7 +135,7 @@ if ( ! empty( $middle['show_wishlist'] ) ) {
 	} elseif ( function_exists( 'YITH_WCWL' ) && function_exists( 'yith_wcwl_get_wishlist_url' ) ) {
 		$wishlist_url = yith_wcwl_get_wishlist_url();
 	} elseif ( function_exists( 'wc_get_page_id' ) ) {
-		$page_id = (int) get_option( 'yith_wcwl_wishlist_page_id', 0 );
+		$page_id = (int) get_option( 'themezur_wishlist_page_id', 0 );
 		if ( $page_id > 0 ) {
 			$wishlist_url = get_permalink( $page_id );
 		}
@@ -302,14 +304,28 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 								value="<?php echo esc_attr( get_search_query() ); ?>"
 								placeholder="<?php echo esc_attr( ! empty( $middle['search_placeholder'] ) ? $middle['search_placeholder'] : __( 'Search…', 'themezur' ) ); ?>"
 								autocomplete="off"
-								<?php echo $smart_search ? 'data-tz-search-input' : ''; ?>
+								<?php if ( $smart_search ) : ?>
+									role="combobox"
+									aria-autocomplete="list"
+									aria-controls="tz-search-suggestions"
+									aria-expanded="false"
+									data-tz-search-input
+								<?php endif; ?>
 							/>
+							<button type="button" class="tz-header-middle__search-clear" data-tz-search-clear aria-label="<?php echo esc_attr__( 'Clear search', 'themezur' ); ?>" hidden>×</button>
 							<button type="submit" class="tz-header-middle__search-btn" aria-label="<?php echo esc_attr__( 'Search', 'themezur' ); ?>">
 								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
 							</button>
 						</form>
 						<?php if ( $smart_search ) : ?>
-							<div class="tz-search-suggest" hidden data-tz-search-suggest></div>
+							<div
+								id="tz-search-suggestions"
+								class="tz-search-suggest"
+								role="listbox"
+								aria-label="<?php echo esc_attr__( 'Product suggestions', 'themezur' ); ?>"
+								hidden
+								data-tz-search-suggest
+							></div>
 						<?php endif; ?>
 					</div>
 				<?php endif; ?>
@@ -334,6 +350,7 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 					<?php if ( ! empty( $middle['show_wishlist'] ) && $wishlist_url ) : ?>
 						<a class="tz-icon-btn tz-wishlist-btn<?php echo $vis['wishlist'] ? ' ' . esc_attr( $vis['wishlist'] ) : ''; ?>" href="<?php echo esc_url( $wishlist_url ); ?>" aria-label="<?php echo esc_attr__( 'Wishlist', 'themezur' ); ?>">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0112 6a5.5 5.5 0 019.5 6C19 16.5 12 21 12 21z"/></svg>
+							<span class="tz-wl-count" hidden></span>
 						</a>
 					<?php endif; ?>
 
@@ -344,15 +361,22 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 					<?php endif; ?>
 
 					<?php if ( ! empty( $middle['show_cart'] ) ) : ?>
-						<a class="tz-icon-btn tz-cart-btn<?php echo $vis['cart'] ? ' ' . esc_attr( $vis['cart'] ) : ''; ?>" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php echo esc_attr__( 'Cart', 'themezur' ); ?>">
+						<a
+							class="tz-icon-btn tz-cart-btn<?php echo $vis['cart'] ? ' ' . esc_attr( $vis['cart'] ) : ''; ?>"
+							href="<?php echo esc_url( $cart_url ); ?>"
+							<?php if ( $mini_cart ) : ?>
+								aria-controls="tz-mini-cart"
+								aria-expanded="false"
+								data-tz-mini-cart-toggle
+							<?php endif; ?>
+						>
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 7h15l-1.5 9h-12z"/><path d="M6 7L5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/></svg>
-							<span class="tz-cart-btn__count" data-tz-cart-count><?php echo esc_html( (string) $cart_count ); ?></span>
+							<?php echo Themezur_Frontend::cart_count_markup( $cart_count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper. ?>
 						</a>
 					<?php endif; ?>
 
-					<?php if ( $nav_menu ) : ?>
-						<button type="button" class="tz-icon-btn tz-nav-toggle" aria-expanded="false" aria-controls="tz-mobile-nav" data-tz-nav-toggle>
-							<span class="screen-reader-text"><?php echo esc_html__( 'Menu', 'themezur' ); ?></span>
+					<?php if ( $nav_menu || ! empty( $bottom['show_categories'] ) ) : ?>
+						<button type="button" class="tz-icon-btn tz-nav-toggle" aria-expanded="false" aria-controls="tz-mobile-drawer" data-tz-nav-toggle aria-label="<?php echo esc_attr__( 'Menu', 'themezur' ); ?>">
 							<span class="tz-nav-toggle__bars" aria-hidden="true"></span>
 						</button>
 					<?php endif; ?>
@@ -415,16 +439,74 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 		</div>
 	<?php endif; ?>
 
-	<?php if ( $nav_menu ) : ?>
-		<div id="tz-mobile-nav" class="tz-header-mobile" hidden data-tz-mobile-nav>
-			<nav class="tz-header-mobile__nav" aria-label="<?php echo esc_attr__( 'Mobile menu', 'themezur' ); ?>">
-				<?php echo $nav_menu; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			</nav>
-			<?php if ( ! empty( $bottom['show_deal'] ) && ! empty( $bottom['deal_text'] ) && empty( $bottom['hide_mobile_deal'] ) ) : ?>
-				<a class="tz-header-bottom__deal tz-header-bottom__deal--mobile" href="<?php echo esc_url( ! empty( $bottom['deal_url'] ) ? $bottom['deal_url'] : '#' ); ?>">
-					<?php echo esc_html( $bottom['deal_text'] ); ?>
-				</a>
-			<?php endif; ?>
+	<!-- Mobile Off-Canvas Drawer -->
+	<?php if ( $nav_menu || ! empty( $bottom['show_categories'] ) ) : ?>
+		<div id="tz-mobile-drawer" class="tz-mobile-drawer" hidden data-tz-mobile-drawer>
+			<div class="tz-mobile-drawer__overlay" data-tz-drawer-close aria-hidden="true"></div>
+			<div class="tz-mobile-drawer__panel" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr__( 'Navigation Menu', 'themezur' ); ?>">
+				<div class="tz-mobile-drawer__header">
+					<div class="tz-mobile-drawer__brand">
+						<?php if ( $logo_id ) : ?>
+							<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+								<?php
+								echo wp_get_attachment_image(
+									$logo_id,
+									'full',
+									false,
+									array(
+										'class' => 'tz-mobile-drawer__logo-img',
+										'alt'   => $site_name ? $site_name : __( 'Site logo', 'themezur' ),
+									)
+								);
+								?>
+							</a>
+						<?php else : ?>
+							<span class="tz-mobile-drawer__title"><?php echo esc_html( $site_name ); ?></span>
+						<?php endif; ?>
+					</div>
+					<button type="button" class="tz-mobile-drawer__close" data-tz-drawer-close aria-label="<?php echo esc_attr__( 'Close menu', 'themezur' ); ?>">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+					</button>
+				</div>
+				<div class="tz-mobile-drawer__body">
+					<?php if ( ! empty( $middle['show_search'] ) ) : ?>
+						<form class="tz-mobile-drawer__search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+							<input type="search" name="s" placeholder="<?php echo esc_attr( ! empty( $middle['search_placeholder'] ) ? $middle['search_placeholder'] : __( 'Search…', 'themezur' ) ); ?>" autocomplete="off" />
+							<button type="submit" aria-label="<?php echo esc_attr__( 'Search', 'themezur' ); ?>">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+							</button>
+						</form>
+					<?php endif; ?>
+
+					<?php if ( $nav_menu ) : ?>
+						<nav class="tz-mobile-drawer__nav" aria-label="<?php echo esc_attr__( 'Mobile navigation', 'themezur' ); ?>">
+							<?php echo $nav_menu; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</nav>
+					<?php endif; ?>
+
+					<?php if ( ! empty( $bottom['show_deal'] ) && ! empty( $bottom['deal_text'] ) ) : ?>
+						<a class="tz-header-bottom__deal tz-mobile-drawer__deal" href="<?php echo esc_url( ! empty( $bottom['deal_url'] ) ? $bottom['deal_url'] : '#' ); ?>">
+							<span class="tz-header-bottom__deal-icon" aria-hidden="true"></span>
+							<?php echo esc_html( $bottom['deal_text'] ); ?>
+						</a>
+					<?php endif; ?>
+				</div>
+
+				<div class="tz-mobile-drawer__footer">
+					<?php if ( ! empty( $middle['show_account'] ) && $account_url ) : ?>
+						<a class="tz-mobile-drawer__footer-btn" href="<?php echo esc_url( $account_url ); ?>">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/></svg>
+							<span><?php echo esc_html( $account_label ); ?></span>
+						</a>
+					<?php endif; ?>
+					<?php if ( ! empty( $middle['show_wishlist'] ) && $wishlist_url ) : ?>
+						<a class="tz-mobile-drawer__footer-btn" href="<?php echo esc_url( $wishlist_url ); ?>">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0112 6a5.5 5.5 0 019.5 6C19 16.5 12 21 12 21z"/></svg>
+							<span><?php esc_html_e( 'Wishlist', 'themezur' ); ?></span>
+						</a>
+					<?php endif; ?>
+				</div>
+			</div>
 		</div>
 	<?php endif; ?>
 
@@ -434,3 +516,18 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 		</div>
 	<?php endif; ?>
 </header>
+
+<?php if ( $mini_cart ) : ?>
+	<div id="tz-mini-cart" class="tz-mini-cart" hidden data-tz-mini-cart>
+		<div class="tz-mini-cart__overlay" aria-hidden="true" data-tz-mini-cart-close></div>
+		<aside class="tz-mini-cart__panel" role="dialog" aria-modal="true" aria-labelledby="tz-mini-cart-title" tabindex="-1" data-tz-mini-cart-panel>
+			<div class="tz-mini-cart__header">
+				<h2 id="tz-mini-cart-title" class="tz-mini-cart__title"><?php esc_html_e( 'Your cart', 'themezur' ); ?></h2>
+				<button type="button" class="tz-mini-cart__close" aria-label="<?php echo esc_attr__( 'Close cart', 'themezur' ); ?>" data-tz-mini-cart-close>
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<?php echo Themezur_Frontend::mini_cart_markup(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce template output. ?>
+		</aside>
+	</div>
+<?php endif; ?>

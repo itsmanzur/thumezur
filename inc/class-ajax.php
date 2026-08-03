@@ -24,6 +24,8 @@ class Themezur_Ajax {
 		add_action( 'wp_ajax_themezur_get_templates', array( __CLASS__, 'get_templates' ) );
 		add_action( 'wp_ajax_themezur_product_search', array( __CLASS__, 'product_search' ) );
 		add_action( 'wp_ajax_nopriv_themezur_product_search', array( __CLASS__, 'product_search' ) );
+		add_action( 'wp_ajax_themezur_cart_count', array( __CLASS__, 'cart_count' ) );
+		add_action( 'wp_ajax_nopriv_themezur_cart_count', array( __CLASS__, 'cart_count' ) );
 	}
 
 	/**
@@ -132,13 +134,35 @@ class Themezur_Ajax {
 			}
 			$items[] = array(
 				'id'    => (int) $post->ID,
-				'title' => get_the_title( $post ),
-				'url'   => get_permalink( $post ),
-				'image' => $thumb ? $thumb : '',
+				'title' => wp_strip_all_tags( get_the_title( $post ) ),
+				'url'   => esc_url_raw( get_permalink( $post ) ),
+				'image' => $thumb ? esc_url_raw( $thumb ) : '',
 				'price' => $price,
 			);
 		}
 
 		wp_send_json_success( array( 'items' => $items ) );
+	}
+
+	/**
+	 * Return the current WooCommerce cart count for classic and block carts.
+	 *
+	 * @return void
+	 */
+	public static function cart_count() {
+		check_ajax_referer( 'themezur_front', 'nonce' );
+
+		$count = 0;
+		if ( function_exists( 'WC' ) && WC()->cart ) {
+			$count = (int) WC()->cart->get_cart_contents_count();
+		}
+
+		wp_send_json_success(
+			array(
+				'count'     => $count,
+				'label'     => Themezur_Frontend::cart_count_label( $count ),
+				'mini_cart' => Themezur_Options::get( 'header.middle.mini_cart', true ) ? Themezur_Frontend::mini_cart_markup() : '',
+			)
+		);
 	}
 }
