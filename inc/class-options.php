@@ -166,6 +166,16 @@ class Themezur_Options {
 					'mini_cart'             => true,
 					'hide_mobile_cart'      => false,
 					'hide_desktop_cart'     => false,
+					'show_menu'             => false,
+					'menu_position'         => 'inline',
+					'hide_mobile_menu'      => false,
+					'hide_desktop_menu'     => false,
+					'show_button'           => false,
+					'button_text'           => 'Order Now',
+					'button_url'            => '',
+					'button_target'         => '_self',
+					'hide_mobile_button'    => false,
+					'hide_desktop_button'   => false,
 				),
 				'bottom'      => array(
 					'enabled'                => true,
@@ -966,6 +976,16 @@ class Themezur_Options {
 			'mini_cart'            => ! empty( $raw['mini_cart'] ),
 			'hide_mobile_cart'     => ! empty( $raw['hide_mobile_cart'] ),
 			'hide_desktop_cart'    => ! empty( $raw['hide_desktop_cart'] ),
+			'show_menu'            => ! empty( $raw['show_menu'] ),
+			'menu_position'        => in_array( $raw['menu_position'] ?? '', array( 'inline', 'center', 'right' ), true ) ? $raw['menu_position'] : 'inline',
+			'hide_mobile_menu'     => ! empty( $raw['hide_mobile_menu'] ),
+			'hide_desktop_menu'    => ! empty( $raw['hide_desktop_menu'] ),
+			'show_button'          => ! empty( $raw['show_button'] ),
+			'button_text'          => isset( $raw['button_text'] ) ? sanitize_text_field( $raw['button_text'] ) : ( $d['button_text'] ?? 'Order Now' ),
+			'button_url'           => isset( $raw['button_url'] ) ? esc_url_raw( $raw['button_url'] ) : '',
+			'button_target'        => ( isset( $raw['button_target'] ) && '_blank' === $raw['button_target'] ) ? '_blank' : '_self',
+			'hide_mobile_button'   => ! empty( $raw['hide_mobile_button'] ),
+			'hide_desktop_button'  => ! empty( $raw['hide_desktop_button'] ),
 		);
 	}
 

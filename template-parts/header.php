@@ -108,9 +108,11 @@ $vis            = array(
 	'wishlist'   => Themezur_Frontend::visibility_classes( $middle, 'wishlist' ),
 	'compare'    => Themezur_Frontend::visibility_classes( $middle, 'compare' ),
 	'cart'       => Themezur_Frontend::visibility_classes( $middle, 'cart' ),
-	'categories' => Themezur_Frontend::visibility_classes( $bottom, 'categories' ),
-	'menu'       => Themezur_Frontend::visibility_classes( $bottom, 'menu' ),
-	'deal'       => Themezur_Frontend::visibility_classes( $bottom, 'deal' ),
+	'categories'    => Themezur_Frontend::visibility_classes( $bottom, 'categories' ),
+	'menu'          => Themezur_Frontend::visibility_classes( $bottom, 'menu' ),
+	'deal'          => Themezur_Frontend::visibility_classes( $bottom, 'deal' ),
+	'middle_menu'   => Themezur_Frontend::visibility_classes( $middle, 'menu' ),
+	'middle_button' => Themezur_Frontend::visibility_classes( $middle, 'button' ),
 );
 $promo_messages = array();
 if ( ! empty( $top['promos'] ) && is_array( $top['promos'] ) ) {
@@ -327,10 +329,37 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 								data-tz-search-suggest
 							></div>
 						<?php endif; ?>
-					</div>
+					<?php if ( ! empty( $middle['show_menu'] ) ) : ?>
+					<?php
+					$middle_nav = wp_nav_menu(
+						array(
+							'theme_location' => 'menu-1',
+							'fallback_cb'    => false,
+							'container'      => false,
+							'menu_class'     => 'tz-nav-list tz-header-middle__nav-list',
+							'echo'           => false,
+							'depth'          => 3,
+						)
+					);
+					?>
+					<?php if ( $middle_nav ) : ?>
+						<nav class="tz-header-middle__nav<?php echo $vis['middle_menu'] ? ' ' . esc_attr( $vis['middle_menu'] ) : ''; ?>">
+							<?php echo $middle_nav; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</nav>
+					<?php endif; ?>
 				<?php endif; ?>
 
 				<div class="tz-header-middle__actions">
+					<?php if ( ! empty( $middle['show_button'] ) && ! empty( $middle['button_text'] ) ) : ?>
+						<a
+							class="tz-btn tz-header-middle__btn<?php echo $vis['middle_button'] ? ' ' . esc_attr( $vis['middle_button'] ) : ''; ?>"
+							href="<?php echo esc_url( ! empty( $middle['button_url'] ) ? $middle['button_url'] : '#' ); ?>"
+							target="<?php echo esc_attr( ! empty( $middle['button_target'] ) ? $middle['button_target'] : '_self' ); ?>"
+						>
+							<?php echo esc_html( $middle['button_text'] ); ?>
+						</a>
+					<?php endif; ?>
+
 					<?php if ( ! empty( $middle['show_dark_mode'] ) ) : ?>
 						<button type="button" class="tz-icon-btn<?php echo $vis['dark'] ? ' ' . esc_attr( $vis['dark'] ) : ''; ?>" data-tz-dark-toggle aria-label="<?php echo esc_attr__( 'Toggle dark mode', 'themezur' ); ?>">
 							<svg class="tz-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 14.3A8.5 8.5 0 119.7 3a7 7 0 0011.3 11.3z"/></svg>

@@ -394,7 +394,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<p class="tz-hint"><?php esc_html_e( 'Cart count and mini-cart contents stay synchronized with classic WooCommerce and Cart Blocks.', 'themezur' ); ?></p>
 				</div>
 			</div>
+
+			<div class="tz-group">
+				<div class="tz-group__head">
+					<div>
+						<h3 class="tz-group__title"><?php esc_html_e( 'Middle Bar Navigation & Button', 'themezur' ); ?></h3>
+						<p class="tz-group__desc"><?php esc_html_e( 'Show main menu or CTA button inside middle bar for single-row / 2-row layouts.', 'themezur' ); ?></p>
+					</div>
+				</div>
+				<div class="tz-group__body">
+					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.middle.show_menu"> <?php esc_html_e( 'Show main navigation menu in middle bar', 'themezur' ); ?></label></div>
+					<div class="tz-vis" x-show="options.header.middle.show_menu">
+						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_menu"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
+						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_menu"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
+					</div>
+
+					<div class="tz-field tz-field--row" style="margin-top:12px;"><label><input type="checkbox" x-model="options.header.middle.show_button"> <?php esc_html_e( 'Show custom CTA button in middle bar', 'themezur' ); ?></label></div>
+					<div class="tz-field-grid" x-show="options.header.middle.show_button">
+						<div class="tz-field">
+							<label><?php esc_html_e( 'Button text', 'themezur' ); ?></label>
+							<input type="text" x-model="options.header.middle.button_text" placeholder="Order Now">
+						</div>
+						<div class="tz-field">
+							<label><?php esc_html_e( 'Button URL', 'themezur' ); ?></label>
+							<input type="url" x-model="options.header.middle.button_url" placeholder="https://">
+						</div>
+					</div>
+					<div class="tz-field tz-field--row" x-show="options.header.middle.show_button">
+						<label><input type="checkbox" x-model="options.header.middle.button_target" :true-value="'_blank'" :false-value="'_self'"> <?php esc_html_e( 'Open link in new tab', 'themezur' ); ?></label>
+					</div>
+					<div class="tz-vis" x-show="options.header.middle.show_button">
+						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_button"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
+						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_button"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
+					</div>
+				</div>
+			</div>
 		</div>
+
 
 		<!-- Bottom -->
 		<div x-show="headerSubTab === 'bottom'">

@@ -419,6 +419,59 @@
 	gap: 0.6rem;
 }
 
+/* Middle Bar Navigation Menu */
+.tz-header-middle__nav {
+	display: flex;
+	align-items: center;
+	margin-inline: 1rem;
+}
+
+.tz-header-middle__nav .tz-nav-list {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tz-header-middle__nav .tz-nav-list a {
+	color: var(--tz-mid-text);
+	font-size: var(--tz-nav-size, 15px);
+	font-weight: var(--tz-nav-weight, 500);
+	font-family: var(--tz-font);
+	text-decoration: none;
+	padding: 0.5rem 0.85rem;
+	border-radius: 6px;
+	transition: color 140ms ease, background 140ms ease;
+}
+
+.tz-header-middle__nav .tz-nav-list a:hover {
+	color: var(--tz-mid-accent);
+	background: color-mix(in srgb, var(--tz-mid-accent) 10%, transparent);
+}
+
+.tz-header-middle__btn {
+	white-space: nowrap;
+	padding: 0.55rem 1.15rem;
+	font-size: 0.88rem;
+	font-weight: 700;
+	border-radius: var(--themezur-btn-radius, 8px);
+	background: var(--tz-mid-accent);
+	color: #ffffff !important;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: filter 140ms ease, transform 140ms ease;
+}
+
+.tz-header-middle__btn:hover {
+	filter: brightness(1.08);
+	transform: translateY(-1px);
+}
+
+
 .tz-icon-btn {
 	position: relative;
 	display: inline-flex;

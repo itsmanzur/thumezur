@@ -76,13 +76,24 @@
 					if (typeof this.options.general.breadcrumbs === 'undefined') {
 						this.options.general.breadcrumbs = true;
 					}
-					// Ensure header typo has font_id.
+					// Ensure header typo and middle defaults.
 					if (!this.options.header) { this.options.header = {}; }
 					if (!this.options.header.typo) { this.options.header.typo = {}; }
 					if (!this.options.header.typo.font_id) {
 						this.options.header.typo.font_id = 'inherit';
 					}
+					if (!this.options.header.middle) { this.options.header.middle = {}; }
+					if (typeof this.options.header.middle.show_menu === 'undefined') {
+						this.options.header.middle.show_menu = false;
+					}
+					if (typeof this.options.header.middle.show_button === 'undefined') {
+						this.options.header.middle.show_button = false;
+						this.options.header.middle.button_text = 'Order Now';
+						this.options.header.middle.button_url = '';
+						this.options.header.middle.button_target = '_self';
+					}
 				},
+
 
 				/**
 				 * Get the available weights for a font id.
