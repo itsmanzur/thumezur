@@ -211,9 +211,41 @@ class Themezur_Docs {
 							'<p>Under <strong>Themezur → WooCommerce</strong> (requires WooCommerce active):</p>
 							<ul>
 								<li><strong>Shop archive</strong> — columns (2–4), products per page, soft/minimal cards, result count &amp; sorting toggles.</li>
-								<li><strong>Single product</strong> — related / upsell counts.</li>
+								<li><strong>Hover image</strong> — swaps to the first gallery image on card hover.</li>
+								<li><strong>New badge</strong> — optional day window (0 = off) for recently published products. Sale <code>-X%</code> uses the Single → Sale percent toggle.</li>
+								<li><strong>Wishlist on cards</strong> — YITH Add to Wishlist shortcode when that plugin is active; otherwise skipped.</li>
+								<li><strong>Shop sidebar</strong> — None / Left / Right. Assign WooCommerce Layered Nav, Price Filter, etc. to <strong>Appearance → Widgets → Themezur Shop Sidebar</strong>. On mobile the sidebar opens as a filter drawer.</li>
 							</ul>
 							<p>Styles use Themezur design tokens (buttons, radius, accent). Set Shop styling to default to disable Themezur polish.</p>',
+							'themezur'
+						),
+					),
+					array(
+						'title' => __( 'Single product', 'themezur' ),
+						'body'  => __(
+							'<p>Same tab → <strong>Single product</strong>:</p>
+							<ul>
+								<li><strong>Layout</strong> — Classic (WooCommerce columns), Wide gallery + sticky summary, or Stacked (gallery above).</li>
+								<li><strong>Sale percent badge</strong> — shows <code>-X%</code> instead of a plain Sale label (also on shop cards).</li>
+								<li><strong>Rating / SKU / stock</strong> — toggles for summary meta.</li>
+								<li><strong>Sticky add to cart</strong> — desktop bar when the main button scrolls out of view (loads <code>woocommerce.js</code> only on product pages).</li>
+								<li><strong>Trust / shipping note</strong> — optional text under add to cart.</li>
+								<li><strong>Related &amp; upsells</strong> — show/hide plus counts (0–8).</li>
+							</ul>
+							<p>Uses hooks + CSS (no heavy template overrides). Elementor Theme Builder single templates still take priority when assigned.</p>',
+							'themezur'
+						),
+					),
+					array(
+						'title' => __( 'Cart, checkout &amp; account', 'themezur' ),
+						'body'  => __(
+							'<p>Under <strong>Themezur → WooCommerce</strong>:</p>
+							<ul>
+								<li><strong>Mini-cart drawer</strong> — header cart icon opens a side drawer (qty ± / remove via AJAX fragments). Optional auto-open after add to cart. Disabled on the cart &amp; checkout pages themselves.</li>
+								<li><strong>Cart / checkout polish</strong> — token styling for tables, totals, fields, and Place order. Optional sticky order review (desktop) and a checkout trust note above Place order.</li>
+								<li><strong>My Account density</strong> — Comfortable or Compact navigation/content spacing, plus form &amp; orders table polish.</li>
+							</ul>
+							<p>Requires Header → Show cart icon for the drawer trigger. No full WooCommerce template copies.</p>',
 							'themezur'
 						),
 					),

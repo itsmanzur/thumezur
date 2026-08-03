@@ -30,11 +30,43 @@ Build in this order. Do not skip ahead unless the user asks.
 - [x] Shop columns / per page / card style / catalog tools
 - [x] Related & upsells counts
 - [x] Token-based CSS polish + panel + Help docs
-- [ ] Deeper single-product template overrides (optional polish)
+
+## Phase 5 — Advanced WooCommerce storefront
+
+Template strategy: hooks + CSS + tiny partials (no full WC template copies). Fast assets only on matching pages.
+
+### 5A — Single product (PDP)
+
+- [x] Layouts: classic / gallery_wide / stacked (body class + CSS)
+- [x] Sale % badge, rating / SKU / stock toggles
+- [x] Sticky add-to-cart bar (desktop, product-only JS)
+- [x] Trust / shipping note
+- [x] Related / upsells show + counts
+- [x] Panel + Help docs
+
+### 5B — Shop archive depth
+
+- [x] Sale % (via single toggle) / New badges on cards, hover 2nd image
+- [x] Loop AJAX ATC polish + optional YITH wishlist on card
+- [x] Shop sidebar widget area + left/right/none layout
+- [x] Mobile filter drawer (widget content, not custom AJAX filters)
+- [x] Panel + Help docs
+
+### 5C — Mini-cart + Cart / Checkout
+
+- [x] Mini-cart drawer via WC fragments + qty AJAX
+- [x] Cart / checkout token polish (hooks + CSS, no full template copies)
+- [x] Panel + Help docs
+
+### 5D — My Account
+
+- [x] Dashboard / forms / orders token polish
+- [x] Density option (comfortable / compact)
+- [x] Panel + Help docs
 
 ## Status
 
-All four planned phases after header/footer are implemented. Iterate from user feedback next.
+Phases 1–5 complete (including advanced WooCommerce 5A–5D). Iterate from user feedback next.
 
 ## Rules
 

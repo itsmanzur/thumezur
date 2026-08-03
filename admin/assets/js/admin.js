@@ -371,7 +371,8 @@
 						row('themezur-footer', 'js', 'Back to top + scripts', bttOn && scriptsOn ? 'on' : 'off', 'footer.js'),
 						row('themezur-blog', 'css', 'Blog pages', blogMode === 'theme' ? 'cond' : 'off', 'blog.css'),
 						row('themezur-pages', 'css', '404 / Search', pagesMode === 'theme' ? 'cond' : 'off', 'pages.css'),
-						row('themezur-woocommerce', 'css', 'Shop pages', wooMode === 'theme' && this.woocommerce ? 'cond' : 'off', this.woocommerce ? 'woocommerce.css' : 'Woo inactive'),
+						row('themezur-woocommerce', 'css', 'Shop / mini-cart', wooMode === 'theme' && this.woocommerce ? 'cond' : 'off', this.woocommerce ? 'woocommerce.css' : 'Woo inactive'),
+						row('themezur-woocommerce', 'js', 'Sticky ATC / filters / mini-cart', wooMode === 'theme' && this.woocommerce && scriptsOn && (!!(o.woocommerce && o.woocommerce.single && o.woocommerce.single.sticky_atc) || !!(o.woocommerce && o.woocommerce.shop && o.woocommerce.shop.sidebar && o.woocommerce.shop.sidebar !== 'none') || !!(o.woocommerce && o.woocommerce.cart && o.woocommerce.cart.mini_cart)) ? 'cond' : 'off', 'woocommerce.js'),
 						row('themezur-breadcrumbs', 'css', 'Breadcrumbs on', g.breadcrumbs ? 'cond' : 'off', 'breadcrumbs.css'),
 						row('hello reset.css', 'css', 'Parent', p.disable_hello_reset ? 'off' : 'on', 'Hello Elementor'),
 						row('hello theme.css', 'css', 'Parent', p.disable_hello_theme_style ? 'off' : 'on', 'Hello Elementor'),
@@ -583,6 +584,10 @@
 						card_style: 'soft',
 						show_result_count: true,
 						show_ordering: true,
+						hover_image: true,
+						new_badge_days: 14,
+						wishlist_on_card: true,
+						sidebar: 'none',
 					};
 					Object.keys(shopDefaults).forEach(function (key) {
 						if (typeof this.options.woocommerce.shop[key] === 'undefined') {
@@ -593,7 +598,16 @@
 						this.options.woocommerce.single = {};
 					}
 					var wooSingleDefaults = {
+						layout: 'classic',
+						sale_percent: true,
+						show_rating: true,
+						show_sku: true,
+						show_stock: true,
+						sticky_atc: true,
+						trust_note: '',
+						show_related: true,
 						related_count: 4,
+						show_upsells: true,
 						upsells_count: 4,
 					};
 					Object.keys(wooSingleDefaults).forEach(function (key) {
@@ -601,6 +615,30 @@
 							this.options.woocommerce.single[key] = wooSingleDefaults[key];
 						}
 					}.bind(this));
+					if (!this.options.woocommerce.cart || typeof this.options.woocommerce.cart !== 'object') {
+						this.options.woocommerce.cart = {};
+					}
+					var wooCartDefaults = { mini_cart: true, open_on_add: true };
+					Object.keys(wooCartDefaults).forEach(function (key) {
+						if (typeof this.options.woocommerce.cart[key] === 'undefined') {
+							this.options.woocommerce.cart[key] = wooCartDefaults[key];
+						}
+					}.bind(this));
+					if (!this.options.woocommerce.checkout || typeof this.options.woocommerce.checkout !== 'object') {
+						this.options.woocommerce.checkout = {};
+					}
+					var wooCheckoutDefaults = { trust_note: '', sticky_review: true };
+					Object.keys(wooCheckoutDefaults).forEach(function (key) {
+						if (typeof this.options.woocommerce.checkout[key] === 'undefined') {
+							this.options.woocommerce.checkout[key] = wooCheckoutDefaults[key];
+						}
+					}.bind(this));
+					if (!this.options.woocommerce.account || typeof this.options.woocommerce.account !== 'object') {
+						this.options.woocommerce.account = {};
+					}
+					if (typeof this.options.woocommerce.account.density === 'undefined') {
+						this.options.woocommerce.account.density = 'comfortable';
+					}
 				},
 
 				footerTypeLabel: function (type) {
