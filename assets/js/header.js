@@ -97,6 +97,51 @@
 			}
 		}
 
+		// Drawer tabs (Menu vs Categories)
+		var tabs  = drawer.querySelectorAll('[data-tz-drawer-tab]');
+		var panes = drawer.querySelectorAll('[data-tz-drawer-pane]');
+
+		function switchTab(tabName) {
+			tabs.forEach(function (t) {
+				t.classList.toggle('is-active', t.getAttribute('data-tz-drawer-tab') === tabName);
+			});
+			panes.forEach(function (p) {
+				var active = p.getAttribute('data-tz-drawer-pane') === tabName;
+				p.classList.toggle('is-active', active);
+				if (active) {
+					p.removeAttribute('hidden');
+				} else {
+					p.setAttribute('hidden', '');
+				}
+			});
+		}
+
+		tabs.forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				switchTab(btn.getAttribute('data-tz-drawer-tab'));
+			});
+		});
+
+		// External open-drawer triggers (e.g. from Mobile Bottom Nav)
+		document.querySelectorAll('[data-tz-open-drawer]').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				var targetTab = btn.getAttribute('data-tz-open-drawer');
+				switchTab(targetTab || 'menu');
+				setOpen(true);
+			});
+		});
+
+		// Focus search input trigger
+		document.querySelectorAll('[data-tz-focus-search]').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				var searchInput = document.getElementById('tz-header-search') || document.querySelector('.tz-mobile-drawer__search input');
+				if (searchInput) {
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+					setTimeout(function () { searchInput.focus(); }, 150);
+				}
+			});
+		});
+
 		toggle.addEventListener('click', function () {
 			setOpen(drawer.hasAttribute('hidden') || !drawer.classList.contains('is-open'));
 		});
@@ -128,16 +173,19 @@
 	 * Dark Mode Toggle
 	 * -------------------------------------------------------------- */
 	function initDark(header) {
-		var darkBtn = header.querySelector('[data-tz-dark-toggle]');
-		if (!darkBtn) return;
-		darkBtn.addEventListener('click', function () {
-			var on = !document.body.classList.contains('tz-dark');
-			document.body.classList.toggle('tz-dark', on);
-			try {
-				localStorage.setItem(DARK_KEY, on ? '1' : '0');
-			} catch (e) {}
+		var darkBtns = document.querySelectorAll('[data-tz-dark-toggle]');
+		if (!darkBtns.length) return;
+		darkBtns.forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				var on = !document.body.classList.contains('tz-dark');
+				document.body.classList.toggle('tz-dark', on);
+				try {
+					localStorage.setItem(DARK_KEY, on ? '1' : '0');
+				} catch (e) {}
+			});
 		});
 	}
+
 
 	/* ----------------------------------------------------------------
 	 * Sticky Header Scroll Behavior

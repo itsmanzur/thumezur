@@ -203,6 +203,17 @@ class Themezur_Options {
 					'hide_mobile_deal'       => false,
 					'hide_desktop_deal'      => false,
 				),
+				'mobile_nav'  => array(
+					'enabled'      => true,
+					'show_home'    => true,
+					'show_cats'    => true,
+					'show_search'  => true,
+					'show_cart'    => true,
+					'show_account' => true,
+					'bg'           => '#ffffff',
+					'text'         => '#0f172a',
+					'accent'       => '#2563eb',
+				),
 			),
 			'footer'      => array(
 				'mode'        => 'theme',
@@ -694,7 +705,8 @@ class Themezur_Options {
 		$clean['header']['spacing'] = self::sanitize_header_spacing( isset( $h['spacing'] ) && is_array( $h['spacing'] ) ? $h['spacing'] : array(), $defaults['header']['spacing'] );
 		$clean['header']['top']     = self::sanitize_header_top( isset( $h['top'] ) && is_array( $h['top'] ) ? $h['top'] : array(), $defaults['header']['top'] );
 		$clean['header']['middle'] = self::sanitize_header_middle( isset( $h['middle'] ) && is_array( $h['middle'] ) ? $h['middle'] : array(), $defaults['header']['middle'] );
-		$clean['header']['bottom'] = self::sanitize_header_bottom( isset( $h['bottom'] ) && is_array( $h['bottom'] ) ? $h['bottom'] : array(), $defaults['header']['bottom'] );
+		$clean['header']['bottom']     = self::sanitize_header_bottom( isset( $h['bottom'] ) && is_array( $h['bottom'] ) ? $h['bottom'] : array(), $defaults['header']['bottom'] );
+		$clean['header']['mobile_nav'] = self::sanitize_header_mobile_nav( isset( $h['mobile_nav'] ) && is_array( $h['mobile_nav'] ) ? $h['mobile_nav'] : array(), $defaults['header']['mobile_nav'] );
 
 		// Footer.
 		$f = isset( $merged['footer'] ) && is_array( $merged['footer'] ) ? $merged['footer'] : array();
@@ -1025,6 +1037,25 @@ class Themezur_Options {
 			'deal_url'                => isset( $raw['deal_url'] ) ? esc_url_raw( $raw['deal_url'] ) : '',
 			'hide_mobile_deal'        => ! empty( $raw['hide_mobile_deal'] ),
 			'hide_desktop_deal'       => ! empty( $raw['hide_desktop_deal'] ),
+		);
+	}
+
+	/**
+	 * @param array $raw Raw.
+	 * @param array $d   Defaults.
+	 * @return array
+	 */
+	private static function sanitize_header_mobile_nav( array $raw, array $d ) {
+		return array(
+			'enabled'      => ! empty( $raw['enabled'] ),
+			'show_home'    => ! empty( $raw['show_home'] ),
+			'show_cats'    => ! empty( $raw['show_cats'] ),
+			'show_search'  => ! empty( $raw['show_search'] ),
+			'show_cart'    => ! empty( $raw['show_cart'] ),
+			'show_account' => ! empty( $raw['show_account'] ),
+			'bg'           => self::sanitize_hex_color_value( $raw['bg'] ?? '', $d['bg'] ),
+			'text'         => self::sanitize_hex_color_value( $raw['text'] ?? '', $d['text'] ),
+			'accent'       => self::sanitize_hex_color_value( $raw['accent'] ?? '', $d['accent'] ),
 		);
 	}
 

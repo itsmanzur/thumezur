@@ -112,6 +112,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<button type="button" class="tz-subtabs__btn" :class="{ 'is-active': headerSubTab === 'middle' }" @click="headerSubTab = 'middle'"><?php esc_html_e( 'Middle bar', 'themezur' ); ?></button>
 			<button type="button" class="tz-subtabs__btn" :class="{ 'is-active': headerSubTab === 'bottom' }" @click="headerSubTab = 'bottom'"><?php esc_html_e( 'Bottom bar', 'themezur' ); ?></button>
 			<button type="button" class="tz-subtabs__btn" :class="{ 'is-active': headerSubTab === 'typo' }" @click="headerSubTab = 'typo'"><?php esc_html_e( 'Typography', 'themezur' ); ?></button>
+			<button type="button" class="tz-subtabs__btn" :class="{ 'is-active': headerSubTab === 'mobile' }" @click="headerSubTab = 'mobile'"><?php esc_html_e( 'Mobile nav', 'themezur' ); ?></button>
 			<button type="button" class="tz-subtabs__btn" :class="{ 'is-active': headerSubTab === 'layout' }" @click="headerSubTab = 'layout'"><?php esc_html_e( 'Layout', 'themezur' ); ?></button>
 		</div>
 
@@ -623,6 +624,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<input type="text" x-model="options.header.typo.logo_max_h" placeholder="44px">
 						</div>
 					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Mobile Nav -->
+		<div x-show="headerSubTab === 'mobile'">
+			<div class="tz-switch-row">
+				<span><?php esc_html_e( 'Enable app-style bottom sticky navigation bar', 'themezur' ); ?></span>
+				<input type="checkbox" x-model="options.header.mobile_nav.enabled">
+			</div>
+
+			<div class="tz-group">
+				<div class="tz-group__head">
+					<div>
+						<h3 class="tz-group__title"><?php esc_html_e( 'Mobile Bottom Nav Buttons', 'themezur' ); ?></h3>
+						<p class="tz-group__desc"><?php esc_html_e( 'App-style sticky navigation bar at the bottom of mobile screens.', 'themezur' ); ?></p>
+					</div>
+				</div>
+				<div class="tz-group__body" x-show="options.header.mobile_nav.enabled">
+					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.mobile_nav.show_home"> <?php esc_html_e( 'Show Home button', 'themezur' ); ?></label></div>
+					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.mobile_nav.show_cats"> <?php esc_html_e( 'Show Categories button', 'themezur' ); ?></label></div>
+					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.mobile_nav.show_search"> <?php esc_html_e( 'Show Search button', 'themezur' ); ?></label></div>
+					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.mobile_nav.show_cart"> <?php esc_html_e( 'Show Cart button (with live count badge)', 'themezur' ); ?></label></div>
+					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.mobile_nav.show_account"> <?php esc_html_e( 'Show Account / Menu button', 'themezur' ); ?></label></div>
 				</div>
 			</div>
 		</div>

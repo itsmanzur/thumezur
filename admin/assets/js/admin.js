@@ -99,7 +99,18 @@
 					if (typeof this.options.header.bottom.menu_id === 'undefined') {
 						this.options.header.bottom.menu_id = 0;
 					}
+					if (!this.options.header.mobile_nav) {
+						this.options.header.mobile_nav = {
+							enabled: true,
+							show_home: true,
+							show_cats: true,
+							show_search: true,
+							show_cart: true,
+							show_account: true
+						};
+					}
 				},
+
 
 
 

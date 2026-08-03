@@ -515,10 +515,44 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 						</form>
 					<?php endif; ?>
 
-					<?php if ( $nav_menu ) : ?>
-						<nav class="tz-mobile-drawer__nav" aria-label="<?php echo esc_attr__( 'Mobile navigation', 'themezur' ); ?>">
-							<?php echo $nav_menu; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-						</nav>
+					<?php if ( ! empty( $cat_tree ) ) : ?>
+						<div class="tz-mobile-drawer__tabs">
+							<button type="button" class="tz-mobile-drawer__tab is-active" data-tz-drawer-tab="menu">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+								<?php esc_html_e( 'Menu', 'themezur' ); ?>
+							</button>
+							<button type="button" class="tz-mobile-drawer__tab" data-tz-drawer-tab="cats">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+								<?php esc_html_e( 'Categories', 'themezur' ); ?>
+							</button>
+						</div>
+					<?php endif; ?>
+
+					<div class="tz-mobile-drawer__pane is-active" data-tz-drawer-pane="menu">
+						<?php if ( $nav_menu ) : ?>
+							<nav class="tz-mobile-drawer__nav" aria-label="<?php echo esc_attr__( 'Mobile navigation', 'themezur' ); ?>">
+								<?php echo $nav_menu; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							</nav>
+						<?php endif; ?>
+					</div>
+
+					<?php if ( ! empty( $cat_tree ) ) : ?>
+						<div class="tz-mobile-drawer__pane" data-tz-drawer-pane="cats" hidden>
+							<ul class="tz-mobile-drawer__cats-list">
+								<?php foreach ( $cat_tree as $parent ) : ?>
+									<li>
+										<a class="tz-mobile-drawer__cat-parent" href="<?php echo esc_url( $parent['url'] ); ?>"><?php echo esc_html( $parent['name'] ); ?></a>
+										<?php if ( ! empty( $parent['children'] ) ) : ?>
+											<ul class="tz-mobile-drawer__cat-children">
+												<?php foreach ( $parent['children'] as $child ) : ?>
+													<li><a href="<?php echo esc_url( $child['url'] ); ?>"><?php echo esc_html( $child['name'] ); ?></a></li>
+												<?php endforeach; ?>
+											</ul>
+										<?php endif; ?>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
 					<?php endif; ?>
 
 					<?php if ( ! empty( $bottom['show_deal'] ) && ! empty( $bottom['deal_text'] ) ) : ?>
@@ -542,6 +576,12 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 							<span><?php esc_html_e( 'Wishlist', 'themezur' ); ?></span>
 						</a>
 					<?php endif; ?>
+					<?php if ( ! empty( $middle['show_dark_mode'] ) ) : ?>
+						<button type="button" class="tz-mobile-drawer__footer-btn" data-tz-dark-toggle aria-label="<?php echo esc_attr__( 'Toggle dark mode', 'themezur' ); ?>">
+							<svg class="tz-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 14.3A8.5 8.5 0 119.7 3a7 7 0 0011.3 11.3z"/></svg>
+							<span><?php esc_html_e( 'Theme Mode', 'themezur' ); ?></span>
+						</button>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
@@ -554,6 +594,56 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 	<?php endif; ?>
 </header>
 
+<?php
+$mobile_nav = isset( $h['mobile_nav'] ) && is_array( $h['mobile_nav'] ) ? $h['mobile_nav'] : array();
+if ( ! empty( $mobile_nav['enabled'] ) ) :
+?>
+	<nav class="tz-mobile-bottom-nav" aria-label="<?php echo esc_attr__( 'Mobile bottom navigation', 'themezur' ); ?>">
+		<?php if ( ! empty( $mobile_nav['show_home'] ) ) : ?>
+			<a class="tz-mobile-bottom-nav__item" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+				<span><?php esc_html_e( 'Home', 'themezur' ); ?></span>
+			</a>
+		<?php endif; ?>
+
+		<?php if ( ! empty( $mobile_nav['show_cats'] ) && ! empty( $cat_tree ) ) : ?>
+			<button type="button" class="tz-mobile-bottom-nav__item" data-tz-open-drawer="cats">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+				<span><?php esc_html_e( 'Categories', 'themezur' ); ?></span>
+			</button>
+		<?php endif; ?>
+
+		<?php if ( ! empty( $mobile_nav['show_search'] ) ) : ?>
+			<button type="button" class="tz-mobile-bottom-nav__item" data-tz-focus-search>
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+				<span><?php esc_html_e( 'Search', 'themezur' ); ?></span>
+			</button>
+		<?php endif; ?>
+
+		<?php if ( ! empty( $mobile_nav['show_cart'] ) ) : ?>
+			<a class="tz-mobile-bottom-nav__item" href="<?php echo esc_url( $cart_url ); ?>" <?php echo $mini_cart ? 'data-tz-mini-cart-toggle' : ''; ?>>
+				<div class="tz-mobile-bottom-nav__icon-wrap">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 7h15l-1.5 9h-12z"/><path d="M6 7L5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/></svg>
+					<?php echo Themezur_Frontend::cart_count_markup( $cart_count ); ?>
+				</div>
+				<span><?php esc_html_e( 'Cart', 'themezur' ); ?></span>
+			</a>
+		<?php endif; ?>
+
+		<?php if ( ! empty( $mobile_nav['show_account'] ) && $account_url ) : ?>
+			<a class="tz-mobile-bottom-nav__item" href="<?php echo esc_url( $account_url ); ?>">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/></svg>
+				<span><?php echo esc_html( is_user_logged_in() ? __( 'Account', 'themezur' ) : __( 'Login', 'themezur' ) ); ?></span>
+			</a>
+		<?php else : ?>
+			<button type="button" class="tz-mobile-bottom-nav__item" data-tz-open-drawer="menu">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+				<span><?php esc_html_e( 'Menu', 'themezur' ); ?></span>
+			</button>
+		<?php endif; ?>
+	</nav>
+<?php endif; ?>
+
 <?php if ( $mini_cart ) : ?>
 	<div id="tz-mini-cart" class="tz-mini-cart" hidden data-tz-mini-cart>
 		<div class="tz-mini-cart__overlay" aria-hidden="true" data-tz-mini-cart-close></div>
@@ -561,6 +651,7 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 			<div class="tz-mini-cart__header">
 				<h2 id="tz-mini-cart-title" class="tz-mini-cart__title"><?php esc_html_e( 'Your cart', 'themezur' ); ?></h2>
 				<button type="button" class="tz-mini-cart__close" aria-label="<?php echo esc_attr__( 'Close cart', 'themezur' ); ?>" data-tz-mini-cart-close>
+
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
