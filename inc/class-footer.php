@@ -212,4 +212,3 @@ class Themezur_Footer {
 		return $svgs[ $key ] ?? '<span class="tz-pay-badge">' . esc_html( $label ) . '</span>';
 	}
 }
-}
