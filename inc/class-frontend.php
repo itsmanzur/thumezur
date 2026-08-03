@@ -401,26 +401,26 @@ class Themezur_Frontend {
 
 		$css = sprintf(
 			':root{--themezur-primary:%1$s;--themezur-accent:%2$s;--themezur-text:%3$s;--themezur-muted:%4$s;--themezur-bg:%5$s;--themezur-surface:%6$s;--themezur-border:%7$s;--themezur-link:%8$s;--themezur-link-hover:%9$s;--themezur-font:%10$s;--themezur-font-heading:%11$s;--themezur-font-size:%12$s;--themezur-line-height:%13$s;--themezur-radius:%14$s;--themezur-container:%15$s;--themezur-btn-bg:%16$s;--themezur-btn-text:%17$s;--themezur-btn-radius:%18$s;--themezur-font-weight:%19$s;--themezur-heading-weight:%20$s;}',
-			esc_attr( $g['primary_color'] ?? '#0f172a' ),
-			esc_attr( $g['accent_color'] ?? '#2563eb' ),
-			esc_attr( $g['text_color'] ?? '#0f172a' ),
-			esc_attr( $g['muted_color'] ?? '#64748b' ),
-			esc_attr( $g['bg_color'] ?? '#ffffff' ),
-			esc_attr( $g['surface_color'] ?? '#f8fafc' ),
-			esc_attr( $g['border_color'] ?? '#e2e8f0' ),
-			esc_attr( $g['link_color'] ?? '#2563eb' ),
-			esc_attr( $g['link_hover'] ?? '#1d4ed8' ),
-			esc_attr( $g['font_body'] ?? 'system-ui, sans-serif' ),
-			esc_attr( $g['font_heading'] ?? 'system-ui, sans-serif' ),
-			esc_attr( $g['font_size'] ?? '16px' ),
-			esc_attr( $g['line_height'] ?? '1.65' ),
-			esc_attr( $g['radius'] ?? '8px' ),
-			esc_attr( $g['container_width'] ?? '1200px' ),
-			esc_attr( $g['button_bg'] ?? '#2563eb' ),
-			esc_attr( $g['button_text'] ?? '#ffffff' ),
-			esc_attr( $g['button_radius'] ?? '8px' ),
-			esc_attr( $body_weight_val ),
-			esc_attr( $head_weight_val )
+			wp_strip_all_tags( $g['primary_color'] ?? '#0f172a' ),
+			wp_strip_all_tags( $g['accent_color'] ?? '#2563eb' ),
+			wp_strip_all_tags( $g['text_color'] ?? '#0f172a' ),
+			wp_strip_all_tags( $g['muted_color'] ?? '#64748b' ),
+			wp_strip_all_tags( $g['bg_color'] ?? '#ffffff' ),
+			wp_strip_all_tags( $g['surface_color'] ?? '#f8fafc' ),
+			wp_strip_all_tags( $g['border_color'] ?? '#e2e8f0' ),
+			wp_strip_all_tags( $g['link_color'] ?? '#2563eb' ),
+			wp_strip_all_tags( $g['link_hover'] ?? '#1d4ed8' ),
+			wp_strip_all_tags( $g['font_body'] ?? 'system-ui, sans-serif' ),
+			wp_strip_all_tags( $g['font_heading'] ?? 'system-ui, sans-serif' ),
+			wp_strip_all_tags( $g['font_size'] ?? '16px' ),
+			wp_strip_all_tags( $g['line_height'] ?? '1.65' ),
+			wp_strip_all_tags( $g['radius'] ?? '8px' ),
+			wp_strip_all_tags( $g['container_width'] ?? '1200px' ),
+			wp_strip_all_tags( $g['button_bg'] ?? '#2563eb' ),
+			wp_strip_all_tags( $g['button_text'] ?? '#ffffff' ),
+			wp_strip_all_tags( $g['button_radius'] ?? '8px' ),
+			wp_strip_all_tags( $body_weight_val ),
+			wp_strip_all_tags( $head_weight_val )
 		);
 
 		wp_add_inline_style( 'themezur-style', $css );
@@ -447,35 +447,35 @@ class Themezur_Frontend {
 
 			$header_css = sprintf(
 				'.tz-site-header--triple{--tz-announce-bg:%1$s;--tz-announce-text:%2$s;--tz-top-bg:%3$s;--tz-top-text:%4$s;--tz-top-muted:%5$s;--tz-top-accent:%6$s;--tz-mid-bg:%7$s;--tz-mid-text:%8$s;--tz-mid-muted:%9$s;--tz-mid-accent:%10$s;--tz-mid-border:%11$s;--tz-bot-bg:%12$s;--tz-bot-text:%13$s;--tz-bot-muted:%14$s;--tz-bot-accent:%15$s;--tz-bot-accent-text:%16$s;--tz-font:%17$s;--tz-top-size:%18$s;--tz-top-weight:%19$s;--tz-mid-size:%20$s;--tz-mid-weight:%21$s;--tz-nav-size:%22$s;--tz-nav-weight:%23$s;--tz-logo-max-h:%24$s;--tz-container:%25$s;--tz-side-pad:%26$s;--tz-top-min-h:%27$s;--tz-mid-min-h:%28$s;--tz-bot-min-h:%29$s;}',
-				esc_attr( $announce['bg'] ?? '#2563eb' ),
-				esc_attr( $announce['text_color'] ?? '#ffffff' ),
-				esc_attr( $top['bg'] ?? '#111827' ),
-				esc_attr( $top['text'] ?? '#f3f4f6' ),
-				esc_attr( $top['muted'] ?? '#9ca3af' ),
-				esc_attr( $top['accent'] ?? '#f59e0b' ),
-				esc_attr( $middle['bg'] ?? '#ffffff' ),
-				esc_attr( $middle['text'] ?? '#0f172a' ),
-				esc_attr( $middle['muted'] ?? '#64748b' ),
-				esc_attr( $middle['accent'] ?? '#2563eb' ),
-				esc_attr( $middle['border'] ?? '#e2e8f0' ),
-				esc_attr( $bottom['bg'] ?? '#111827' ),
-				esc_attr( $bottom['text'] ?? '#ffffff' ),
-				esc_attr( $bottom['muted'] ?? '#cbd5e1' ),
-				esc_attr( $bottom['accent'] ?? '#f59e0b' ),
-				esc_attr( $bottom['accent_text'] ?? '#111827' ),
-				esc_attr( $resolved_header_font ),
-				esc_attr( $typo['top_size'] ?? '13px' ),
-				esc_attr( $typo['top_weight'] ?? '500' ),
-				esc_attr( $typo['mid_size'] ?? '14px' ),
-				esc_attr( $typo['mid_weight'] ?? '400' ),
-				esc_attr( $typo['nav_size'] ?? '15px' ),
-				esc_attr( $typo['nav_weight'] ?? '500' ),
-				esc_attr( $typo['logo_max_h'] ?? '44px' ),
-				esc_attr( $spacing['container_width'] ?? '1200px' ),
-				esc_attr( $spacing['side_padding'] ?? '1.15rem' ),
-				esc_attr( $spacing['top_min_h'] ?? '2.25rem' ),
-				esc_attr( $spacing['mid_min_h'] ?? '4.5rem' ),
-				esc_attr( $spacing['bot_min_h'] ?? '3rem' )
+				wp_strip_all_tags( $announce['bg'] ?? '#2563eb' ),
+				wp_strip_all_tags( $announce['text_color'] ?? '#ffffff' ),
+				wp_strip_all_tags( $top['bg'] ?? '#111827' ),
+				wp_strip_all_tags( $top['text'] ?? '#f3f4f6' ),
+				wp_strip_all_tags( $top['muted'] ?? '#9ca3af' ),
+				wp_strip_all_tags( $top['accent'] ?? '#f59e0b' ),
+				wp_strip_all_tags( $middle['bg'] ?? '#ffffff' ),
+				wp_strip_all_tags( $middle['text'] ?? '#0f172a' ),
+				wp_strip_all_tags( $middle['muted'] ?? '#64748b' ),
+				wp_strip_all_tags( $middle['accent'] ?? '#2563eb' ),
+				wp_strip_all_tags( $middle['border'] ?? '#e2e8f0' ),
+				wp_strip_all_tags( $bottom['bg'] ?? '#111827' ),
+				wp_strip_all_tags( $bottom['text'] ?? '#ffffff' ),
+				wp_strip_all_tags( $bottom['muted'] ?? '#cbd5e1' ),
+				wp_strip_all_tags( $bottom['accent'] ?? '#f59e0b' ),
+				wp_strip_all_tags( $bottom['accent_text'] ?? '#111827' ),
+				wp_strip_all_tags( $resolved_header_font ),
+				wp_strip_all_tags( $typo['top_size'] ?? '13px' ),
+				wp_strip_all_tags( $typo['top_weight'] ?? '500' ),
+				wp_strip_all_tags( $typo['mid_size'] ?? '14px' ),
+				wp_strip_all_tags( $typo['mid_weight'] ?? '400' ),
+				wp_strip_all_tags( $typo['nav_size'] ?? '15px' ),
+				wp_strip_all_tags( $typo['nav_weight'] ?? '500' ),
+				wp_strip_all_tags( $typo['logo_max_h'] ?? '44px' ),
+				wp_strip_all_tags( $spacing['container_width'] ?? '1200px' ),
+				wp_strip_all_tags( $spacing['side_padding'] ?? '1.15rem' ),
+				wp_strip_all_tags( $spacing['top_min_h'] ?? '2.25rem' ),
+				wp_strip_all_tags( $spacing['mid_min_h'] ?? '4.5rem' ),
+				wp_strip_all_tags( $spacing['bot_min_h'] ?? '3rem' )
 			);
 
 			wp_add_inline_style( 'themezur-header', $header_css );
@@ -492,13 +492,13 @@ class Themezur_Frontend {
 			$ft = Themezur_Options::get( 'footer', array() );
 			$footer_css = sprintf(
 				'.tz-site-footer--columns4{--tz-ft-bg:%1$s;--tz-ft-text:%2$s;--tz-ft-muted:%3$s;--tz-ft-accent:%4$s;--tz-ft-border:%5$s;--tz-ft-container:%6$s;--tz-ft-side-pad:%7$s;}',
-				esc_attr( $ft['bg'] ?? '#0f172a' ),
-				esc_attr( $ft['text'] ?? '#e2e8f0' ),
-				esc_attr( $ft['muted'] ?? '#94a3b8' ),
-				esc_attr( $ft['accent'] ?? '#f59e0b' ),
-				esc_attr( $ft['border'] ?? '#1e293b' ),
-				esc_attr( $ft['container_width'] ?? '1200px' ),
-				esc_attr( $ft['side_padding'] ?? '1.15rem' )
+				wp_strip_all_tags( $ft['bg'] ?? '#0f172a' ),
+				wp_strip_all_tags( $ft['text'] ?? '#e2e8f0' ),
+				wp_strip_all_tags( $ft['muted'] ?? '#94a3b8' ),
+				wp_strip_all_tags( $ft['accent'] ?? '#f59e0b' ),
+				wp_strip_all_tags( $ft['border'] ?? '#1e293b' ),
+				wp_strip_all_tags( $ft['container_width'] ?? '1200px' ),
+				wp_strip_all_tags( $ft['side_padding'] ?? '1.15rem' )
 			);
 			wp_add_inline_style( 'themezur-footer', $footer_css );
 		}
@@ -508,9 +508,9 @@ class Themezur_Frontend {
 			$accent = Themezur_Options::get( 'general.accent_color', '#2563eb' );
 			$blog_css = sprintf(
 				'.tz-blog{--tz-blog-container:%1$s;--tz-blog-single-max:%2$s;--tz-blog-accent:%3$s;}',
-				esc_attr( $blog['container_width'] ?? '1100px' ),
-				esc_attr( $blog['single']['content_width'] ?? '720px' ),
-				esc_attr( $accent )
+				wp_strip_all_tags( $blog['container_width'] ?? '1100px' ),
+				wp_strip_all_tags( $blog['single']['content_width'] ?? '720px' ),
+				wp_strip_all_tags( $accent )
 			);
 			wp_add_inline_style( 'themezur-blog', $blog_css );
 		}
