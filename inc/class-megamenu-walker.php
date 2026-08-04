@@ -304,6 +304,10 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 			return '<img src="' . esc_url( $icon ) . '" class="tz-mega-item__img" alt="Icon" />';
 		}
 
+		if ( 0 === strpos( $icon, 'dashicons-' ) || 0 === strpos( $icon, 'dashicon-' ) ) {
+			return '<span class="dashicons ' . esc_attr( $icon ) . '" style="font-size:18px; width:18px; height:18px; line-height:1; display:flex; align-items:center; justify-content:center;"></span>';
+		}
+
 		$svgs = array(
 			'scanner'   => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>',
 			'heatmaps'  => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/></svg>',

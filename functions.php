@@ -31,6 +31,8 @@ themezur();
  * @return void
  */
 function themezur_enqueue_scripts_styles() {
+	wp_enqueue_style( 'dashicons' );
+
 	$deps = array();
 	if ( wp_style_is( 'hello-elementor-theme-style', 'enqueued' ) ) {
 		$deps[] = 'hello-elementor-theme-style';

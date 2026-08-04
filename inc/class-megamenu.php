@@ -110,21 +110,47 @@ class Themezur_Mega_Menu {
 		$badge_color = $badge_color ? $badge_color : 'green';
 
 		$presets = array(
-			''          => '— Select Preset Icon —',
-			'scanner'   => '🔍 Scanner / Audit',
-			'heatmaps'  => '🔥 Heatmaps / Fire',
-			'analytics' => '📊 Analytics / Chart',
-			'widget'    => '🧩 Widget / Modules',
-			'ai'        => '🤖 AI Features / Sparkles',
-			'pdf'       => '📄 PDF / Document',
-			'agency'    => '🏢 Agency / Briefcase',
-			'crawler'   => '🌐 Crawler / Site Scan',
-			'shopping'  => '🛒 Shopping Cart',
-			'star'      => '⭐️ Star / Featured',
-			'zap'       => '⚡ Zap / Speed',
-			'lock'      => '🔒 Security / Lock',
-			'gift'      => '🎁 Gift / Offer',
-			'custom'    => '🖼️ Custom Image / Uploaded',
+			''                                => '— Select Preset Icon —',
+
+			// SaaS & Tech SVG Presets
+			'scanner'                         => '🔍 Scanner / Audit (SVG)',
+			'heatmaps'                        => '🔥 Heatmaps / Fire (SVG)',
+			'analytics'                       => '📊 Analytics / Chart (SVG)',
+			'widget'                          => '🧩 Widget / Modules (SVG)',
+			'ai'                              => '🤖 AI Features / Sparkles (SVG)',
+			'pdf'                             => '📄 PDF / Document (SVG)',
+			'agency'                          => '🏢 Agency / Briefcase (SVG)',
+			'crawler'                         => '🌐 Crawler / Site Scan (SVG)',
+			'shopping'                        => '🛒 Shopping Cart (SVG)',
+			'star'                            => '⭐️ Star / Featured (SVG)',
+			'zap'                             => '⚡ Zap / Speed (SVG)',
+			'lock'                            => '🔒 Security / Lock (SVG)',
+			'gift'                            => '🎁 Gift / Offer (SVG)',
+
+			// WordPress Dashicons
+			'dashicons-admin-home'            => '🏠 Home (Dashicon)',
+			'dashicons-store'                 => '🏪 Store / Shop (Dashicon)',
+			'dashicons-cart'                  => '🛒 Cart (Dashicon)',
+			'dashicons-heart'                 => '❤️ Heart / Wishlist (Dashicon)',
+			'dashicons-category'              => '📂 Category (Dashicon)',
+			'dashicons-tag'                   => '🏷️ Tag / Sale (Dashicon)',
+			'dashicons-email'                 => '✉️ Email / Contact (Dashicon)',
+			'dashicons-phone'                 => '📞 Phone (Dashicon)',
+			'dashicons-location'              => '📍 Location / Map (Dashicon)',
+			'dashicons-clock'                 => '⏰ Clock / Hours (Dashicon)',
+			'dashicons-wordpress'             => '🔷 WordPress (Dashicon)',
+			'dashicons-welcome-widgets-menus' => '⚙️ Widgets / Config (Dashicon)',
+			'dashicons-shield'                => '🛡️ Shield / Guarantee (Dashicon)',
+			'dashicons-desktop'               => '💻 Desktop / PC (Dashicon)',
+			'dashicons-smartphone'            => '📱 Mobile (Dashicon)',
+			'dashicons-camera'                => '📷 Camera (Dashicon)',
+			'dashicons-video-alt3'            => '🎥 Video (Dashicon)',
+			'dashicons-download'              => '⬇️ Download (Dashicon)',
+			'dashicons-hammer'                => '🛠️ Tools / Services (Dashicon)',
+			'dashicons-star-filled'           => '🌟 Star Rating (Dashicon)',
+			'dashicons-info'                  => 'ℹ️ Info / Help (Dashicon)',
+
+			'custom'                          => '🖼️ Custom Image / Uploaded URL',
 		);
 		$preset_selected = array_key_exists( $icon, $presets ) ? $icon : ( filter_var( $icon, FILTER_VALIDATE_URL ) ? 'custom' : '' );
 		?>
