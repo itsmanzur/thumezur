@@ -588,6 +588,7 @@ class Themezur_Options {
 				'remove_query_strings'            => false,
 				'disable_jquery_migrate'          => false,
 				'preload_google_fonts'            => true,
+				'instant_page_preloader'          => true,
 			),
 		);
 	}

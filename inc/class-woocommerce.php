@@ -453,7 +453,7 @@ class Themezur_WooCommerce {
 			return;
 		}
 		?>
-		<div class="tz-sticky-bar" id="tz-sticky-bar" aria-hidden="true" hidden>
+		<div class="tz-sticky-bar" id="tz-sticky-bar" data-tz-sticky-atc aria-hidden="true" hidden>
 			<div class="tz-sticky-bar__inner">
 				<div class="tz-sticky-bar__product">
 					<?php
@@ -467,7 +467,7 @@ class Themezur_WooCommerce {
 						<span class="tz-sticky-bar__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></span>
 					</div>
 				</div>
-				<button class="button single_add_to_cart_button tz-sticky-bar__btn" data-product-id="<?php echo (int) $product->get_id(); ?>" type="button">
+				<button class="button single_add_to_cart_button tz-sticky-bar__btn tz-woo-sticky-atc__btn" data-product-id="<?php echo (int) $product->get_id(); ?>" type="button">
 					<?php echo esc_html( $product->single_add_to_cart_text() ); ?>
 				</button>
 			</div>

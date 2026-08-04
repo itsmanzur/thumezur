@@ -314,6 +314,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<span><?php esc_html_e( 'Disable jQuery Migrate script on frontend', 'themezur' ); ?></span>
 						</label>
 						<label class="tz-toggle">
+							<input type="checkbox" x-model="options.performance.instant_page_preloader">
+							<span><strong>⚡ <?php esc_html_e( 'Enable Instant Page Preloader (Hover Speculation for 0ms instant page loads)', 'themezur' ); ?></strong></span>
+						</label>
+						<label class="tz-toggle">
 							<input type="checkbox" x-model="options.performance.disable_gutenberg_css">
 							<span><?php esc_html_e( 'Disable Block Library CSS (wp-block-library.css)', 'themezur' ); ?></span>
 						</label>

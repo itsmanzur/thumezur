@@ -170,6 +170,10 @@
 							newsletter_shortcode: ''
 						};
 					}
+					if (!this.options.performance) { this.options.performance = {}; }
+					if (typeof this.options.performance.instant_page_preloader === 'undefined') {
+						this.options.performance.instant_page_preloader = true;
+					}
 				},
 
 

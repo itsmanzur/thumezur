@@ -264,5 +264,19 @@ function themezur_enqueue_scripts_styles() {
 			}
 		}
 	}
+
+	// Instant Page Preloader (Hover Speculation Rules API).
+	if ( Themezur_Options::get( 'general.scripts_enabled', true ) && Themezur_Options::get( 'performance.instant_page_preloader', true ) ) {
+		wp_enqueue_script(
+			'themezur-instant-page',
+			THEMEZUR_URI . '/assets/js/instant-page.js',
+			array(),
+			THEMEZUR_VERSION,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'themezur_enqueue_scripts_styles', 20 );
