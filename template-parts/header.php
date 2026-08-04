@@ -39,6 +39,7 @@ if ( ! empty( $bottom['show_menu'] ) ) {
 		'menu_class'  => 'tz-nav-list',
 		'echo'        => false,
 		'depth'       => 3,
+		'walker'      => new Themezur_Mega_Walker(),
 	);
 	if ( $bot_menu_id > 0 ) {
 		$bot_args['menu'] = $bot_menu_id;
@@ -345,6 +346,7 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 						'menu_class'  => 'tz-nav-list tz-header-middle__nav-list',
 						'echo'        => false,
 						'depth'       => 3,
+						'walker'      => new Themezur_Mega_Walker(),
 					);
 					if ( $mid_menu_id > 0 ) {
 						$mid_args['menu'] = $mid_menu_id;

@@ -83,11 +83,29 @@ function themezur_enqueue_scripts_styles() {
 			THEMEZUR_VERSION
 		);
 
+		wp_enqueue_style(
+			'themezur-megamenu',
+			THEMEZUR_URI . '/assets/css/megamenu.css',
+			array( 'themezur-header' ),
+			THEMEZUR_VERSION
+		);
+
 		if ( Themezur_Options::get( 'general.scripts_enabled', true ) ) {
 			wp_enqueue_script(
 				'themezur-header',
 				THEMEZUR_URI . '/assets/js/header.js',
 				array(),
+				THEMEZUR_VERSION,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+
+			wp_enqueue_script(
+				'themezur-megamenu',
+				THEMEZUR_URI . '/assets/js/megamenu.js',
+				array( 'themezur-header' ),
 				THEMEZUR_VERSION,
 				array(
 					'in_footer' => true,

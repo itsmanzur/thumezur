@@ -58,6 +58,8 @@ final class Themezur {
 		require_once THEMEZUR_DIR . '/inc/class-woocommerce.php';
 		require_once THEMEZUR_DIR . '/inc/class-wishlist.php';
 		require_once THEMEZUR_DIR . '/inc/class-ajax.php';
+		require_once THEMEZUR_DIR . '/inc/class-megamenu.php';
+		require_once THEMEZUR_DIR . '/inc/class-megamenu-walker.php';
 
 		if ( is_admin() ) {
 			require_once THEMEZUR_DIR . '/admin/class-admin.php';
