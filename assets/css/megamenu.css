@@ -29,15 +29,41 @@
 	pointer-events: auto !important;
 }
 
-/* Inner Glassmorphism / Dark SaaS Card */
-.tz-mega-dropdown__inner {
-	background: #0f172a !important; /* Premium Dark SaaS Panel */
+/* Theme Presets */
+.tz-mega-dropdown--theme-dark .tz-mega-dropdown__inner {
+	background: #0f172a !important; /* Dark SaaS Card */
 	border: 1px solid rgba(255, 255, 255, 0.12) !important;
 	border-radius: 16px !important;
 	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45), 0 4px 16px rgba(0, 0, 0, 0.2) !important;
-	overflow: hidden;
 	color: #ffffff !important;
 }
+
+.tz-mega-dropdown--theme-light .tz-mega-dropdown__inner {
+	background: #ffffff !important; /* Clean White Card */
+	border: 1px solid #e2e8f0 !important;
+	border-radius: 16px !important;
+	box-shadow: 0 16px 48px rgba(15, 23, 42, 0.14) !important;
+	color: #0f172a !important;
+}
+
+.tz-mega-dropdown--theme-light .tz-mega-item__title { color: #0f172a !important; }
+.tz-mega-dropdown--theme-light .tz-mega-item__desc { color: #64748b !important; }
+.tz-mega-dropdown--theme-light .tz-mega-section__label { color: #64748b !important; }
+.tz-mega-dropdown--theme-light .tz-mega-section__label::after { background: #e2e8f0 !important; }
+.tz-mega-dropdown--theme-light .tz-mega-item:hover { background: #f1f5f9 !important; }
+.tz-mega-dropdown--theme-light .tz-mega-footer { background: #f8fafc !important; border-top-color: #e2e8f0 !important; }
+.tz-mega-dropdown--theme-light .tz-mega-footer__text { color: #64748b !important; }
+.tz-mega-dropdown--theme-light .tz-mega-footer__btn { color: #2563eb !important; }
+
+.tz-mega-dropdown--theme-custom .tz-mega-dropdown__inner {
+	background: var(--tz-mega-custom-bg, #0f172a) !important;
+	color: var(--tz-mega-custom-text, #ffffff) !important;
+	border: 1px solid rgba(255, 255, 255, 0.12) !important;
+	border-radius: 16px !important;
+	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35) !important;
+}
+
+.tz-mega-dropdown--theme-custom .tz-mega-item__title { color: var(--tz-mega-custom-text, #ffffff) !important; }
 
 /* Width Variants */
 .tz-mega-dropdown--compact {

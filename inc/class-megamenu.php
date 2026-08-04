@@ -20,8 +20,59 @@ class Themezur_Mega_Menu {
 	 * @return void
 	 */
 	public static function init() {
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_assets' ) );
 		add_action( 'wp_nav_menu_item_custom_fields', array( __CLASS__, 'render_custom_fields' ), 10, 5 );
 		add_action( 'wp_update_nav_menu_item', array( __CLASS__, 'save_custom_fields' ), 10, 3 );
+	}
+
+	/**
+	 * Enqueue WP Media scripts on nav-menus.php.
+	 *
+	 * @param string $hook Admin page hook name.
+	 * @return void
+	 */
+	public static function enqueue_admin_assets( $hook ) {
+		if ( 'nav-menus.php' !== $hook ) {
+			return;
+		}
+
+		wp_enqueue_media();
+		wp_enqueue_style( 'wp-color-picker' );
+		wp_enqueue_script( 'wp-color-picker' );
+
+		// Inline script for Media Upload & Icon Picker helper
+		$inline_js = "
+		jQuery(document).ready(function($){
+			// Initialize color pickers
+			$('.tz-color-field').wpColorPicker();
+
+			// Media Upload Button Handler
+			$(document).on('click', '.tz-mega-upload-btn', function(e){
+				e.preventDefault();
+				var btn = $(this);
+				var input = btn.siblings('.tz-mega-icon-input');
+
+				var customUploader = wp.media({
+					title: 'Select Mega Menu Icon / Image',
+					button: { text: 'Use this image' },
+					multiple: false
+				}).on('select', function() {
+					var attachment = customUploader.state().get('selection').first().toJSON();
+					input.val(attachment.url).trigger('change');
+				}).open();
+			});
+
+			// Preset icon dropdown sync
+			$(document).on('change', '.tz-mega-icon-preset', function(){
+				var val = $(this).val();
+				var input = $(this).siblings('.tz-mega-icon-input');
+				if (val && val !== 'custom') {
+					input.val(val);
+				}
+			});
+		});
+		";
+		wp_add_inline_script( 'nav-menu', $inline_js );
 	}
 
 	/**
@@ -39,6 +90,9 @@ class Themezur_Mega_Menu {
 		$layout        = get_post_meta( $item_id, '_tz_mega_layout', true );
 		$width         = get_post_meta( $item_id, '_tz_mega_width', true );
 		$cols          = get_post_meta( $item_id, '_tz_mega_cols', true );
+		$theme         = get_post_meta( $item_id, '_tz_mega_theme', true );
+		$bg_color      = get_post_meta( $item_id, '_tz_mega_bg_color', true );
+		$text_color    = get_post_meta( $item_id, '_tz_mega_text_color', true );
 		$elementor_id  = get_post_meta( $item_id, '_tz_mega_elementor_id', true );
 		$section_label = get_post_meta( $item_id, '_tz_mega_section_label', true );
 		$icon          = get_post_meta( $item_id, '_tz_mega_icon', true );
@@ -52,7 +106,27 @@ class Themezur_Mega_Menu {
 		$layout      = $layout ? $layout : 'saas';
 		$width       = $width ? $width : 'compact';
 		$cols        = $cols ? (int) $cols : 2;
+		$theme       = $theme ? $theme : 'dark';
 		$badge_color = $badge_color ? $badge_color : 'green';
+
+		$presets = array(
+			''          => '— Select Preset Icon —',
+			'scanner'   => '🔍 Scanner / Audit',
+			'heatmaps'  => '🔥 Heatmaps / Fire',
+			'analytics' => '📊 Analytics / Chart',
+			'widget'    => '🧩 Widget / Modules',
+			'ai'        => '🤖 AI Features / Sparkles',
+			'pdf'       => '📄 PDF / Document',
+			'agency'    => '🏢 Agency / Briefcase',
+			'crawler'   => '🌐 Crawler / Site Scan',
+			'shopping'  => '🛒 Shopping Cart',
+			'star'      => '⭐️ Star / Featured',
+			'zap'       => '⚡ Zap / Speed',
+			'lock'      => '🔒 Security / Lock',
+			'gift'      => '🎁 Gift / Offer',
+			'custom'    => '🖼️ Custom Image / Uploaded',
+		);
+		$preset_selected = array_key_exists( $icon, $presets ) ? $icon : ( filter_var( $icon, FILTER_VALIDATE_URL ) ? 'custom' : '' );
 		?>
 		<div class="tz-menu-item-meta-wrap" style="clear: both; margin: 12px 0 8px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
 			<h4 style="margin: 0 0 10px; font-weight: 700; color: #0f172a; font-size: 13px;">🚀 Themezur Mega Menu Options</h4>
@@ -66,13 +140,24 @@ class Themezur_Mega_Menu {
 					</label>
 				</p>
 
-				<p class="description description-wide" style="margin-bottom: 8px;">
+				<p class="description description-thin">
 					<label for="tz-mega-layout-<?php echo esc_attr( (string) $item_id ); ?>">
-						<?php esc_html_e( 'Dropdown Layout Style', 'themezur' ); ?><br>
+						<?php esc_html_e( 'Dropdown Layout', 'themezur' ); ?><br>
 						<select id="tz-mega-layout-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_layout[<?php echo esc_attr( (string) $item_id ); ?>]" style="width: 100%;">
-							<option value="saas" <?php selected( $layout, 'saas' ); ?>><?php esc_html_e( 'Rich SaaS / Tech Grid (Icons, Titles, Badges & Descs)', 'themezur' ); ?></option>
-							<option value="grid" <?php selected( $layout, 'grid' ); ?>><?php esc_html_e( 'Standard Multi-Column Links Grid', 'themezur' ); ?></option>
-							<option value="elementor" <?php selected( $layout, 'elementor' ); ?>><?php esc_html_e( 'Elementor / Block Saved Template', 'themezur' ); ?></option>
+							<option value="saas" <?php selected( $layout, 'saas' ); ?>><?php esc_html_e( 'Rich SaaS Grid (Icons & Descs)', 'themezur' ); ?></option>
+							<option value="grid" <?php selected( $layout, 'grid' ); ?>><?php esc_html_e( 'Standard Multi-Column Grid', 'themezur' ); ?></option>
+							<option value="elementor" <?php selected( $layout, 'elementor' ); ?>><?php esc_html_e( 'Elementor Saved Template', 'themezur' ); ?></option>
+						</select>
+					</label>
+				</p>
+
+				<p class="description description-thin">
+					<label for="tz-mega-theme-<?php echo esc_attr( (string) $item_id ); ?>">
+						<?php esc_html_e( '🎨 Color Theme / Preset', 'themezur' ); ?><br>
+						<select id="tz-mega-theme-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_theme[<?php echo esc_attr( (string) $item_id ); ?>]" style="width: 100%;">
+							<option value="dark" <?php selected( $theme, 'dark' ); ?>><?php esc_html_e( 'Dark SaaS Card (#0f172a)', 'themezur' ); ?></option>
+							<option value="light" <?php selected( $theme, 'light' ); ?>><?php esc_html_e( 'Clean White Card (#ffffff)', 'themezur' ); ?></option>
+							<option value="custom" <?php selected( $theme, 'custom' ); ?>><?php esc_html_e( 'Custom Colors', 'themezur' ); ?></option>
 						</select>
 					</label>
 				</p>
@@ -98,6 +183,17 @@ class Themezur_Mega_Menu {
 						</select>
 					</label>
 				</p>
+
+				<div class="description description-wide" style="margin-top: 6px; display: flex; gap: 12px; align-items: center;">
+					<label>
+						<?php esc_html_e( 'Custom Background:', 'themezur' ); ?>
+						<input type="text" class="tz-color-field" name="tz_mega_bg_color[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $bg_color ); ?>" data-default-color="#0f172a" />
+					</label>
+					<label>
+						<?php esc_html_e( 'Custom Text Color:', 'themezur' ); ?>
+						<input type="text" class="tz-color-field" name="tz_mega_text_color[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $text_color ); ?>" data-default-color="#ffffff" />
+					</label>
+				</div>
 
 				<p class="description description-wide" style="margin-top: 8px;">
 					<label for="tz-mega-elementor-id-<?php echo esc_attr( (string) $item_id ); ?>">
@@ -136,11 +232,17 @@ class Themezur_Mega_Menu {
 					</label>
 				</p>
 
-				<p class="description description-thin">
-					<label for="tz-mega-icon-<?php echo esc_attr( (string) $item_id ); ?>">
-						<?php esc_html_e( 'Item Icon (SVG name / Dashicon)', 'themezur' ); ?><br>
-						<input type="text" id="tz-mega-icon-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_icon[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $icon ); ?>" placeholder="scanner, heatmaps, ai, pdf..." class="widefat" />
-					</label>
+				<p class="description description-wide" style="margin-bottom: 6px;">
+					<label><?php esc_html_e( 'Item Icon (Select Preset or Upload Image/SVG)', 'themezur' ); ?></label><br>
+					<select class="tz-mega-icon-preset" style="width: 100%; margin-bottom: 4px;">
+						<?php foreach ( $presets as $p_val => $p_name ) : ?>
+							<option value="<?php echo esc_attr( $p_val ); ?>" <?php selected( $preset_selected, $p_val ); ?>><?php echo esc_html( $p_name ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<div style="display: flex; gap: 6px; align-items: center;">
+						<input type="text" class="tz-mega-icon-input widefat" id="tz-mega-icon-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_icon[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $icon ); ?>" placeholder="scanner, ai, or image URL" />
+						<button type="button" class="button tz-mega-upload-btn" style="white-space: nowrap;">🖼️ <?php esc_html_e( 'Upload', 'themezur' ); ?></button>
+					</div>
 				</p>
 
 				<p class="description description-thin">
@@ -202,6 +304,18 @@ class Themezur_Mega_Menu {
 		if ( isset( $_POST['tz_mega_cols'][ $menu_item_db_id ] ) ) {
 			$cols = absint( $_POST['tz_mega_cols'][ $menu_item_db_id ] );
 			update_post_meta( $menu_item_db_id, '_tz_mega_cols', $cols );
+		}
+
+		// Theme
+		if ( isset( $_POST['tz_mega_theme'][ $menu_item_db_id ] ) ) {
+			$theme = sanitize_key( $_POST['tz_mega_theme'][ $menu_item_db_id ] );
+			update_post_meta( $menu_item_db_id, '_tz_mega_theme', $theme );
+		}
+		if ( isset( $_POST['tz_mega_bg_color'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_bg_color', sanitize_hex_color( $_POST['tz_mega_bg_color'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_text_color'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_text_color', sanitize_hex_color( $_POST['tz_mega_text_color'][ $menu_item_db_id ] ) );
 		}
 
 		// Elementor ID

@@ -47,14 +47,33 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 			$cols         = get_post_meta( $item_id, '_tz_mega_cols', true );
 			$elementor_id = get_post_meta( $item_id, '_tz_mega_elementor_id', true );
 
+			$theme      = get_post_meta( $item_id, '_tz_mega_theme', true );
+			$bg_color   = get_post_meta( $item_id, '_tz_mega_bg_color', true );
+			$text_color = get_post_meta( $item_id, '_tz_mega_text_color', true );
+
 			$layout = $layout ? $layout : 'saas';
 			$width  = $width ? $width : 'compact';
 			$cols   = $cols ? (int) $cols : 2;
+			$theme  = $theme ? $theme : 'dark';
+
+			$style_attr = '';
+			if ( 'custom' === $theme ) {
+				$styles = array();
+				if ( $bg_color ) {
+					$styles[] = '--tz-mega-custom-bg:' . esc_attr( $bg_color );
+				}
+				if ( $text_color ) {
+					$styles[] = '--tz-mega-custom-text:' . esc_attr( $text_color );
+				}
+				if ( ! empty( $styles ) ) {
+					$style_attr = ' style="' . implode( ';', $styles ) . '"';
+				}
+			}
 
 			if ( $is_mega ) {
 				$this->in_mega_col = false;
 				if ( 'elementor' === $layout && $elementor_id > 0 ) {
-					$output .= "\n{$indent}<div class=\"tz-mega-dropdown tz-mega-dropdown--{$width} tz-mega-dropdown--elementor\"><div class=\"tz-mega-dropdown__inner\">\n";
+					$output .= "\n{$indent}<div class=\"tz-mega-dropdown tz-mega-dropdown--{$width} tz-mega-dropdown--theme-{$theme} tz-mega-dropdown--elementor\"{$style_attr}><div class=\"tz-mega-dropdown__inner\">\n";
 					if ( class_exists( '\Elementor\Plugin' ) ) {
 						$output .= \Elementor\Plugin::instance()->frontend->get_builder_content_for_display( $elementor_id );
 					} else {
@@ -64,7 +83,7 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 					return;
 				}
 
-				$output .= "\n{$indent}<div class=\"tz-mega-dropdown tz-mega-dropdown--{$width} tz-mega-dropdown--{$layout}\"><div class=\"tz-mega-dropdown__inner\"><div class=\"tz-mega-grid tz-mega-grid--cols-{$cols}\">\n";
+				$output .= "\n{$indent}<div class=\"tz-mega-dropdown tz-mega-dropdown--{$width} tz-mega-dropdown--theme-{$theme} tz-mega-dropdown--{$layout}\"{$style_attr}><div class=\"tz-mega-dropdown__inner\"><div class=\"tz-mega-grid tz-mega-grid--cols-{$cols}\">\n";
 				return;
 			}
 		}
