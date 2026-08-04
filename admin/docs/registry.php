@@ -97,6 +97,43 @@ class Themezur_Docs {
 						),
 					),
 					array(
+						'title' => __( 'Themezur Ideal Mega Menu Engine Usage Guide', 'themezur' ),
+						'body'  => __(
+							'<p>Themezur includes a high-performance, native <strong>Mega Menu Engine</strong> integrated directly into WordPress <code>Appearance → Menus</code> without requiring any external plugins.</p>
+							<h4>1. How to Enable Mega Menu on a Top-Level Menu Item:</h4>
+							<ol>
+								<li>Go to <strong>Appearance → Menus</strong> in the WordPress admin sidebar.</li>
+								<li>Click on any main top-level menu item (e.g., <em>Features</em>, <em>Shop</em>, or <em>Categories</em>) to expand its options panel.</li>
+								<li>Check the box <strong>Enable Mega Menu Dropdown for this item</strong>.</li>
+								<li>Choose your <strong>Dropdown Layout Style</strong> (<em>Rich SaaS Grid</em>, <em>Standard Multi-Column Grid</em>, or <em>Elementor Saved Template</em>).</li>
+								<li>Set <strong>Panel Width</strong> (<em>Compact 750px</em>, <em>Container 1200px</em>, or <em>Full Width 100%</em>) and <strong>Columns Count</strong> (2, 3, or 4 columns).</li>
+								<li>Pick a <strong>Color Theme</strong> (<em>Dark SaaS Card #0f172a</em>, <em>Clean White Card #ffffff</em>, or <em>Custom Colors</em>) and <strong>Entrance Animation</strong> (<em>Slide Down</em>, <em>Fade In</em>, <em>Scale Zoom</em>, or <em>3D Flip</em>).</li>
+							</ol>
+
+							<h4>2. How to Add Icons, Section Headers, Badges &amp; Descriptions:</h4>
+							<ol>
+								<li>Drag your sub-links underneath the top-level menu item as indented sub-items.</li>
+								<li>Open any sub-item to configure its rich options:
+									<ul>
+										<li><strong>Section Group Header:</strong> Type a header label (e.g. <code>FREE</code>, <code>PRO</code>, <code>AGENCY</code>, <code>CATEGORIES</code>) on the 1st item of a group to start a new column with a stylish divider line.</li>
+										<li><strong>Item Icon:</strong> Choose from 15+ built-in SVG presets (<code>scanner</code>, <code>heatmaps</code>, <code>analytics</code>, <code>ai</code>, <code>pdf</code>, <code>star</code>, <code>shopping</code>), 20+ WordPress <strong>Dashicons</strong> (<code>dashicons-cart</code>, <code>dashicons-store</code>, <code>dashicons-heart</code>), or click <strong>🖼️ Upload Image</strong> to select any custom image/SVG from your Media Library!</li>
+										<li><strong>Badge Text &amp; Color:</strong> Type badge text (e.g. <code>PRO</code>, <code>HOT</code>, <code>NEW</code>) and choose a badge color (<em>Green</em>, <em>Purple</em>, <em>Blue</em>, <em>Red</em>).</li>
+										<li><strong>Item Short Subtitle / Description:</strong> Type a 1-line description displayed directly below the title.</li>
+									</ul>
+								</li>
+							</ol>
+
+							<h4>3. Advanced Features (Promo Card, Categories Grid, Glowing Badges):</h4>
+							<ul>
+								<li><strong>🛍️ Featured Product / Promo Card Column:</strong> Check <em>Add Featured Product / Promo Banner Card Column</em> under the top-level menu item and fill in image, title, price, and button link to render a 3D offer card column.</li>
+								<li><strong>🖼️ Background Image Overlay:</strong> Add a banner background image URL under <em>Dropdown Panel Background Image Overlay</em>.</li>
+								<li><strong>🔥 Main Bar Glowing Badges:</strong> Type badge text (e.g. <code>HOT</code>, <code>50% OFF</code>) under <em>Main Bar Glowing Animated Badge</em> to render pulsing glow badges on the main navigation bar.</li>
+								<li><strong>📂 WooCommerce Category Grid:</strong> Check <em>Auto Render WooCommerce Product Categories Grid</em> to automatically render visual product category thumbnail cards inside the mega dropdown.</li>
+							</ul>',
+							'themezur'
+						),
+					),
+					array(
 						'title' => __( 'Themezur 4-column footer', 'themezur' ),
 						'body'  => __(
 							'<p>Under <strong>Themezur → Footer</strong>, Source = Themezur footer (4-column):</p>
