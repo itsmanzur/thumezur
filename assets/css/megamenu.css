@@ -1,239 +1,229 @@
 /* -----------------------------------------------------------------
- * Themezur Ideal Mega Menu System
+ * Themezur Ideal SaaS Mega Menu System (Pixel-Perfect Styling)
  * ----------------------------------------------------------------- */
 
 /* Mega Menu Item Container */
 .tz-nav-list > li.tz-menu-item--mega {
-	position: relative;
+	position: relative !important;
 }
 
 /* Mega Dropdown Panel Base */
 .tz-mega-dropdown {
-	position: absolute;
-	top: 100%;
-	left: 50%;
-	transform: translateX(-50%) translateY(8px);
-	z-index: 1200;
+	position: absolute !important;
+	top: calc(100% + 4px) !important;
+	left: 0 !important;
+	z-index: 99999 !important;
+	display: none !important;
 	opacity: 0;
-	visibility: hidden;
 	pointer-events: none;
-	transition: opacity 220ms ease, transform 220ms cubic-bezier(0.4, 0, 0.2, 1), visibility 220ms ease;
-	padding-top: 10px; /* Bridge gap for hover */
+	transition: opacity 180ms ease, transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
+	padding-top: 8px; /* Smooth hover bridge */
 }
 
-.tz-menu-item--mega:hover > .tz-mega-dropdown,
-.tz-menu-item--mega.is-active > .tz-mega-dropdown,
+/* Show when parent is hovered or active */
+.tz-nav-list > li.tz-menu-item--mega:hover > .tz-mega-dropdown,
+.tz-nav-list > li.tz-menu-item--mega.is-active > .tz-mega-dropdown,
 .tz-mega-dropdown:hover {
-	opacity: 1;
-	visibility: visible;
-	pointer-events: auto;
-	transform: translateX(-50%) translateY(0);
+	display: block !important;
+	opacity: 1 !important;
+	pointer-events: auto !important;
 }
 
+/* Inner Glassmorphism / Dark SaaS Card */
 .tz-mega-dropdown__inner {
-	background: color-mix(in srgb, var(--themezur-bg, #ffffff) 96%, transparent);
-	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
-	border: 1px solid var(--tz-mid-border, #e2e8f0);
-	border-radius: 16px;
-	box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
+	background: #0f172a !important; /* Premium Dark SaaS Panel */
+	border: 1px solid rgba(255, 255, 255, 0.12) !important;
+	border-radius: 16px !important;
+	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45), 0 4px 16px rgba(0, 0, 0, 0.2) !important;
 	overflow: hidden;
-}
-
-/* Dark mode adjustment */
-.tz-dark .tz-mega-dropdown__inner {
-	background: color-mix(in srgb, #0f172a 94%, transparent);
-	border-color: #1e293b;
-	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+	color: #ffffff !important;
 }
 
 /* Width Variants */
 .tz-mega-dropdown--compact {
-	width: min(750px, 92vw);
+	width: min(720px, 92vw) !important;
 }
 
 .tz-mega-dropdown--container {
-	width: min(1200px, 94vw);
+	width: min(1140px, 94vw) !important;
 }
 
 .tz-mega-dropdown--full {
-	width: 98vw;
-	max-width: 1400px;
+	width: 96vw !important;
+	left: 50% !important;
+	transform: translateX(-50%) !important;
 }
 
-/* Grid Layout */
+/* Grid & Column Layout */
 .tz-mega-grid {
-	display: grid;
-	gap: 12px 14px;
-	padding: 20px;
+	display: grid !important;
+	gap: 24px !important;
+	padding: 24px !important;
+	margin: 0 !important;
+	list-style: none !important;
 }
 
-.tz-mega-grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
-.tz-mega-grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
-.tz-mega-grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+.tz-mega-grid--cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+.tz-mega-grid--cols-3 { grid-template-columns: repeat(3, 1fr) !important; }
+.tz-mega-grid--cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
+
+.tz-mega-col {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 8px !important;
+	min-width: 0 !important;
+}
 
 /* Section Header Labels */
 .tz-mega-section__label {
-	grid-column: 1 / -1;
-	font-size: 0.72rem;
-	font-weight: 800;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color: var(--tz-mid-muted, #94a3b8);
-	margin: 8px 0 4px 4px;
-	display: flex;
-	align-items: center;
-	gap: 8px;
+	font-size: 0.75rem !important;
+	font-weight: 800 !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.08em !important;
+	color: #94a3b8 !important;
+	margin: 0 0 10px 4px !important;
+	display: flex !important;
+	align-items: center !important;
+	gap: 10px !important;
 }
 
 .tz-mega-section__label::after {
-	content: '';
-	flex: 1;
-	height: 1px;
-	background: color-mix(in srgb, var(--tz-mid-border, #e2e8f0) 60%, transparent);
+	content: '' !important;
+	flex: 1 !important;
+	height: 1px !important;
+	background: rgba(255, 255, 255, 0.15) !important;
 }
 
-/* Rich SaaS Item */
+/* Rich SaaS Menu Link Item */
 .tz-mega-item {
-	display: flex;
-	align-items: flex-start;
-	gap: 12px;
-	padding: 10px 12px;
-	border-radius: 12px;
-	text-decoration: none;
-	color: inherit;
-	transition: background 160ms ease, transform 140ms ease;
+	display: flex !important;
+	align-items: flex-start !important;
+	gap: 12px !important;
+	padding: 10px 12px !important;
+	border-radius: 12px !important;
+	text-decoration: none !important;
+	color: #ffffff !important;
+	background: transparent !important;
+	transition: background 160ms ease, transform 140ms ease !important;
 }
 
 .tz-mega-item:hover {
-	background: color-mix(in srgb, var(--tz-mid-text, #0f172a) 5%, transparent);
-	transform: translateY(-1px);
+	background: rgba(255, 255, 255, 0.08) !important;
+	transform: translateY(-1px) !important;
 }
 
-.tz-dark .tz-mega-item:hover {
-	background: rgba(255, 255, 255, 0.06);
-}
-
-/* Rounded Icon Wrap */
+/* Rounded Icon Box */
 .tz-mega-item__icon-wrap {
-	width: 38px;
-	height: 38px;
-	border-radius: 10px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	background: color-mix(in srgb, var(--tz-mid-accent, #2563eb) 12%, transparent);
-	color: var(--tz-mid-accent, #2563eb);
-	flex-shrink: 0;
-	transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+	width: 38px !important;
+	height: 38px !important;
+	border-radius: 10px !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	background: rgba(37, 99, 235, 0.2) !important;
+	color: #60a5fa !important;
+	flex-shrink: 0 !important;
+	transition: transform 180ms ease, background 180ms ease, color 180ms ease !important;
 }
 
 .tz-mega-item:hover .tz-mega-item__icon-wrap {
-	transform: scale(1.08);
-	background: var(--tz-mid-accent, #2563eb);
-	color: #ffffff;
+	transform: scale(1.08) !important;
+	background: #2563eb !important;
+	color: #ffffff !important;
 }
 
 .tz-mega-item__img {
-	width: 20px;
-	height: 20px;
-	object-fit: contain;
+	width: 20px !important;
+	height: 20px !important;
+	object-fit: contain !important;
 }
 
-/* Content & Head */
+/* Item Content & Title */
 .tz-mega-item__content {
-	flex: 1;
-	min-width: 0;
+	flex: 1 !important;
+	min-width: 0 !important;
 }
 
 .tz-mega-item__head {
-	display: flex;
-	align-items: center;
-	gap: 8px;
+	display: flex !important;
+	align-items: center !important;
+	gap: 8px !important;
 }
 
 .tz-mega-item__title {
-	font-size: 0.92rem;
-	font-weight: 700;
-	color: var(--tz-mid-text, #0f172a);
-	line-height: 1.3;
-}
-
-.tz-dark .tz-mega-item__title {
-	color: #f8fafc;
+	font-size: 0.95rem !important;
+	font-weight: 700 !important;
+	color: #ffffff !important;
+	line-height: 1.3 !important;
 }
 
 /* Badges */
 .tz-mega-badge {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 0.62rem;
-	font-weight: 800;
-	line-height: 1;
-	padding: 3px 6px;
-	border-radius: 999px;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	font-size: 0.62rem !important;
+	font-weight: 800 !important;
+	line-height: 1 !important;
+	padding: 3px 6px !important;
+	border-radius: 999px !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.04em !important;
 }
 
-.tz-mega-badge--green { background: #10b981; color: #ffffff; }
-.tz-mega-badge--purple { background: #8b5cf6; color: #ffffff; }
-.tz-mega-badge--blue { background: #2563eb; color: #ffffff; }
-.tz-mega-badge--red { background: #ef4444; color: #ffffff; }
+.tz-mega-badge--green { background: #10b981 !important; color: #ffffff !important; }
+.tz-mega-badge--purple { background: #a855f7 !important; color: #ffffff !important; }
+.tz-mega-badge--blue { background: #2563eb !important; color: #ffffff !important; }
+.tz-mega-badge--red { background: #ef4444 !important; color: #ffffff !important; }
 
-/* Description */
+/* Item Subtitle / Description */
 .tz-mega-item__desc {
-	margin: 3px 0 0;
-	font-size: 0.78rem;
-	line-height: 1.4;
-	color: var(--tz-mid-muted, #64748b);
+	margin: 3px 0 0 !important;
+	font-size: 0.8rem !important;
+	line-height: 1.45 !important;
+	color: #94a3b8 !important;
+	font-weight: 400 !important;
 }
 
 /* Bottom Callout Banner Footer */
 .tz-mega-footer {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 12px;
-	padding: 12px 20px;
-	background: color-mix(in srgb, var(--tz-mid-text, #0f172a) 4%, transparent);
-	border-top: 1px solid color-mix(in srgb, var(--tz-mid-border, #e2e8f0) 60%, transparent);
-	font-size: 0.85rem;
-}
-
-.tz-dark .tz-mega-footer {
-	background: rgba(255, 255, 255, 0.03);
-	border-top-color: #1e293b;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	gap: 12px !important;
+	padding: 14px 24px !important;
+	background: rgba(255, 255, 255, 0.04) !important;
+	border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+	font-size: 0.88rem !important;
 }
 
 .tz-mega-footer__text {
-	color: var(--tz-mid-muted, #64748b);
-	font-weight: 500;
+	color: #cbd5e1 !important;
+	font-weight: 500 !important;
 }
 
 .tz-mega-footer__btn {
-	font-weight: 700;
-	color: var(--tz-mid-accent, #2563eb);
-	text-decoration: none;
-	transition: opacity 140ms ease;
+	font-weight: 700 !important;
+	color: #34d399 !important;
+	text-decoration: none !important;
+	transition: opacity 140ms ease !important;
 }
 
 .tz-mega-footer__btn:hover {
-	opacity: 0.85;
-	text-decoration: underline;
+	opacity: 0.85 !important;
+	text-decoration: underline !important;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive Accordion */
 @media (max-width: 991px) {
 	.tz-mega-dropdown {
-		position: static;
+		position: static !important;
 		transform: none !important;
 		opacity: 1 !important;
-		visibility: visible !important;
+		display: block !important;
 		pointer-events: auto !important;
 		width: 100% !important;
-		padding-top: 0;
+		padding-top: 0 !important;
 	}
 
 	.tz-mega-dropdown__inner {
@@ -244,6 +234,6 @@
 
 	.tz-mega-grid {
 		grid-template-columns: 1fr !important;
-		padding: 8px 0;
+		padding: 8px 0 !important;
 	}
 }

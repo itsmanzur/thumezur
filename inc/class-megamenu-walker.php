@@ -22,7 +22,14 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 	private $current_top_item = null;
 
 	/**
-	 * Starts the list before the elements are added.
+	 * Track whether a mega column container is open.
+	 *
+	 * @var bool
+	 */
+	private $in_mega_col = false;
+
+	/**
+	 * Starts the list before elements are added.
 	 *
 	 * @param string   $output Used to append additional content.
 	 * @param int      $depth  Depth of menu item.
@@ -45,6 +52,7 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 			$cols   = $cols ? (int) $cols : 2;
 
 			if ( $is_mega ) {
+				$this->in_mega_col = false;
 				if ( 'elementor' === $layout && $elementor_id > 0 ) {
 					$output .= "\n{$indent}<div class=\"tz-mega-dropdown tz-mega-dropdown--{$width} tz-mega-dropdown--elementor\"><div class=\"tz-mega-dropdown__inner\">\n";
 					if ( class_exists( '\Elementor\Plugin' ) ) {
@@ -70,7 +78,7 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 	}
 
 	/**
-	 * Ends the list of after the elements are added.
+	 * Ends the list after elements are added.
 	 *
 	 * @param string   $output Used to append additional content.
 	 * @param int      $depth  Depth of menu item.
@@ -89,7 +97,12 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 			$btn_url     = get_post_meta( $item_id, '_tz_mega_bottom_btn_url', true );
 
 			if ( $is_mega && 'elementor' !== $layout ) {
-				$output .= "\n{$indent}</div><!-- /.tz-mega-grid -->\n";
+				if ( $this->in_mega_col ) {
+					$output .= "</div><!-- /.tz-mega-col -->\n";
+					$this->in_mega_col = false;
+				}
+
+				$output .= "{$indent}</div><!-- /.tz-mega-grid -->\n";
 
 				if ( $bottom_text || $btn_label ) {
 					$output .= "{$indent}<div class=\"tz-mega-footer\">";
@@ -124,8 +137,73 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
 		if ( 0 === $depth ) {
 			$this->current_top_item = $item;
+			$this->in_mega_col      = false;
 		}
 
+		$is_mega_parent = ( $this->current_top_item && get_post_meta( $this->current_top_item->ID, '_tz_mega_enable', true ) );
+
+		if ( $depth > 0 && $is_mega_parent ) {
+			$section_label = get_post_meta( $item->ID, '_tz_mega_section_label', true );
+
+			// If item has section label or is the very 1st item and no column open
+			if ( $section_label || ! $this->in_mega_col ) {
+				if ( $this->in_mega_col ) {
+					$output .= "</div><!-- /.tz-mega-col -->\n";
+				}
+				$output .= "<div class=\"tz-mega-col\">\n";
+				$this->in_mega_col = true;
+
+				if ( $section_label ) {
+					$output .= '<div class="tz-mega-section__label"><span>' . esc_html( $section_label ) . '</span></div>' . "\n";
+				}
+			}
+
+			$atts           = array();
+			$atts['title']  = ! empty( $item->attr_title ) ? $item->attr_title : '';
+			$atts['target'] = ! empty( $item->target ) ? $item->target : '';
+			$atts['rel']    = ! empty( $item->xfn ) ? $item->xfn : '';
+			$atts['href']   = ! empty( $item->url ) ? $item->url : '';
+
+			$atts = apply_filters( 'nav_menu_link_attributes', $atts, $item, $args, $depth );
+			$attributes = '';
+			foreach ( $atts as $attr => $value ) {
+				if ( ! empty( $value ) ) {
+					$value       = ( 'href' === $attr ) ? esc_url( $value ) : esc_attr( $value );
+					$attributes .= ' ' . $attr . '="' . $value . '"';
+				}
+			}
+
+			$title = apply_filters( 'the_title', $item->title, $item->ID );
+			$title = apply_filters( 'nav_menu_item_title', $title, $item, $args, $depth );
+
+			$icon        = get_post_meta( $item->ID, '_tz_mega_icon', true );
+			$desc        = get_post_meta( $item->ID, '_tz_mega_desc', true );
+			$badge       = get_post_meta( $item->ID, '_tz_mega_badge', true );
+			$badge_color = get_post_meta( $item->ID, '_tz_mega_badge_color', true );
+			$badge_color = $badge_color ? $badge_color : 'green';
+
+			$item_output  = '<a class="tz-mega-item"' . $attributes . '>';
+			if ( $icon ) {
+				$item_output .= '<div class="tz-mega-item__icon-wrap">' . self::get_icon_svg( $icon ) . '</div>';
+			}
+			$item_output .= '<div class="tz-mega-item__content">';
+			$item_output .= '<div class="tz-mega-item__head">';
+			$item_output .= '<span class="tz-mega-item__title">' . $title . '</span>';
+			if ( $badge ) {
+				$item_output .= '<span class="tz-mega-badge tz-mega-badge--' . esc_attr( $badge_color ) . '">' . esc_html( $badge ) . '</span>';
+			}
+			$item_output .= '</div>';
+			if ( $desc ) {
+				$item_output .= '<p class="tz-mega-item__desc">' . esc_html( $desc ) . '</p>';
+			}
+			$item_output .= '</div>';
+			$item_output .= '</a>' . "\n";
+
+			$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
+			return;
+		}
+
+		// Standard Level 0 Item Processing
 		$indent = ( $depth ) ? str_repeat( "\t", $depth ) : '';
 		$classes = empty( $item->classes ) ? array() : (array) $item->classes;
 		$classes[] = 'menu-item-' . $item->ID;
@@ -143,12 +221,6 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 		$id_attr = $id_attr ? ' id="' . esc_attr( $id_attr ) . '"' : '';
 
 		$output .= $indent . '<li' . $id_attr . $class_names . '>';
-
-		// Section header label for sub-items
-		$section_label = get_post_meta( $item->ID, '_tz_mega_section_label', true );
-		if ( $depth > 0 && $section_label ) {
-			$output .= '<div class="tz-mega-section__label">' . esc_html( $section_label ) . '</div>';
-		}
 
 		$atts           = array();
 		$atts['title']  = ! empty( $item->attr_title ) ? $item->attr_title : '';
@@ -168,42 +240,33 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 		$title = apply_filters( 'the_title', $item->title, $item->ID );
 		$title = apply_filters( 'nav_menu_item_title', $title, $item, $args, $depth );
 
-		$icon        = get_post_meta( $item->ID, '_tz_mega_icon', true );
-		$desc        = get_post_meta( $item->ID, '_tz_mega_desc', true );
-		$badge       = get_post_meta( $item->ID, '_tz_mega_badge', true );
-		$badge_color = get_post_meta( $item->ID, '_tz_mega_badge_color', true );
-		$badge_color = $badge_color ? $badge_color : 'green';
-
-		$item_output = $args->before ?? '';
-
-		if ( $depth > 0 && ( $icon || $desc || $badge ) ) {
-			// Rich SaaS Item Format
-			$item_output .= '<a class="tz-mega-item"' . $attributes . '>';
-			if ( $icon ) {
-				$item_output .= '<div class="tz-mega-item__icon-wrap">' . self::get_icon_svg( $icon ) . '</div>';
-			}
-			$item_output .= '<div class="tz-mega-item__content">';
-			$item_output .= '<div class="tz-mega-item__head">';
-			$item_output .= '<span class="tz-mega-item__title">' . $title . '</span>';
-			if ( $badge ) {
-				$item_output .= '<span class="tz-mega-badge tz-mega-badge--' . esc_attr( $badge_color ) . '">' . esc_html( $badge ) . '</span>';
-			}
-			$item_output .= '</div>';
-			if ( $desc ) {
-				$item_output .= '<p class="tz-mega-item__desc">' . esc_html( $desc ) . '</p>';
-			}
-			$item_output .= '</div>';
-			$item_output .= '</a>';
-		} else {
-			// Standard Item Format
-			$item_output .= '<a' . $attributes . '>';
-			$item_output .= ( $args->link_before ?? '' ) . $title . ( $args->link_after ?? '' );
-			$item_output .= '</a>';
-		}
-
+		$item_output  = $args->before ?? '';
+		$item_output .= '<a' . $attributes . '>';
+		$item_output .= ( $args->link_before ?? '' ) . $title . ( $args->link_after ?? '' );
+		$item_output .= '</a>';
 		$item_output .= $args->after ?? '';
 
 		$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
+	}
+
+	/**
+	 * End element output.
+	 *
+	 * @param string   $output Used to append additional content.
+	 * @param WP_Post  $item   Page data object.
+	 * @param int      $depth  Depth of page.
+	 * @param stdClass $args   An object of wp_nav_menu() arguments.
+	 * @return void
+	 */
+	public function end_el( &$output, $item, $depth = 0, $args = null ) {
+		$is_mega_parent = ( $this->current_top_item && get_post_meta( $this->current_top_item->ID, '_tz_mega_enable', true ) );
+
+		if ( $depth > 0 && $is_mega_parent ) {
+			// Mega sub-items do not emit </li> tags since they live directly inside .tz-mega-col
+			return;
+		}
+
+		$output .= "</li>\n";
 	}
 
 	/**
