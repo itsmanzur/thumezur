@@ -50,30 +50,37 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 			$theme      = get_post_meta( $item_id, '_tz_mega_theme', true );
 			$bg_color   = get_post_meta( $item_id, '_tz_mega_bg_color', true );
 			$text_color = get_post_meta( $item_id, '_tz_mega_text_color', true );
+			$animation  = get_post_meta( $item_id, '_tz_mega_animation', true );
+			$bg_image   = get_post_meta( $item_id, '_tz_mega_bg_image', true );
+			$cat_grid   = get_post_meta( $item_id, '_tz_mega_cat_grid_enable', true );
 
-			$layout = $layout ? $layout : 'saas';
-			$width  = $width ? $width : 'compact';
-			$cols   = $cols ? (int) $cols : 2;
-			$theme  = $theme ? $theme : 'dark';
+			$layout    = $layout ? $layout : 'saas';
+			$width     = $width ? $width : 'compact';
+			$cols      = $cols ? (int) $cols : 2;
+			$theme     = $theme ? $theme : 'dark';
+			$animation = $animation ? $animation : 'slide';
 
-			$style_attr = '';
+			$styles = array();
 			if ( 'custom' === $theme ) {
-				$styles = array();
 				if ( $bg_color ) {
 					$styles[] = '--tz-mega-custom-bg:' . esc_attr( $bg_color );
 				}
 				if ( $text_color ) {
 					$styles[] = '--tz-mega-custom-text:' . esc_attr( $text_color );
 				}
-				if ( ! empty( $styles ) ) {
-					$style_attr = ' style="' . implode( ';', $styles ) . '"';
-				}
 			}
+			if ( $bg_image ) {
+				$styles[] = '--tz-mega-bg-img:url("' . esc_url( $bg_image ) . '")';
+			}
+
+			$style_attr = ! empty( $styles ) ? ' style="' . implode( ';', $styles ) . '"' : '';
 
 			if ( $is_mega ) {
 				$this->in_mega_col = false;
+				$panel_class       = "tz-mega-dropdown tz-mega-dropdown--{$width} tz-mega-dropdown--theme-{$theme} tz-mega-anim--{$animation}";
+
 				if ( 'elementor' === $layout && $elementor_id > 0 ) {
-					$output .= "\n{$indent}<div class=\"tz-mega-dropdown tz-mega-dropdown--{$width} tz-mega-dropdown--theme-{$theme} tz-mega-dropdown--elementor\"{$style_attr}><div class=\"tz-mega-dropdown__inner\">\n";
+					$output .= "\n{$indent}<div class=\"{$panel_class} tz-mega-dropdown--elementor\"{$style_attr}><div class=\"tz-mega-dropdown__inner\">\n";
 					if ( class_exists( '\Elementor\Plugin' ) ) {
 						$output .= \Elementor\Plugin::instance()->frontend->get_builder_content_for_display( $elementor_id );
 					} else {
@@ -83,7 +90,41 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 					return;
 				}
 
-				$output .= "\n{$indent}<div class=\"tz-mega-dropdown tz-mega-dropdown--{$width} tz-mega-dropdown--theme-{$theme} tz-mega-dropdown--{$layout}\"{$style_attr}><div class=\"tz-mega-dropdown__inner\"><div class=\"tz-mega-grid tz-mega-grid--cols-{$cols}\">\n";
+				$output .= "\n{$indent}<div class=\"{$panel_class} tz-mega-dropdown--{$layout}\"{$style_attr}><div class=\"tz-mega-dropdown__inner\">";
+				if ( $bg_image ) {
+					$output .= '<div class="tz-mega-bg-overlay"></div>';
+				}
+
+				// WooCommerce Categories Grid Layout (Feature 5)
+				if ( $cat_grid && taxonomy_exists( 'product_cat' ) ) {
+					$output .= '<div class="tz-mega-cat-grid">';
+					$terms   = get_terms(
+						array(
+							'taxonomy'   => 'product_cat',
+							'hide_empty' => false,
+							'number'     => 6,
+						)
+					);
+					if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+						foreach ( $terms as $term ) {
+							$thumb_id = get_term_meta( $term->term_id, 'thumbnail_id', true );
+							$img_url  = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'thumbnail' ) : '';
+							$link     = get_term_link( $term );
+							$output  .= '<a href="' . esc_url( $link ) . '" class="tz-mega-cat-card">';
+							if ( $img_url ) {
+								$output .= '<img src="' . esc_url( $img_url ) . '" class="tz-mega-cat-card__img" alt="' . esc_attr( $term->name ) . '" />';
+							} else {
+								$output .= '<div class="tz-mega-cat-card__placeholder">📂</div>';
+							}
+							$output .= '<div class="tz-mega-cat-card__info"><strong class="tz-mega-cat-card__name">' . esc_html( $term->name ) . '</strong>';
+							$output .= '<span class="tz-mega-cat-card__count">' . esc_html( (string) $term->count ) . ' ' . __( 'items', 'themezur' ) . '</span></div>';
+							$output .= '</a>';
+						}
+					}
+					$output .= '</div>';
+				}
+
+				$output .= "<div class=\"tz-mega-grid tz-mega-grid--cols-{$cols}\">\n";
 				return;
 			}
 		}
@@ -108,17 +149,49 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 		$indent = str_repeat( "\t", $depth );
 
 		if ( 0 === $depth && $this->current_top_item ) {
-			$item_id     = $this->current_top_item->ID;
-			$is_mega     = get_post_meta( $item_id, '_tz_mega_enable', true );
-			$layout      = get_post_meta( $item_id, '_tz_mega_layout', true );
-			$bottom_text = get_post_meta( $item_id, '_tz_mega_bottom_text', true );
-			$btn_label   = get_post_meta( $item_id, '_tz_mega_bottom_btn_label', true );
-			$btn_url     = get_post_meta( $item_id, '_tz_mega_bottom_btn_url', true );
+			$item_id      = $this->current_top_item->ID;
+			$is_mega      = get_post_meta( $item_id, '_tz_mega_enable', true );
+			$layout       = get_post_meta( $item_id, '_tz_mega_layout', true );
+			$bottom_text  = get_post_meta( $item_id, '_tz_mega_bottom_text', true );
+			$btn_label    = get_post_meta( $item_id, '_tz_mega_bottom_btn_label', true );
+			$btn_url      = get_post_meta( $item_id, '_tz_mega_bottom_btn_url', true );
+			$promo_enable = get_post_meta( $item_id, '_tz_mega_promo_enable', true );
 
 			if ( $is_mega && 'elementor' !== $layout ) {
 				if ( $this->in_mega_col ) {
 					$output .= "</div><!-- /.tz-mega-col -->\n";
 					$this->in_mega_col = false;
+				}
+
+				// Featured Product / Promo Card Column (Feature 1)
+				if ( $promo_enable ) {
+					$p_img   = get_post_meta( $item_id, '_tz_mega_promo_img', true );
+					$p_title = get_post_meta( $item_id, '_tz_mega_promo_title', true );
+					$p_desc  = get_post_meta( $item_id, '_tz_mega_promo_desc', true );
+					$p_btn   = get_post_meta( $item_id, '_tz_mega_promo_btn_label', true );
+					$p_url   = get_post_meta( $item_id, '_tz_mega_promo_btn_url', true );
+					$p_badge = get_post_meta( $item_id, '_tz_mega_promo_badge', true );
+
+					$output .= '<div class="tz-mega-col tz-mega-col--promo">';
+					$output .= '<div class="tz-mega-promo-card">';
+					if ( $p_badge ) {
+						$output .= '<span class="tz-mega-promo-card__badge">' . esc_html( $p_badge ) . '</span>';
+					}
+					if ( $p_img ) {
+						$output .= '<img src="' . esc_url( $p_img ) . '" class="tz-mega-promo-card__img" alt="' . esc_attr( $p_title ) . '" />';
+					}
+					$output .= '<div class="tz-mega-promo-card__body">';
+					if ( $p_title ) {
+						$output .= '<h5 class="tz-mega-promo-card__title">' . esc_html( $p_title ) . '</h5>';
+					}
+					if ( $p_desc ) {
+						$output .= '<p class="tz-mega-promo-card__desc">' . esc_html( $p_desc ) . '</p>';
+					}
+					if ( $p_btn ) {
+						$p_href  = $p_url ? $p_url : '#';
+						$output .= '<a href="' . esc_url( $p_href ) . '" class="tz-btn tz-btn--sm tz-mega-promo-card__btn">' . esc_html( $p_btn ) . '</a>';
+					}
+					$output .= '</div></div></div>' . "\n";
 				}
 
 				$output .= "{$indent}</div><!-- /.tz-mega-grid -->\n";
@@ -259,9 +332,17 @@ class Themezur_Mega_Walker extends Walker_Nav_Menu {
 		$title = apply_filters( 'the_title', $item->title, $item->ID );
 		$title = apply_filters( 'nav_menu_item_title', $title, $item, $args, $depth );
 
+		// Main Bar Glowing Badge (Feature 4)
+		$top_badge = ( 0 === $depth ) ? get_post_meta( $item->ID, '_tz_mega_top_badge', true ) : '';
+		$top_color = ( 0 === $depth ) ? get_post_meta( $item->ID, '_tz_mega_top_badge_color', true ) : 'red';
+		$top_color = $top_color ? $top_color : 'red';
+
 		$item_output  = $args->before ?? '';
 		$item_output .= '<a' . $attributes . '>';
 		$item_output .= ( $args->link_before ?? '' ) . $title . ( $args->link_after ?? '' );
+		if ( $top_badge ) {
+			$item_output .= '<span class="tz-glowing-badge tz-glowing-badge--' . esc_attr( $top_color ) . '">' . esc_html( $top_badge ) . '</span>';
+		}
 		$item_output .= '</a>';
 		$item_output .= $args->after ?? '';
 

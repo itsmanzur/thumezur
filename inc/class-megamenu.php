@@ -86,33 +86,45 @@ class Themezur_Mega_Menu {
 	 * @return void
 	 */
 	public static function render_custom_fields( $item_id, $item, $depth, $args, $id = 0 ) {
-		$enable        = get_post_meta( $item_id, '_tz_mega_enable', true );
-		$layout        = get_post_meta( $item_id, '_tz_mega_layout', true );
-		$width         = get_post_meta( $item_id, '_tz_mega_width', true );
-		$cols          = get_post_meta( $item_id, '_tz_mega_cols', true );
-		$theme         = get_post_meta( $item_id, '_tz_mega_theme', true );
-		$bg_color      = get_post_meta( $item_id, '_tz_mega_bg_color', true );
-		$text_color    = get_post_meta( $item_id, '_tz_mega_text_color', true );
-		$elementor_id  = get_post_meta( $item_id, '_tz_mega_elementor_id', true );
-		$section_label = get_post_meta( $item_id, '_tz_mega_section_label', true );
-		$icon          = get_post_meta( $item_id, '_tz_mega_icon', true );
-		$desc          = get_post_meta( $item_id, '_tz_mega_desc', true );
-		$badge         = get_post_meta( $item_id, '_tz_mega_badge', true );
-		$badge_color   = get_post_meta( $item_id, '_tz_mega_badge_color', true );
-		$bottom_text   = get_post_meta( $item_id, '_tz_mega_bottom_text', true );
-		$btn_label     = get_post_meta( $item_id, '_tz_mega_bottom_btn_label', true );
-		$btn_url       = get_post_meta( $item_id, '_tz_mega_bottom_btn_url', true );
+		$enable           = get_post_meta( $item_id, '_tz_mega_enable', true );
+		$layout           = get_post_meta( $item_id, '_tz_mega_layout', true );
+		$width            = get_post_meta( $item_id, '_tz_mega_width', true );
+		$cols             = get_post_meta( $item_id, '_tz_mega_cols', true );
+		$theme            = get_post_meta( $item_id, '_tz_mega_theme', true );
+		$bg_color         = get_post_meta( $item_id, '_tz_mega_bg_color', true );
+		$text_color       = get_post_meta( $item_id, '_tz_mega_text_color', true );
+		$animation        = get_post_meta( $item_id, '_tz_mega_animation', true );
+		$bg_image         = get_post_meta( $item_id, '_tz_mega_bg_image', true );
+		$top_badge        = get_post_meta( $item_id, '_tz_mega_top_badge', true );
+		$top_badge_color  = get_post_meta( $item_id, '_tz_mega_top_badge_color', true );
+		$promo_enable     = get_post_meta( $item_id, '_tz_mega_promo_enable', true );
+		$promo_img        = get_post_meta( $item_id, '_tz_mega_promo_img', true );
+		$promo_title      = get_post_meta( $item_id, '_tz_mega_promo_title', true );
+		$promo_desc       = get_post_meta( $item_id, '_tz_mega_promo_desc', true );
+		$promo_btn_label  = get_post_meta( $item_id, '_tz_mega_promo_btn_label', true );
+		$promo_btn_url    = get_post_meta( $item_id, '_tz_mega_promo_btn_url', true );
+		$promo_badge      = get_post_meta( $item_id, '_tz_mega_promo_badge', true );
+		$cat_grid_enable  = get_post_meta( $item_id, '_tz_mega_cat_grid_enable', true );
+		$elementor_id     = get_post_meta( $item_id, '_tz_mega_elementor_id', true );
+		$section_label    = get_post_meta( $item_id, '_tz_mega_section_label', true );
+		$icon             = get_post_meta( $item_id, '_tz_mega_icon', true );
+		$desc             = get_post_meta( $item_id, '_tz_mega_desc', true );
+		$badge            = get_post_meta( $item_id, '_tz_mega_badge', true );
+		$badge_color      = get_post_meta( $item_id, '_tz_mega_badge_color', true );
+		$bottom_text      = get_post_meta( $item_id, '_tz_mega_bottom_text', true );
+		$btn_label        = get_post_meta( $item_id, '_tz_mega_bottom_btn_label', true );
+		$btn_url          = get_post_meta( $item_id, '_tz_mega_bottom_btn_url', true );
 
-		$layout      = $layout ? $layout : 'saas';
-		$width       = $width ? $width : 'compact';
-		$cols        = $cols ? (int) $cols : 2;
-		$theme       = $theme ? $theme : 'dark';
-		$badge_color = $badge_color ? $badge_color : 'green';
+		$layout           = $layout ? $layout : 'saas';
+		$width            = $width ? $width : 'compact';
+		$cols             = $cols ? (int) $cols : 2;
+		$theme            = $theme ? $theme : 'dark';
+		$animation        = $animation ? $animation : 'slide';
+		$top_badge_color  = $top_badge_color ? $top_badge_color : 'red';
+		$badge_color      = $badge_color ? $badge_color : 'green';
 
 		$presets = array(
 			''                                => '— Select Preset Icon —',
-
-			// SaaS & Tech SVG Presets
 			'scanner'                         => '🔍 Scanner / Audit (SVG)',
 			'heatmaps'                        => '🔥 Heatmaps / Fire (SVG)',
 			'analytics'                       => '📊 Analytics / Chart (SVG)',
@@ -126,8 +138,6 @@ class Themezur_Mega_Menu {
 			'zap'                             => '⚡ Zap / Speed (SVG)',
 			'lock'                            => '🔒 Security / Lock (SVG)',
 			'gift'                            => '🎁 Gift / Offer (SVG)',
-
-			// WordPress Dashicons
 			'dashicons-admin-home'            => '🏠 Home (Dashicon)',
 			'dashicons-store'                 => '🏪 Store / Shop (Dashicon)',
 			'dashicons-cart'                  => '🛒 Cart (Dashicon)',
@@ -149,7 +159,6 @@ class Themezur_Mega_Menu {
 			'dashicons-hammer'                => '🛠️ Tools / Services (Dashicon)',
 			'dashicons-star-filled'           => '🌟 Star Rating (Dashicon)',
 			'dashicons-info'                  => 'ℹ️ Info / Help (Dashicon)',
-
 			'custom'                          => '🖼️ Custom Image / Uploaded URL',
 		);
 		$preset_selected = array_key_exists( $icon, $presets ) ? $icon : ( filter_var( $icon, FILTER_VALIDATE_URL ) ? 'custom' : '' );
@@ -166,6 +175,20 @@ class Themezur_Mega_Menu {
 					</label>
 				</p>
 
+				<!-- Main Bar Glowing Badge (Feature 4) -->
+				<div class="description description-wide" style="margin-bottom: 8px; padding: 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
+					<strong>🔥 <?php esc_html_e( 'Main Bar Glowing Animated Badge (e.g. HOT, NEW, 50% OFF)', 'themezur' ); ?></strong><br>
+					<div style="display: flex; gap: 8px; margin-top: 4px;">
+						<input type="text" name="tz_mega_top_badge[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $top_badge ); ?>" placeholder="HOT, NEW, 50% OFF" style="flex:1;" />
+						<select name="tz_mega_top_badge_color[<?php echo esc_attr( (string) $item_id ); ?>]">
+							<option value="red" <?php selected( $top_badge_color, 'red' ); ?>>🔴 Red Glow</option>
+							<option value="green" <?php selected( $top_badge_color, 'green' ); ?>>🟢 Green Glow</option>
+							<option value="purple" <?php selected( $top_badge_color, 'purple' ); ?>>🟣 Purple Glow</option>
+							<option value="gold" <?php selected( $top_badge_color, 'gold' ); ?>>🟡 Gold Glow</option>
+						</select>
+					</div>
+				</div>
+
 				<p class="description description-thin">
 					<label for="tz-mega-layout-<?php echo esc_attr( (string) $item_id ); ?>">
 						<?php esc_html_e( 'Dropdown Layout', 'themezur' ); ?><br>
@@ -177,9 +200,22 @@ class Themezur_Mega_Menu {
 					</label>
 				</p>
 
+				<!-- Entrance Animation Selector (Feature 3) -->
+				<p class="description description-thin">
+					<label for="tz-mega-animation-<?php echo esc_attr( (string) $item_id ); ?>">
+						✨ <?php esc_html_e( 'Entrance Animation', 'themezur' ); ?><br>
+						<select id="tz-mega-animation-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_animation[<?php echo esc_attr( (string) $item_id ); ?>]" style="width: 100%;">
+							<option value="slide" <?php selected( $animation, 'slide' ); ?>>Slide Down</option>
+							<option value="fade" <?php selected( $animation, 'fade' ); ?>>Fade In</option>
+							<option value="scale" <?php selected( $animation, 'scale' ); ?>>Scale Zoom Up</option>
+							<option value="flip" <?php selected( $animation, 'flip' ); ?>>3D Flip Up</option>
+						</select>
+					</label>
+				</p>
+
 				<p class="description description-thin">
 					<label for="tz-mega-theme-<?php echo esc_attr( (string) $item_id ); ?>">
-						<?php esc_html_e( '🎨 Color Theme / Preset', 'themezur' ); ?><br>
+						🎨 <?php esc_html_e( 'Color Theme', 'themezur' ); ?><br>
 						<select id="tz-mega-theme-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_theme[<?php echo esc_attr( (string) $item_id ); ?>]" style="width: 100%;">
 							<option value="dark" <?php selected( $theme, 'dark' ); ?>><?php esc_html_e( 'Dark SaaS Card (#0f172a)', 'themezur' ); ?></option>
 							<option value="light" <?php selected( $theme, 'light' ); ?>><?php esc_html_e( 'Clean White Card (#ffffff)', 'themezur' ); ?></option>
@@ -209,6 +245,46 @@ class Themezur_Mega_Menu {
 						</select>
 					</label>
 				</p>
+
+				<!-- Panel Background Image Overlay (Feature 2) -->
+				<p class="description description-wide" style="margin-top: 6px;">
+					<label>🖼️ <?php esc_html_e( 'Dropdown Panel Background Image Overlay', 'themezur' ); ?></label><br>
+					<div style="display: flex; gap: 6px;">
+						<input type="text" class="tz-mega-icon-input widefat" name="tz_mega_bg_image[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $bg_image ); ?>" placeholder="https://..." />
+						<button type="button" class="button tz-mega-upload-btn" style="white-space: nowrap;">🖼️ <?php esc_html_e( 'Upload Image', 'themezur' ); ?></button>
+					</div>
+				</p>
+
+				<!-- WooCommerce Categories Grid Option (Feature 5) -->
+				<p class="description description-wide" style="margin-top: 8px;">
+					<label for="tz-mega-cat-grid-<?php echo esc_attr( (string) $item_id ); ?>">
+						<input type="checkbox" id="tz-mega-cat-grid-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_cat_grid_enable[<?php echo esc_attr( (string) $item_id ); ?>]" value="1" <?php checked( $cat_grid_enable, '1' ); ?> />
+						<strong>📂 <?php esc_html_e( 'Auto Render WooCommerce Product Categories Grid with Thumbnails', 'themezur' ); ?></strong>
+					</label>
+				</p>
+
+				<!-- Featured Product / Promo Card Column (Feature 1) -->
+				<div class="description description-wide" style="margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
+					<label for="tz-mega-promo-enable-<?php echo esc_attr( (string) $item_id ); ?>">
+						<input type="checkbox" id="tz-mega-promo-enable-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_promo_enable[<?php echo esc_attr( (string) $item_id ); ?>]" value="1" <?php checked( $promo_enable, '1' ); ?> />
+						<strong>🛍️ <?php esc_html_e( 'Add Featured Product / Promo Banner Card Column', 'themezur' ); ?></strong>
+					</label>
+					<div style="margin-top: 8px;" x-show="true">
+						<div style="display: flex; gap: 6px; margin-bottom: 6px;">
+							<input type="text" class="tz-mega-icon-input widefat" name="tz_mega_promo_img[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_img ); ?>" placeholder="Product / Banner Image URL" />
+							<button type="button" class="button tz-mega-upload-btn" style="white-space: nowrap;">🖼️ <?php esc_html_e( 'Upload', 'themezur' ); ?></button>
+						</div>
+						<div style="display: flex; gap: 6px; margin-bottom: 6px;">
+							<input type="text" name="tz_mega_promo_title[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_title ); ?>" placeholder="Card Title (e.g. Summer Special Deal)" style="flex:1.5;" />
+							<input type="text" name="tz_mega_promo_badge[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_badge ); ?>" placeholder="Badge (50% OFF)" style="flex:1;" />
+						</div>
+						<input type="text" name="tz_mega_promo_desc[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_desc ); ?>" placeholder="Subtitle / Price (e.g. Starting from $49.00)" class="widefat" style="margin-bottom: 6px;" />
+						<div style="display: flex; gap: 6px;">
+							<input type="text" name="tz_mega_promo_btn_label[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_btn_label ); ?>" placeholder="Button Text (Shop Now →)" style="flex:1;" />
+							<input type="text" name="tz_mega_promo_btn_url[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_btn_url ); ?>" placeholder="Link URL (https://...)" style="flex:1;" />
+						</div>
+					</div>
+				</div>
 
 				<div class="description description-wide" style="margin-top: 6px; display: flex; gap: 12px; align-items: center;">
 					<label>
@@ -343,6 +419,51 @@ class Themezur_Mega_Menu {
 		if ( isset( $_POST['tz_mega_text_color'][ $menu_item_db_id ] ) ) {
 			update_post_meta( $menu_item_db_id, '_tz_mega_text_color', sanitize_hex_color( $_POST['tz_mega_text_color'][ $menu_item_db_id ] ) );
 		}
+
+		// Animation (Feature 3)
+		if ( isset( $_POST['tz_mega_animation'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_animation', sanitize_key( $_POST['tz_mega_animation'][ $menu_item_db_id ] ) );
+		}
+
+		// Panel Background Image (Feature 2)
+		if ( isset( $_POST['tz_mega_bg_image'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_bg_image', esc_url_raw( $_POST['tz_mega_bg_image'][ $menu_item_db_id ] ) );
+		}
+
+		// Main Bar Glowing Badge (Feature 4)
+		if ( isset( $_POST['tz_mega_top_badge'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_top_badge', sanitize_text_field( $_POST['tz_mega_top_badge'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_top_badge_color'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_top_badge_color', sanitize_key( $_POST['tz_mega_top_badge_color'][ $menu_item_db_id ] ) );
+		}
+
+		// Promo Card Column (Feature 1)
+		$promo_enable = ! empty( $_POST['tz_mega_promo_enable'][ $menu_item_db_id ] ) ? '1' : '';
+		update_post_meta( $menu_item_db_id, '_tz_mega_promo_enable', $promo_enable );
+
+		if ( isset( $_POST['tz_mega_promo_img'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_promo_img', esc_url_raw( $_POST['tz_mega_promo_img'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_promo_title'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_promo_title', sanitize_text_field( $_POST['tz_mega_promo_title'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_promo_desc'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_promo_desc', sanitize_text_field( $_POST['tz_mega_promo_desc'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_promo_btn_label'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_promo_btn_label', sanitize_text_field( $_POST['tz_mega_promo_btn_label'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_promo_btn_url'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_promo_btn_url', esc_url_raw( $_POST['tz_mega_promo_btn_url'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_promo_badge'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_promo_badge', sanitize_text_field( $_POST['tz_mega_promo_badge'][ $menu_item_db_id ] ) );
+		}
+
+		// WooCommerce Cat Grid (Feature 5)
+		$cat_grid = ! empty( $_POST['tz_mega_cat_grid_enable'][ $menu_item_db_id ] ) ? '1' : '';
+		update_post_meta( $menu_item_db_id, '_tz_mega_cat_grid_enable', $cat_grid );
 
 		// Elementor ID
 		if ( isset( $_POST['tz_mega_elementor_id'][ $menu_item_db_id ] ) ) {
