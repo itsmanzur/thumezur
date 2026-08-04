@@ -107,6 +107,8 @@
 							show_search: true,
 							show_cart: true,
 							show_account: true
+						};
+					}
 					if (!this.options.footer) { this.options.footer = {}; }
 					if (!this.options.footer.trust_badges) {
 						this.options.footer.trust_badges = {
