@@ -9,11 +9,51 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'THEMEZUR_VERSION', '2.8.1' );
+define( 'THEMEZUR_VERSION', '2.10.2' );
 define( 'THEMEZUR_DIR', get_stylesheet_directory() );
 define( 'THEMEZUR_URI', get_stylesheet_directory_uri() );
 
-require_once THEMEZUR_DIR . '/inc/class-themezur.php';
+/**
+ * Themezur requires the Hello Elementor parent theme.
+ *
+ * @return bool
+ */
+function themezur_parent_theme_ok() {
+	return file_exists( get_template_directory() . '/style.css' ) && 'hello-elementor' === get_template();
+}
+
+if ( ! themezur_parent_theme_ok() ) {
+	add_action(
+		'admin_notices',
+		static function () {
+			if ( ! current_user_can( 'switch_themes' ) ) {
+				return;
+			}
+			echo '<div class="notice notice-error"><p>';
+			echo esc_html__( 'Themezur requires the Hello Elementor parent theme. Install and keep Hello Elementor active as the parent, then activate Themezur.', 'themezur' );
+			echo '</p></div>';
+		}
+	);
+	return;
+}
+
+$themezur_bootstrap = THEMEZUR_DIR . '/inc/class-themezur.php';
+if ( ! file_exists( $themezur_bootstrap ) ) {
+	add_action(
+		'admin_notices',
+		static function () {
+			if ( ! current_user_can( 'switch_themes' ) ) {
+				return;
+			}
+			echo '<div class="notice notice-error"><p>';
+			echo esc_html__( 'Themezur is incomplete (missing /inc files). Re-upload the theme zip — do not extract with broken path separators.', 'themezur' );
+			echo '</p></div>';
+		}
+	);
+	return;
+}
+
+require_once $themezur_bootstrap;
 
 /**
  * Boot Themezur.
@@ -23,7 +63,7 @@ require_once THEMEZUR_DIR . '/inc/class-themezur.php';
 function themezur() {
 	return Themezur::instance();
 }
-themezur();
+add_action( 'after_setup_theme', 'themezur', 20 );
 
 /**
  * Enqueue child theme assets on the frontend.
@@ -31,8 +71,6 @@ themezur();
  * @return void
  */
 function themezur_enqueue_scripts_styles() {
-	wp_enqueue_style( 'dashicons' );
-
 	$deps = array();
 	if ( wp_style_is( 'hello-elementor-theme-style', 'enqueued' ) ) {
 		$deps[] = 'hello-elementor-theme-style';
@@ -78,6 +116,8 @@ function themezur_enqueue_scripts_styles() {
 	$footer_mode = class_exists( 'Themezur_Frontend' ) ? Themezur_Frontend::resolve_mode( 'footer' ) : 'theme';
 
 	if ( 'theme' === $header_mode ) {
+		wp_enqueue_style( 'dashicons' );
+
 		wp_enqueue_style(
 			'themezur-header',
 			THEMEZUR_URI . '/assets/css/header.css',
@@ -119,10 +159,12 @@ function themezur_enqueue_scripts_styles() {
 				'themezur-header',
 				'themezurFront',
 				array(
-					'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
-					'nonce'      => wp_create_nonce( 'themezur_front' ),
-					'searchMin'  => (int) Themezur_Options::get( 'header.middle.search_min_chars', 2 ),
-					'i18nNoResults' => __( 'No products found', 'themezur' ),
+					'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
+					'nonce'              => wp_create_nonce( 'themezur_front' ),
+					'searchMin'          => (int) Themezur_Options::get( 'header.middle.search_min_chars', 2 ),
+					'i18nNoResults'      => __( 'No products found', 'themezur' ),
+					'i18nToggleSubmenu'  => __( 'Toggle sub-menu', 'themezur' ),
+					'miniCartOpenOnAdd'  => (bool) Themezur_Options::get( 'woocommerce.cart.open_on_add', true ),
 				)
 			);
 		}
@@ -147,7 +189,7 @@ function themezur_enqueue_scripts_styles() {
 				THEMEZUR_VERSION
 			);
 		}
-		if ( $btt_on && ( ! class_exists( 'Themezur_Options' ) || Themezur_Options::get( 'general.scripts_enabled', true ) ) ) {
+		if ( ( $btt_on || 'theme' === $footer_mode ) && ( ! class_exists( 'Themezur_Options' ) || Themezur_Options::get( 'general.scripts_enabled', true ) ) ) {
 			wp_enqueue_script(
 				'themezur-footer',
 				THEMEZUR_URI . '/assets/js/footer.js',
@@ -156,6 +198,16 @@ function themezur_enqueue_scripts_styles() {
 				array(
 					'in_footer' => true,
 					'strategy'  => 'defer',
+				)
+			);
+			wp_localize_script(
+				'themezur-footer',
+				'themezurFooter',
+				array(
+					'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+					'nonce'       => wp_create_nonce( 'themezur_front' ),
+					'i18nSuccess' => __( 'Thanks for subscribing!', 'themezur' ),
+					'i18nError'   => __( 'Could not subscribe. Please try again.', 'themezur' ),
 				)
 			);
 		}
@@ -205,6 +257,36 @@ function themezur_enqueue_scripts_styles() {
 
 		$scripts_on = Themezur_Options::get( 'general.scripts_enabled', true );
 
+		if ( $scripts_on && class_exists( 'Themezur_WooCommerce' ) && Themezur_WooCommerce::should_enqueue_woocommerce_js() ) {
+			wp_enqueue_script(
+				'themezur-woocommerce',
+				THEMEZUR_URI . '/assets/js/woocommerce.js',
+				array(),
+				THEMEZUR_VERSION,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+			if ( ! wp_script_is( 'themezur-header', 'enqueued' ) ) {
+				wp_localize_script(
+					'themezur-woocommerce',
+					'themezurFront',
+					array(
+						'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
+						'nonce'             => wp_create_nonce( 'themezur_front' ),
+						'miniCartOpenOnAdd' => (bool) Themezur_Options::get( 'woocommerce.cart.open_on_add', true ),
+					)
+				);
+			} else {
+				wp_add_inline_script(
+					'themezur-woocommerce',
+					'if(window.themezurFront){themezurFront.miniCartOpenOnAdd=' . ( Themezur_Options::get( 'woocommerce.cart.open_on_add', true ) ? 'true' : 'false' ) . ';}',
+					'before'
+				);
+			}
+		}
+
 		if ( $scripts_on && class_exists( 'Themezur_WooCommerce' ) && Themezur_WooCommerce::quick_view_enabled() ) {
 			wp_enqueue_script(
 				'themezur-quick-view',
@@ -217,16 +299,17 @@ function themezur_enqueue_scripts_styles() {
 				)
 			);
 			// Share ajaxUrl + nonce with quick-view (header.js may not be loaded if header mode = elementor).
-			if ( ! wp_script_is( 'themezur-header', 'enqueued' ) ) {
+			if ( ! wp_script_is( 'themezur-header', 'enqueued' ) && ! wp_script_is( 'themezur-woocommerce', 'enqueued' ) ) {
 				wp_localize_script(
 					'themezur-quick-view',
 					'themezurFront',
 					array(
-						'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
-						'nonce'               => wp_create_nonce( 'themezur_front' ),
-						'i18nError'           => __( 'Error loading product.', 'themezur' ),
-						'i18nAddWishlist'     => __( 'Add to Wishlist', 'themezur' ),
-						'i18nRemoveWishlist'  => __( 'Remove from Wishlist', 'themezur' ),
+						'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
+						'nonce'              => wp_create_nonce( 'themezur_front' ),
+						'i18nError'          => __( 'Error loading product.', 'themezur' ),
+						'i18nAddWishlist'    => __( 'Add to Wishlist', 'themezur' ),
+						'i18nRemoveWishlist' => __( 'Remove from Wishlist', 'themezur' ),
+						'miniCartOpenOnAdd'  => (bool) Themezur_Options::get( 'woocommerce.cart.open_on_add', true ),
 					)
 				);
 			} else {
@@ -250,7 +333,7 @@ function themezur_enqueue_scripts_styles() {
 				)
 			);
 			// wishlist.js uses window.themezurFront — ensure it's available.
-			if ( ! wp_script_is( 'themezur-header', 'enqueued' ) && ! wp_script_is( 'themezur-quick-view', 'enqueued' ) ) {
+			if ( ! wp_script_is( 'themezur-header', 'enqueued' ) && ! wp_script_is( 'themezur-quick-view', 'enqueued' ) && ! wp_script_is( 'themezur-woocommerce', 'enqueued' ) ) {
 				wp_localize_script(
 					'themezur-wishlist',
 					'themezurFront',

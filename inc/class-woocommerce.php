@@ -22,12 +22,17 @@ class Themezur_WooCommerce {
 			return;
 		}
 
+		add_action( 'widgets_init', array( __CLASS__, 'register_sidebar' ) );
 		add_filter( 'loop_shop_columns', array( __CLASS__, 'shop_columns' ) );
 		add_filter( 'loop_shop_per_page', array( __CLASS__, 'products_per_page' ), 20 );
 		add_filter( 'woocommerce_output_related_products_args', array( __CLASS__, 'related_args' ) );
 		add_filter( 'woocommerce_upsell_display_args', array( __CLASS__, 'upsell_args' ) );
 		add_action( 'wp', array( __CLASS__, 'maybe_remove_catalog_tools' ) );
+		add_action( 'wp', array( __CLASS__, 'setup_single' ) );
+		add_action( 'wp', array( __CLASS__, 'setup_shop_archive' ) );
+		add_action( 'wp', array( __CLASS__, 'setup_checkout' ) );
 		add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
+		add_filter( 'woocommerce_sale_flash', array( __CLASS__, 'sale_flash' ), 10, 3 );
 
 		// Quick View hooks.
 		add_action( 'woocommerce_after_shop_loop_item_title', array( __CLASS__, 'quick_view_button' ), 5 );
@@ -40,6 +45,7 @@ class Themezur_WooCommerce {
 
 		// Single product hooks.
 		add_action( 'woocommerce_after_add_to_cart_button', array( __CLASS__, 'sticky_cart_data' ) );
+		add_action( 'woocommerce_after_add_to_cart_button', array( __CLASS__, 'single_trust_note' ), 25 );
 		add_action( 'wp_footer', array( __CLASS__, 'sticky_cart_bar' ) );
 		add_filter( 'woocommerce_quantity_input_args', array( __CLASS__, 'quantity_stepper_args' ) );
 
@@ -49,6 +55,10 @@ class Themezur_WooCommerce {
 		// AJAX — add to cart (for Quick View AJAX flow).
 		add_action( 'wp_ajax_themezur_add_to_cart', array( __CLASS__, 'ajax_add_to_cart' ) );
 		add_action( 'wp_ajax_nopriv_themezur_add_to_cart', array( __CLASS__, 'ajax_add_to_cart' ) );
+
+		// AJAX — mini-cart qty / remove.
+		add_action( 'wp_ajax_themezur_mini_cart', array( __CLASS__, 'ajax_mini_cart' ) );
+		add_action( 'wp_ajax_nopriv_themezur_mini_cart', array( __CLASS__, 'ajax_mini_cart' ) );
 	}
 
 	/* ----------------------------------------------------------------
@@ -59,7 +69,7 @@ class Themezur_WooCommerce {
 	 * @return bool
 	 */
 	public static function is_enabled() {
-		return 'theme' === Themezur_Options::get( 'woocommerce.mode', 'theme' );
+		return class_exists( 'WooCommerce' ) && 'theme' === Themezur_Options::get( 'woocommerce.mode', 'theme' );
 	}
 
 	/**
@@ -88,6 +98,36 @@ class Themezur_WooCommerce {
 	 */
 	public static function quantity_stepper_enabled() {
 		return self::is_enabled() && (bool) Themezur_Options::get( 'woocommerce.single.quantity_stepper', true );
+	}
+
+	/**
+	 * Whether themezur-woocommerce.js should load.
+	 *
+	 * @return bool
+	 */
+	public static function should_enqueue_woocommerce_js() {
+		if ( ! self::is_enabled() ) {
+			return false;
+		}
+
+		if ( self::sticky_cart_enabled() && is_singular( 'product' ) ) {
+			return true;
+		}
+
+		if ( self::quantity_stepper_enabled() && ( is_singular( 'product' ) || is_cart() ) ) {
+			return true;
+		}
+
+		$sidebar = Themezur_Options::get( 'woocommerce.shop.sidebar', 'none' );
+		if ( in_array( $sidebar, array( 'left', 'right' ), true ) && ( is_shop() || is_product_taxonomy() ) ) {
+			return true;
+		}
+
+		if ( Themezur_Options::get( 'header.middle.mini_cart', true ) && Themezur_Options::get( 'header.middle.show_cart', true ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/* ----------------------------------------------------------------
@@ -138,7 +178,40 @@ class Themezur_WooCommerce {
 	 * @return bool
 	 */
 	public static function should_enqueue_assets() {
-		return self::is_enabled() && self::is_context();
+		if ( ! self::is_enabled() ) {
+			return false;
+		}
+
+		if ( self::is_context() ) {
+			return true;
+		}
+
+		// Mini-cart drawer styles on any page when header mini-cart is on.
+		return (bool) Themezur_Options::get( 'header.middle.show_cart', true )
+			&& (bool) Themezur_Options::get( 'header.middle.mini_cart', true );
+	}
+
+	/* ----------------------------------------------------------------
+	 * Sidebar
+	 * -------------------------------------------------------------- */
+
+	/**
+	 * Register Themezur shop sidebar widget area.
+	 *
+	 * @return void
+	 */
+	public static function register_sidebar() {
+		register_sidebar(
+			array(
+				'name'          => __( 'Themezur Shop Sidebar', 'themezur' ),
+				'id'            => 'themezur-shop',
+				'description'   => __( 'Filters and widgets for the Themezur shop archive (left/right layout).', 'themezur' ),
+				'before_widget' => '<section id="%1$s" class="widget tz-woo-shop-widget %2$s">',
+				'after_widget'  => '</section>',
+				'before_title'  => '<h3 class="widget-title tz-woo-shop-widget__title">',
+				'after_title'   => '</h3>',
+			)
+		);
 	}
 
 	/* ----------------------------------------------------------------
@@ -177,10 +250,10 @@ class Themezur_WooCommerce {
 		if ( ! self::is_enabled() ) {
 			return $args;
 		}
-		$count               = (int) Themezur_Options::get( 'woocommerce.single.related_count', 4 );
-		$count               = max( 0, min( 8, $count ) );
+		$count                  = (int) Themezur_Options::get( 'woocommerce.single.related_count', 4 );
+		$count                  = max( 0, min( 8, $count ) );
 		$args['posts_per_page'] = $count;
-		$args['columns']     = min( 4, max( 2, $count ) );
+		$args['columns']        = min( 4, max( 2, $count ? $count : 2 ) );
 		return $args;
 	}
 
@@ -217,11 +290,79 @@ class Themezur_WooCommerce {
 	}
 
 	/**
+	 * Single product setup: toggles, related/upsells visibility.
+	 *
+	 * @return void
+	 */
+	public static function setup_single() {
+		if ( ! self::is_enabled() || ! is_singular( 'product' ) ) {
+			return;
+		}
+
+		if ( ! Themezur_Options::get( 'woocommerce.single.show_rating', true ) ) {
+			remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 10 );
+		}
+
+		if ( ! Themezur_Options::get( 'woocommerce.single.show_related', true ) ) {
+			remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
+		}
+
+		if ( ! Themezur_Options::get( 'woocommerce.single.show_upsells', true ) ) {
+			remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_upsell_display', 15 );
+		}
+	}
+
+	/**
+	 * Shop archive: hover image, new badge, sidebar layout wrapper + filter toggle.
+	 *
+	 * @return void
+	 */
+	public static function setup_shop_archive() {
+		if ( ! self::is_enabled() ) {
+			return;
+		}
+
+		if ( ! is_shop() && ! is_product_taxonomy() ) {
+			return;
+		}
+
+		if ( Themezur_Options::get( 'woocommerce.shop.hover_image', true ) ) {
+			remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10 );
+			add_action( 'woocommerce_before_shop_loop_item_title', array( __CLASS__, 'loop_hover_thumbnail' ), 10 );
+		}
+
+		add_action( 'woocommerce_before_shop_loop_item_title', array( __CLASS__, 'loop_new_badge' ), 9 );
+
+		$sidebar = Themezur_Options::get( 'woocommerce.shop.sidebar', 'none' );
+		if ( in_array( $sidebar, array( 'left', 'right' ), true ) ) {
+			remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
+			// After WC content wrapper opens (priority 10); close before wrapper ends.
+			add_action( 'woocommerce_before_main_content', array( __CLASS__, 'shop_layout_open' ), 15 );
+			add_action( 'woocommerce_after_main_content', array( __CLASS__, 'shop_layout_close' ), 5 );
+			add_action( 'woocommerce_before_shop_loop', array( __CLASS__, 'shop_filters_toggle' ), 15 );
+			add_action( 'woocommerce_no_products_found', array( __CLASS__, 'shop_filters_toggle' ), 5 );
+			add_action( 'wp_footer', array( __CLASS__, 'shop_filters_overlay' ) );
+		}
+	}
+
+	/**
+	 * Checkout trust note.
+	 *
+	 * @return void
+	 */
+	public static function setup_checkout() {
+		if ( ! self::is_enabled() || ! is_checkout() ) {
+			return;
+		}
+		add_action( 'woocommerce_review_order_before_submit', array( __CLASS__, 'checkout_trust_note' ), 5 );
+	}
+
+	/**
 	 * @param string[] $classes Body classes.
 	 * @return string[]
 	 */
 	public static function body_class( $classes ) {
-		if ( ! self::should_enqueue_assets() ) {
+		if ( ! self::is_enabled() || ! self::is_context() ) {
 			return $classes;
 		}
 
@@ -243,7 +384,262 @@ class Themezur_WooCommerce {
 			$classes[] = 'tz-woo-stepper';
 		}
 
+		if ( is_singular( 'product' ) ) {
+			$layout    = Themezur_Options::get( 'woocommerce.single.layout', 'classic' );
+			$classes[] = 'tz-woo-layout-' . sanitize_html_class( $layout );
+			if ( ! Themezur_Options::get( 'woocommerce.single.show_sku', true ) ) {
+				$classes[] = 'tz-woo-hide-sku';
+			}
+			if ( ! Themezur_Options::get( 'woocommerce.single.show_stock', true ) ) {
+				$classes[] = 'tz-woo-hide-stock';
+			}
+		}
+
+		if ( is_shop() || is_product_taxonomy() ) {
+			$sidebar   = Themezur_Options::get( 'woocommerce.shop.sidebar', 'none' );
+			$classes[] = 'tz-woo-sidebar-' . sanitize_html_class( $sidebar );
+			if ( Themezur_Options::get( 'woocommerce.shop.hover_image', true ) ) {
+				$classes[] = 'tz-woo-hover-image';
+			}
+		}
+
+		if ( is_checkout() && Themezur_Options::get( 'woocommerce.checkout.sticky_review', true ) ) {
+			$classes[] = 'tz-woo-checkout-sticky';
+		}
+
+		if ( is_account_page() ) {
+			$density   = Themezur_Options::get( 'woocommerce.account.density', 'comfortable' );
+			$classes[] = 'tz-woo-account-' . sanitize_html_class( $density );
+		}
+
 		return $classes;
+	}
+
+	/**
+	 * Sale flash with optional percent.
+	 *
+	 * @param string     $html    Flash HTML.
+	 * @param WP_Post    $post    Post.
+	 * @param WC_Product $product Product.
+	 * @return string
+	 */
+	public static function sale_flash( $html, $post, $product ) {
+		if ( ! self::is_enabled() || ! Themezur_Options::get( 'woocommerce.single.sale_percent', true ) ) {
+			return $html;
+		}
+		if ( ! $product instanceof WC_Product || ! $product->is_on_sale() ) {
+			return $html;
+		}
+
+		$percent = self::get_sale_percent( $product );
+		if ( $percent < 1 ) {
+			return $html;
+		}
+
+		return '<span class="onsale tz-woo-sale-percent">-' . esc_html( (string) $percent ) . '%</span>';
+	}
+
+	/**
+	 * @param WC_Product $product Product.
+	 * @return int
+	 */
+	private static function get_sale_percent( $product ) {
+		if ( $product->is_type( 'variable' ) ) {
+			$prices = $product->get_variation_prices( true );
+			if ( empty( $prices['regular_price'] ) || empty( $prices['sale_price'] ) ) {
+				return 0;
+			}
+			$max = 0;
+			foreach ( $prices['regular_price'] as $key => $regular ) {
+				$sale = isset( $prices['sale_price'][ $key ] ) ? (float) $prices['sale_price'][ $key ] : 0;
+				$reg  = (float) $regular;
+				if ( $reg > 0 && $sale > 0 && $sale < $reg ) {
+					$max = max( $max, (int) round( ( ( $reg - $sale ) / $reg ) * 100 ) );
+				}
+			}
+			return $max;
+		}
+
+		$regular = (float) $product->get_regular_price();
+		$sale    = (float) $product->get_sale_price();
+		if ( $regular <= 0 || $sale <= 0 || $sale >= $regular ) {
+			return 0;
+		}
+		return (int) round( ( ( $regular - $sale ) / $regular ) * 100 );
+	}
+
+	/* ----------------------------------------------------------------
+	 * Shop archive UI
+	 * -------------------------------------------------------------- */
+
+	/**
+	 * Product thumbnail with optional hover gallery image.
+	 *
+	 * @return void
+	 */
+	public static function loop_hover_thumbnail() {
+		global $product;
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
+
+		$primary = $product->get_image( 'woocommerce_thumbnail', array( 'class' => 'tz-woo-thumb-primary attachment-woocommerce_thumbnail size-woocommerce_thumbnail' ) );
+		$second  = '';
+		$gallery = $product->get_gallery_image_ids();
+		if ( ! empty( $gallery[0] ) ) {
+			$second = wp_get_attachment_image(
+				$gallery[0],
+				'woocommerce_thumbnail',
+				false,
+				array(
+					'class'   => 'tz-woo-thumb-secondary',
+					'alt'     => '',
+					'loading' => 'lazy',
+				)
+			);
+		}
+
+		echo '<span class="tz-woo-thumb-wrap' . ( $second ? ' has-hover' : '' ) . '">';
+		echo $primary; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		if ( $second ) {
+			echo $second; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		echo '</span>';
+	}
+
+	/**
+	 * New badge on loop cards.
+	 *
+	 * @return void
+	 */
+	public static function loop_new_badge() {
+		$days = (int) Themezur_Options::get( 'woocommerce.shop.new_badge_days', 14 );
+		if ( $days < 1 ) {
+			return;
+		}
+		global $product;
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
+		$created = $product->get_date_created();
+		if ( ! $created ) {
+			return;
+		}
+		$cutoff = $created->getTimestamp() + ( $days * DAY_IN_SECONDS );
+		if ( time() > $cutoff ) {
+			return;
+		}
+		echo '<span class="tz-woo-new-badge">' . esc_html__( 'New', 'themezur' ) . '</span>';
+	}
+
+	/**
+	 * Open shop layout wrapper + main column.
+	 *
+	 * @return void
+	 */
+	public static function shop_layout_open() {
+		$sidebar = Themezur_Options::get( 'woocommerce.shop.sidebar', 'none' );
+		$has     = is_active_sidebar( 'themezur-shop' );
+		echo '<div class="tz-woo-shop-layout tz-woo-shop-layout--' . esc_attr( $sidebar ) . ( $has ? ' has-sidebar' : ' no-sidebar' ) . '">';
+		if ( 'left' === $sidebar && $has ) {
+			self::shop_sidebar();
+		}
+		echo '<div class="tz-woo-shop-main">';
+	}
+
+	/**
+	 * Close shop main + optional right sidebar + layout.
+	 *
+	 * @return void
+	 */
+	public static function shop_layout_close() {
+		echo '</div><!-- .tz-woo-shop-main -->';
+		$sidebar = Themezur_Options::get( 'woocommerce.shop.sidebar', 'none' );
+		if ( 'right' === $sidebar && is_active_sidebar( 'themezur-shop' ) ) {
+			self::shop_sidebar();
+		}
+		echo '</div><!-- .tz-woo-shop-layout -->';
+	}
+
+	/**
+	 * Render shop sidebar + mobile drawer chrome.
+	 *
+	 * @return void
+	 */
+	public static function shop_sidebar() {
+		if ( ! is_active_sidebar( 'themezur-shop' ) ) {
+			return;
+		}
+		?>
+		<aside class="tz-woo-shop-sidebar" data-tz-woo-shop-sidebar aria-label="<?php esc_attr_e( 'Shop filters', 'themezur' ); ?>">
+			<div class="tz-woo-shop-sidebar__head">
+				<span class="tz-woo-shop-sidebar__title"><?php esc_html_e( 'Filters', 'themezur' ); ?></span>
+				<button type="button" class="tz-woo-shop-sidebar__close" data-tz-woo-filters-close aria-label="<?php esc_attr_e( 'Close filters', 'themezur' ); ?>">&times;</button>
+			</div>
+			<div class="tz-woo-shop-sidebar__widgets">
+				<?php dynamic_sidebar( 'themezur-shop' ); ?>
+			</div>
+		</aside>
+		<?php
+	}
+
+	/**
+	 * Mobile filter toggle before the loop.
+	 *
+	 * @return void
+	 */
+	public static function shop_filters_toggle() {
+		static $printed = false;
+		if ( $printed || ! is_active_sidebar( 'themezur-shop' ) ) {
+			return;
+		}
+		$printed = true;
+		?>
+		<button type="button" class="tz-woo-filters-toggle button" data-tz-woo-filters-toggle aria-expanded="false">
+			<?php esc_html_e( 'Filters', 'themezur' ); ?>
+		</button>
+		<?php
+	}
+
+	/**
+	 * Overlay for mobile filter drawer.
+	 *
+	 * @return void
+	 */
+	public static function shop_filters_overlay() {
+		if ( ! is_active_sidebar( 'themezur-shop' ) ) {
+			return;
+		}
+		echo '<div class="tz-woo-filters-overlay" data-tz-woo-filters-overlay hidden></div>';
+	}
+
+	/**
+	 * Trust note under add to cart on single product.
+	 *
+	 * @return void
+	 */
+	public static function single_trust_note() {
+		if ( ! self::is_enabled() || ! is_singular( 'product' ) ) {
+			return;
+		}
+		$note = trim( (string) Themezur_Options::get( 'woocommerce.single.trust_note', '' ) );
+		if ( '' === $note ) {
+			return;
+		}
+		echo '<p class="tz-woo-trust-note">' . esc_html( $note ) . '</p>';
+	}
+
+	/**
+	 * Trust note above Place order on checkout.
+	 *
+	 * @return void
+	 */
+	public static function checkout_trust_note() {
+		$note = trim( (string) Themezur_Options::get( 'woocommerce.checkout.trust_note', '' ) );
+		if ( '' === $note ) {
+			return;
+		}
+		echo '<p class="tz-woo-checkout-trust">' . esc_html( $note ) . '</p>';
 	}
 
 	/* ----------------------------------------------------------------
@@ -326,7 +722,7 @@ class Themezur_WooCommerce {
 			$gallery_html .= '<div class="tz-qv-thumbs">';
 			$gallery_html .= '<button class="tz-qv-thumb tz-qv-thumb--active" data-img="' . esc_url( $image_url ) . '" type="button"><img src="' . esc_url( $image_url ) . '" alt="" loading="lazy"></button>';
 			foreach ( array_slice( $gallery_ids, 0, 4 ) as $gid ) {
-				$g_url = wp_get_attachment_image_url( $gid, 'woocommerce_gallery_thumbnail' );
+				$g_url  = wp_get_attachment_image_url( $gid, 'woocommerce_gallery_thumbnail' );
 				$g_full = wp_get_attachment_image_url( $gid, 'woocommerce_single' );
 				if ( $g_url ) {
 					$gallery_html .= '<button class="tz-qv-thumb" data-img="' . esc_url( $g_full ) . '" type="button"><img src="' . esc_url( $g_url ) . '" alt="" loading="lazy"></button>';
@@ -352,19 +748,7 @@ class Themezur_WooCommerce {
 			$desc = wp_trim_words( wp_strip_all_tags( $product->get_description() ), 30, '...' );
 		}
 
-		$add_to_cart_url = '';
 		$add_to_cart_text = $product->add_to_cart_text();
-		if ( $product->is_purchasable() && $product->is_in_stock() && $product->is_type( 'simple' ) ) {
-			$add_to_cart_url = add_query_arg(
-				array(
-					'add-to-cart' => $product->get_id(),
-					'quantity'    => 1,
-				),
-				wc_get_cart_url()
-			);
-		} else {
-			$add_to_cart_url = $product->get_permalink();
-		}
 
 		$html  = '<div class="tz-qv-image-col">';
 		$html .= '<img class="tz-qv-main-img" id="tz-qv-main-img" src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $product->get_name() ) . '">';
@@ -379,7 +763,6 @@ class Themezur_WooCommerce {
 		if ( $desc ) {
 			$html .= '<div class="tz-qv-desc">' . wp_kses_post( $desc ) . '</div>';
 		}
-		// Simple product: AJAX add to cart; others: go to product page.
 		if ( $product->is_purchasable() && $product->is_in_stock() && $product->is_type( 'simple' ) ) {
 			$html .= '<div class="tz-qv-actions">';
 			$html .= '<button class="button tz-qv-atc" data-product-id="' . (int) $product->get_id() . '" type="button">' . esc_html( $add_to_cart_text ) . '</button>';
@@ -467,7 +850,7 @@ class Themezur_WooCommerce {
 						<span class="tz-sticky-bar__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></span>
 					</div>
 				</div>
-				<button class="button single_add_to_cart_button tz-sticky-bar__btn tz-woo-sticky-atc__btn" data-product-id="<?php echo (int) $product->get_id(); ?>" type="button">
+				<button class="button single_add_to_cart_button tz-sticky-bar__btn tz-woo-sticky-atc__btn" type="button">
 					<?php echo esc_html( $product->single_add_to_cart_text() ); ?>
 				</button>
 			</div>
@@ -509,10 +892,22 @@ class Themezur_WooCommerce {
 		if ( ! $user->ID ) {
 			return;
 		}
-		$name    = $user->display_name ?: $user->user_login;
+		$name    = $user->display_name ? $user->display_name : $user->user_login;
 		$initial = mb_strtoupper( mb_substr( $name, 0, 1 ) );
-		$orders  = wc_get_orders( array( 'customer' => $user->ID, 'limit' => -1, 'return' => 'ids' ) );
-		$count   = count( $orders );
+
+		if ( function_exists( 'wc_get_customer_order_count' ) ) {
+			$count = (int) wc_get_customer_order_count( $user->ID );
+		} else {
+			$orders = wc_get_orders(
+				array(
+					'customer_id' => $user->ID,
+					'limit'       => 1,
+					'paginate'    => true,
+					'return'      => 'ids',
+				)
+			);
+			$count = ( $orders instanceof stdClass && isset( $orders->total ) ) ? (int) $orders->total : 0;
+		}
 		?>
 		<div class="tz-account-welcome">
 			<div class="tz-account-avatar" aria-hidden="true"><?php echo esc_html( $initial ); ?></div>
@@ -571,8 +966,8 @@ class Themezur_WooCommerce {
 
 		wc_clear_notices();
 
-		$count      = (int) WC()->cart->get_cart_contents_count();
-		$mini_cart  = Themezur_Options::get( 'header.middle.mini_cart', true )
+		$count     = (int) WC()->cart->get_cart_contents_count();
+		$mini_cart = Themezur_Options::get( 'header.middle.mini_cart', true )
 			? Themezur_Frontend::mini_cart_markup()
 			: '';
 
@@ -582,6 +977,57 @@ class Themezur_WooCommerce {
 				'label'     => Themezur_Frontend::cart_count_label( $count ),
 				'mini_cart' => $mini_cart,
 				'message'   => __( 'Product added to cart!', 'themezur' ),
+			)
+		);
+	}
+
+	/**
+	 * AJAX mini-cart quantity / remove.
+	 *
+	 * @return void
+	 */
+	public static function ajax_mini_cart() {
+		check_ajax_referer( 'themezur_front', 'nonce' );
+
+		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+			wp_send_json_error( array( 'message' => __( 'Cart unavailable.', 'themezur' ) ), 400 );
+		}
+
+		$key    = isset( $_POST['cart_item_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cart_item_key'] ) ) : '';
+		$remove = ! empty( $_POST['remove'] );
+		$qty    = isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 0;
+
+		if ( '' === $key || ! WC()->cart->get_cart_item( $key ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid cart item.', 'themezur' ) ), 400 );
+		}
+
+		if ( $remove || $qty < 1 ) {
+			WC()->cart->remove_cart_item( $key );
+		} else {
+			WC()->cart->set_quantity( $key, $qty, true );
+		}
+
+		WC()->cart->calculate_totals();
+
+		$count = (int) WC()->cart->get_cart_contents_count();
+
+		$fragments = array(
+			'div.widget_shopping_cart_content' => Themezur_Frontend::mini_cart_markup(),
+			'span.tz-cart-btn__count'          => Themezur_Frontend::cart_count_markup( $count ),
+		);
+
+		/**
+		 * Allow other code to extend mini-cart fragments.
+		 *
+		 * @param array $fragments Fragments keyed by CSS selector.
+		 */
+		$fragments = apply_filters( 'themezur_mini_cart_fragments', $fragments );
+
+		wp_send_json_success(
+			array(
+				'fragments' => $fragments,
+				'count'     => $count,
+				'label'     => Themezur_Frontend::cart_count_label( $count ),
 			)
 		);
 	}
