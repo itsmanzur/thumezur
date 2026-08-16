@@ -41,6 +41,7 @@
 					footer: false,
 				},
 				mediaFrame: null,
+				mediaFrame2: null,
 				socialNetworks: cfg.socialNetworks || [],
 
 				init() {
@@ -335,6 +336,45 @@
 							};
 						}
 					}.bind(this));
+
+					var footerKeys = ['front_page', 'shop', 'blog', 'checkout'];
+					if (!this.options.assignments.footer_overrides || typeof this.options.assignments.footer_overrides !== 'object') {
+						this.options.assignments.footer_overrides = {};
+					}
+					footerKeys.forEach(function (key) {
+						if (!this.options.assignments.footer_overrides[key]) {
+							this.options.assignments.footer_overrides[key] = {
+								enabled: false,
+								mode: 'inherit',
+								template_id: 0,
+							};
+						}
+					}.bind(this));
+
+					if (!this.options.footer) this.options.footer = {};
+					if (!Array.isArray(this.options.footer.column_order) || !this.options.footer.column_order.length) {
+						this.options.footer.column_order = ['1', '2', '3', '4', '5'];
+					}
+					if (!this.options.footer.column_widths) this.options.footer.column_widths = 'equal';
+					if (!this.options.footer.app_badges || typeof this.options.footer.app_badges !== 'object') {
+						this.options.footer.app_badges = { enabled: false, title: 'Get the app', play_url: '', appstore_url: '', qr_image_id: 0 };
+					}
+					if (!this.options.footer.store_row || typeof this.options.footer.store_row !== 'object') {
+						this.options.footer.store_row = { enabled: false, label: 'Find a store', map_url: '', address_text: '' };
+					}
+					if (!this.options.footer.newsletter_row) this.options.footer.newsletter_row = {};
+					if (!this.options.footer.newsletter_row.email_name) this.options.footer.newsletter_row.email_name = 'EMAIL';
+				},
+
+				moveFooterColumn: function (index, dir) {
+					this.ensureAssignments();
+					var order = this.options.footer.column_order.slice();
+					var next = index + dir;
+					if (next < 0 || next >= order.length) return;
+					var tmp = order[index];
+					order[index] = order[next];
+					order[next] = tmp;
+					this.options.footer.column_order = order;
 				},
 
 				ensureSocials: function () {
@@ -558,7 +598,9 @@
 						row('themezur-blog', 'css', 'Blog pages', blogMode === 'theme' ? 'cond' : 'off', 'blog.css'),
 						row('themezur-pages', 'css', '404 / Search', pagesMode === 'theme' ? 'cond' : 'off', 'pages.css'),
 						row('themezur-woocommerce', 'css', 'Shop / mini-cart', wooMode === 'theme' && this.woocommerce ? 'cond' : 'off', this.woocommerce ? 'woocommerce.css' : 'Woo inactive'),
-						row('themezur-woocommerce', 'js', 'Sticky ATC / filters / mini-cart', wooMode === 'theme' && this.woocommerce && scriptsOn && (!!(o.woocommerce && o.woocommerce.single && o.woocommerce.single.sticky_atc) || !!(o.woocommerce && o.woocommerce.shop && o.woocommerce.shop.sidebar && o.woocommerce.shop.sidebar !== 'none') || !!(o.woocommerce && o.woocommerce.cart && o.woocommerce.cart.mini_cart)) ? 'cond' : 'off', 'woocommerce.js'),
+						row('themezur-quick-view', 'js', 'Quick View modal', wooMode === 'theme' && this.woocommerce && scriptsOn && !!(o.woocommerce && o.woocommerce.shop && o.woocommerce.shop.quick_view) ? 'cond' : 'off', 'quick-view.js'),
+						row('themezur-wishlist', 'js', 'Wishlist (localStorage)', wooMode === 'theme' && this.woocommerce && scriptsOn && !!(o.woocommerce && o.woocommerce.shop && o.woocommerce.shop.wishlist) ? 'cond' : 'off', 'wishlist.js'),
+						row('themezur-woocommerce', 'js', 'Sticky / stepper / filters / mini qty', wooMode === 'theme' && this.woocommerce && scriptsOn && (!!(o.woocommerce && o.woocommerce.single && o.woocommerce.single.sticky_cart) || !!(o.woocommerce && o.woocommerce.single && o.woocommerce.single.quantity_stepper) || !!(o.woocommerce && o.woocommerce.shop && o.woocommerce.shop.sidebar && o.woocommerce.shop.sidebar !== 'none') || !!(o.header && o.header.middle && o.header.middle.mini_cart)) ? 'cond' : 'off', 'woocommerce.js'),
 						row('themezur-breadcrumbs', 'css', 'Breadcrumbs on', g.breadcrumbs ? 'cond' : 'off', 'breadcrumbs.css'),
 						row('hello reset.css', 'css', 'Parent', p.disable_hello_reset ? 'off' : 'on', 'Hello Elementor'),
 						row('hello theme.css', 'css', 'Parent', p.disable_hello_theme_style ? 'off' : 'on', 'Hello Elementor'),
@@ -770,9 +812,10 @@
 						card_style: 'soft',
 						show_result_count: true,
 						show_ordering: true,
+						quick_view: true,
+						wishlist: true,
 						hover_image: true,
 						new_badge_days: 14,
-						wishlist_on_card: true,
 						sidebar: 'none',
 					};
 					Object.keys(shopDefaults).forEach(function (key) {
@@ -789,7 +832,8 @@
 						show_rating: true,
 						show_sku: true,
 						show_stock: true,
-						sticky_atc: true,
+						sticky_cart: true,
+						quantity_stepper: true,
 						trust_note: '',
 						show_related: true,
 						related_count: 4,
@@ -804,12 +848,9 @@
 					if (!this.options.woocommerce.cart || typeof this.options.woocommerce.cart !== 'object') {
 						this.options.woocommerce.cart = {};
 					}
-					var wooCartDefaults = { mini_cart: true, open_on_add: true };
-					Object.keys(wooCartDefaults).forEach(function (key) {
-						if (typeof this.options.woocommerce.cart[key] === 'undefined') {
-							this.options.woocommerce.cart[key] = wooCartDefaults[key];
-						}
-					}.bind(this));
+					if (typeof this.options.woocommerce.cart.open_on_add === 'undefined') {
+						this.options.woocommerce.cart.open_on_add = true;
+					}
 					if (!this.options.woocommerce.checkout || typeof this.options.woocommerce.checkout !== 'object') {
 						this.options.woocommerce.checkout = {};
 					}
@@ -936,6 +977,49 @@
 				removeLogo: function () {
 					this.options.general.logo_id = 0;
 					this.options.general.logo_url = '';
+				},
+
+				pickLogo2: function () {
+					var self = this;
+					if (typeof wp === 'undefined' || !wp.media) {
+						self.showToast(self.i18n.error || 'Error');
+						return;
+					}
+
+					if (self.mediaFrame2) {
+						self.mediaFrame2.open();
+						return;
+					}
+
+					self.mediaFrame2 = wp.media({
+						title: (self.i18n && self.i18n.logoTitle) || 'Select logo',
+						button: {
+							text: (self.i18n && self.i18n.logoButton) || 'Use this logo',
+						},
+						library: {
+							type: 'image',
+						},
+						multiple: false,
+					});
+
+					self.mediaFrame2.on('select', function () {
+						var attachment = self.mediaFrame2.state().get('selection').first().toJSON();
+						if (!attachment || !attachment.id) {
+							return;
+						}
+						self.options.general.logo_id_2 = attachment.id;
+						self.options.general.logo_url_2 =
+							(attachment.sizes && attachment.sizes.medium && attachment.sizes.medium.url) ||
+							attachment.url ||
+							'';
+					});
+
+					self.mediaFrame2.open();
+				},
+
+				removeLogo2: function () {
+					this.options.general.logo_id_2 = 0;
+					this.options.general.logo_url_2 = '';
 				},
 
 				pickFooterLogo: function (colKey) {

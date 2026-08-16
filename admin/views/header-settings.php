@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Themezur admin — Header settings (triple-row), polished groups.
  *
@@ -266,7 +266,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 				</div>
 			</div>
+			<div class="tz-group">
+				<div class="tz-group__head">
+					<div>
+						<h3 class="tz-group__title"><?php esc_html_e( 'Custom HTML / shortcode', 'themezur' ); ?></h3>
+						<p class="tz-group__desc"><?php esc_html_e( 'Drop any shortcode or HTML in the top bar (right side) - language switcher, currency switcher, plugin badge, etc.', 'themezur' ); ?></p>
+					</div>
+					<label class="tz-field--row" style="margin:0;padding:0;border:0;"><input type="checkbox" x-model="options.header.top.show_custom"></label>
+				</div>
+				<div class="tz-group__body" x-show="options.header.top.show_custom">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'HTML / shortcode', 'themezur' ); ?></label>
+						<textarea x-model="options.header.top.custom_html" rows="3" placeholder="[my_plugin_shortcode]"></textarea>
+					</div>
+					<div class="tz-vis">
+						<label><input type="checkbox" x-model="options.header.top.hide_mobile_custom"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
+						<label><input type="checkbox" x-model="options.header.top.hide_desktop_custom"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
+					</div>
+				</div>
+			</div>
 		</div>
+
 
 		<!-- Middle -->
 		<div x-show="headerSubTab === 'middle'">
@@ -436,6 +456,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="tz-vis" x-show="options.header.middle.show_button">
 						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_button"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
 						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_button"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
+					</div>
+				</div>
+			</div>
+			<div class="tz-group">
+				<div class="tz-group__head">
+					<div>
+						<h3 class="tz-group__title"><?php esc_html_e( 'Custom HTML / shortcode', 'themezur' ); ?></h3>
+						<p class="tz-group__desc"><?php esc_html_e( 'Drop any shortcode or HTML among the middle-bar action icons - language switcher, currency switcher, plugin badge, etc.', 'themezur' ); ?></p>
+					</div>
+					<label class="tz-field--row" style="margin:0;padding:0;border:0;"><input type="checkbox" x-model="options.header.middle.show_custom"></label>
+				</div>
+				<div class="tz-group__body" x-show="options.header.middle.show_custom">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'HTML / shortcode', 'themezur' ); ?></label>
+						<textarea x-model="options.header.middle.custom_html" rows="3" placeholder="[my_plugin_shortcode]"></textarea>
+					</div>
+					<div class="tz-vis">
+						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_custom"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
+						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_custom"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
 					</div>
 				</div>
 			</div>

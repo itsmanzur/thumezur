@@ -56,6 +56,8 @@ class Themezur_Options {
 				'breadcrumbs'     => true,
 				'scripts_enabled' => true,
 				'logo_id'         => 0,
+				'logo_id_2'       => 0,
+				'logo_divider'    => true,
 				'show_tagline'    => false,
 			),
 			'header'      => array(
@@ -126,6 +128,10 @@ class Themezur_Options {
 					'date_custom'           => '',
 					'hide_mobile_date'      => false,
 					'hide_desktop_date'     => false,
+					'show_custom'           => false,
+					'custom_html'           => '',
+					'hide_mobile_custom'    => false,
+					'hide_desktop_custom'   => false,
 				),
 				'middle'      => array(
 					'enabled'               => true,
@@ -177,6 +183,10 @@ class Themezur_Options {
 					'button_target'         => '_self',
 					'hide_mobile_button'    => false,
 					'hide_desktop_button'   => false,
+					'show_custom'           => false,
+					'custom_html'           => '',
+					'hide_mobile_custom'    => false,
+					'hide_desktop_custom'   => false,
 				),
 				'bottom'      => array(
 					'enabled'                => true,
@@ -259,6 +269,22 @@ class Themezur_Options {
 					'action'      => '',
 					'placeholder' => 'Enter your email address',
 					'button'      => 'Subscribe Now',
+					'email_name'  => 'EMAIL',
+				),
+				'column_order'  => array( '1', '2', '3', '4', '5' ),
+				'column_widths' => 'equal',
+				'app_badges'    => array(
+					'enabled'      => false,
+					'title'        => 'Get the app',
+					'play_url'     => '',
+					'appstore_url' => '',
+					'qr_image_id'  => 0,
+				),
+				'store_row'     => array(
+					'enabled'      => false,
+					'label'        => 'Find a store',
+					'map_url'      => '',
+					'address_text' => '',
 				),
 				'columns'     => array(
 					'1' => array(
@@ -533,21 +559,42 @@ class Themezur_Options {
 				),
 			),
 			'woocommerce' => array(
-				'mode'   => 'theme',
-				'shop'   => array(
-					'columns'            => 3,
-					'products_per_page'  => 12,
-					'card_style'         => 'soft',
-					'show_result_count'  => true,
-					'show_ordering'      => true,
-					'quick_view'         => true,
-					'wishlist'           => true,
+				'mode'     => 'theme',
+				'shop'     => array(
+					'columns'           => 3,
+					'products_per_page' => 12,
+					'card_style'        => 'soft',
+					'show_result_count' => true,
+					'show_ordering'     => true,
+					'quick_view'        => true,
+					'wishlist'          => true,
+					'hover_image'       => true,
+					'new_badge_days'    => 14,
+					'sidebar'           => 'none',
 				),
-				'single' => array(
-					'related_count'      => 4,
-					'upsells_count'      => 4,
-					'sticky_cart'        => true,
-					'quantity_stepper'   => true,
+				'single'   => array(
+					'related_count'    => 4,
+					'upsells_count'    => 4,
+					'sticky_cart'      => true,
+					'quantity_stepper' => true,
+					'layout'           => 'classic',
+					'sale_percent'     => true,
+					'show_rating'      => true,
+					'show_sku'         => true,
+					'show_stock'       => true,
+					'trust_note'       => '',
+					'show_related'     => true,
+					'show_upsells'     => true,
+				),
+				'cart'     => array(
+					'open_on_add' => true,
+				),
+				'checkout' => array(
+					'trust_note'    => '',
+					'sticky_review' => true,
+				),
+				'account'  => array(
+					'density' => 'comfortable',
 				),
 			),
 			'assignments' => array(
@@ -571,6 +618,28 @@ class Themezur_Options {
 						'template_id' => 0,
 					),
 					'blog'       => array(
+						'enabled'     => false,
+						'mode'        => 'inherit',
+						'template_id' => 0,
+					),
+				),
+				'footer_overrides' => array(
+					'front_page' => array(
+						'enabled'     => false,
+						'mode'        => 'inherit',
+						'template_id' => 0,
+					),
+					'shop'       => array(
+						'enabled'     => false,
+						'mode'        => 'inherit',
+						'template_id' => 0,
+					),
+					'blog'       => array(
+						'enabled'     => false,
+						'mode'        => 'inherit',
+						'template_id' => 0,
+					),
+					'checkout'   => array(
 						'enabled'     => false,
 						'mode'        => 'inherit',
 						'template_id' => 0,
@@ -761,6 +830,9 @@ class Themezur_Options {
 		$clean['general']['show_tagline']    = ! empty( $g['show_tagline'] );
 		$logo_id = isset( $g['logo_id'] ) ? absint( $g['logo_id'] ) : 0;
 		$clean['general']['logo_id'] = ( $logo_id && wp_attachment_is_image( $logo_id ) ) ? $logo_id : 0;
+		$logo_id_2 = isset( $g['logo_id_2'] ) ? absint( $g['logo_id_2'] ) : 0;
+		$clean['general']['logo_id_2'] = ( $logo_id_2 && wp_attachment_is_image( $logo_id_2 ) ) ? $logo_id_2 : 0;
+		$clean['general']['logo_divider'] = ! empty( $g['logo_divider'] );
 
 		// Header.
 		$h = isset( $merged['header'] ) && is_array( $merged['header'] ) ? $merged['header'] : array();
@@ -805,6 +877,26 @@ class Themezur_Options {
 			isset( $f['back_to_top'] ) && is_array( $f['back_to_top'] ) ? $f['back_to_top'] : array(),
 			$defaults['footer']['back_to_top']
 		);
+		$clean['footer']['heading'] = self::sanitize_hex_color_value( $f['heading'] ?? '', $defaults['footer']['heading'] );
+		$clean['footer']['trust_badges'] = self::sanitize_footer_trust_badges(
+			isset( $f['trust_badges'] ) && is_array( $f['trust_badges'] ) ? $f['trust_badges'] : array(),
+			$defaults['footer']['trust_badges']
+		);
+		$clean['footer']['newsletter_row'] = self::sanitize_footer_newsletter_row(
+			isset( $f['newsletter_row'] ) && is_array( $f['newsletter_row'] ) ? $f['newsletter_row'] : array(),
+			$defaults['footer']['newsletter_row']
+		);
+		$clean['footer']['column_order']  = self::sanitize_footer_column_order( isset( $f['column_order'] ) ? $f['column_order'] : array() );
+		$cw = isset( $f['column_widths'] ) ? sanitize_key( $f['column_widths'] ) : 'equal';
+		$clean['footer']['column_widths'] = in_array( $cw, array( 'equal', '2-1-1-1', '1-1-1-2', 'about_wide' ), true ) ? $cw : 'equal';
+		$clean['footer']['app_badges']    = self::sanitize_footer_app_badges(
+			isset( $f['app_badges'] ) && is_array( $f['app_badges'] ) ? $f['app_badges'] : array(),
+			$defaults['footer']['app_badges']
+		);
+		$clean['footer']['store_row'] = self::sanitize_footer_store_row(
+			isset( $f['store_row'] ) && is_array( $f['store_row'] ) ? $f['store_row'] : array(),
+			$defaults['footer']['store_row']
+		);
 
 		// Blog.
 		$b = isset( $merged['blog'] ) && is_array( $merged['blog'] ) ? $merged['blog'] : array();
@@ -847,6 +939,10 @@ class Themezur_Options {
 		$clean['assignments']['header_overrides'] = self::sanitize_header_overrides(
 			isset( $a['header_overrides'] ) && is_array( $a['header_overrides'] ) ? $a['header_overrides'] : array(),
 			$defaults['assignments']['header_overrides']
+		);
+		$clean['assignments']['footer_overrides'] = self::sanitize_footer_overrides(
+			isset( $a['footer_overrides'] ) && is_array( $a['footer_overrides'] ) ? $a['footer_overrides'] : array(),
+			$defaults['assignments']['footer_overrides']
 		);
 
 		// Performance.
@@ -1012,6 +1108,10 @@ class Themezur_Options {
 			'date_custom'           => isset( $raw['date_custom'] ) ? sanitize_text_field( $raw['date_custom'] ) : '',
 			'hide_mobile_date'      => ! empty( $raw['hide_mobile_date'] ),
 			'hide_desktop_date'     => ! empty( $raw['hide_desktop_date'] ),
+			'show_custom'           => ! empty( $raw['show_custom'] ),
+			'custom_html'           => isset( $raw['custom_html'] ) ? wp_kses_post( $raw['custom_html'] ) : '',
+			'hide_mobile_custom'    => ! empty( $raw['hide_mobile_custom'] ),
+			'hide_desktop_custom'   => ! empty( $raw['hide_desktop_custom'] ),
 		);
 	}
 
@@ -1073,6 +1173,10 @@ class Themezur_Options {
 			'button_target'        => ( isset( $raw['button_target'] ) && '_blank' === $raw['button_target'] ) ? '_blank' : '_self',
 			'hide_mobile_button'   => ! empty( $raw['hide_mobile_button'] ),
 			'hide_desktop_button'  => ! empty( $raw['hide_desktop_button'] ),
+			'show_custom'          => ! empty( $raw['show_custom'] ),
+			'custom_html'          => isset( $raw['custom_html'] ) ? wp_kses_post( $raw['custom_html'] ) : '',
+			'hide_mobile_custom'   => ! empty( $raw['hide_mobile_custom'] ),
+			'hide_desktop_custom'  => ! empty( $raw['hide_desktop_custom'] ),
 		);
 	}
 
@@ -1139,18 +1243,140 @@ class Themezur_Options {
 	 * @return array
 	 */
 	private static function sanitize_header_overrides( array $raw, array $d ) {
+		return self::sanitize_location_overrides( $raw, $d, array( 'front_page', 'shop', 'blog' ) );
+	}
+
+	/**
+	 * Sanitize per-context footer overrides.
+	 *
+	 * @param array $raw Raw.
+	 * @param array $d   Defaults.
+	 * @return array
+	 */
+	private static function sanitize_footer_overrides( array $raw, array $d ) {
+		return self::sanitize_location_overrides( $raw, $d, array( 'front_page', 'shop', 'blog', 'checkout' ) );
+	}
+
+	/**
+	 * Shared override sanitizer.
+	 *
+	 * @param array    $raw  Raw.
+	 * @param array    $d    Defaults.
+	 * @param string[] $keys Contexts.
+	 * @return array
+	 */
+	private static function sanitize_location_overrides( array $raw, array $d, array $keys ) {
 		$modes = array( 'inherit', 'theme', 'elementor', 'none' );
 		$out   = array();
-		foreach ( array( 'front_page', 'shop', 'blog' ) as $ctx ) {
+		foreach ( $keys as $ctx ) {
 			$row  = isset( $raw[ $ctx ] ) && is_array( $raw[ $ctx ] ) ? $raw[ $ctx ] : array();
-			$mode = isset( $row['mode'] ) ? sanitize_key( $row['mode'] ) : $d[ $ctx ]['mode'];
+			$def  = isset( $d[ $ctx ] ) ? $d[ $ctx ] : array(
+				'enabled'     => false,
+				'mode'        => 'inherit',
+				'template_id' => 0,
+			);
+			$mode = isset( $row['mode'] ) ? sanitize_key( $row['mode'] ) : $def['mode'];
 			$out[ $ctx ] = array(
 				'enabled'     => ! empty( $row['enabled'] ),
-				'mode'        => in_array( $mode, $modes, true ) ? $mode : $d[ $ctx ]['mode'],
+				'mode'        => in_array( $mode, $modes, true ) ? $mode : $def['mode'],
 				'template_id' => isset( $row['template_id'] ) ? absint( $row['template_id'] ) : 0,
 			);
 		}
 		return $out;
+	}
+
+	/**
+	 * @param array $raw Raw.
+	 * @param array $d   Defaults.
+	 * @return array
+	 */
+	private static function sanitize_footer_trust_badges( array $raw, array $d ) {
+		$items = array();
+		$src   = isset( $raw['items'] ) && is_array( $raw['items'] ) ? $raw['items'] : $d['items'];
+		foreach ( $src as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$items[] = array(
+				'icon'     => sanitize_key( $item['icon'] ?? 'shipping' ),
+				'title'    => sanitize_text_field( $item['title'] ?? '' ),
+				'subtitle' => sanitize_text_field( $item['subtitle'] ?? '' ),
+			);
+		}
+		return array(
+			'enabled' => ! empty( $raw['enabled'] ),
+			'items'   => $items,
+		);
+	}
+
+	/**
+	 * @param array $raw Raw.
+	 * @param array $d   Defaults.
+	 * @return array
+	 */
+	private static function sanitize_footer_newsletter_row( array $raw, array $d ) {
+		return array(
+			'enabled'     => ! empty( $raw['enabled'] ),
+			'title'       => sanitize_text_field( $raw['title'] ?? $d['title'] ),
+			'subtitle'    => sanitize_text_field( $raw['subtitle'] ?? $d['subtitle'] ),
+			'action'      => esc_url_raw( $raw['action'] ?? '' ),
+			'placeholder' => sanitize_text_field( $raw['placeholder'] ?? $d['placeholder'] ),
+			'button'      => sanitize_text_field( $raw['button'] ?? $d['button'] ),
+			'email_name'  => ( preg_replace( '/[^A-Za-z0-9_\-\[\]]/', '', (string) ( $raw['email_name'] ?? $d['email_name'] ) ) ?: 'EMAIL' ),
+		);
+	}
+
+	/**
+	 * @param mixed $raw Order list.
+	 * @return string[]
+	 */
+	private static function sanitize_footer_column_order( $raw ) {
+		$allowed = array( '1', '2', '3', '4', '5' );
+		$order   = array();
+		if ( is_array( $raw ) ) {
+			foreach ( $raw as $key ) {
+				$key = (string) absint( $key );
+				if ( in_array( $key, $allowed, true ) && ! in_array( $key, $order, true ) ) {
+					$order[] = $key;
+				}
+			}
+		}
+		foreach ( $allowed as $key ) {
+			if ( ! in_array( $key, $order, true ) ) {
+				$order[] = $key;
+			}
+		}
+		return $order;
+	}
+
+	/**
+	 * @param array $raw Raw.
+	 * @param array $d   Defaults.
+	 * @return array
+	 */
+	private static function sanitize_footer_app_badges( array $raw, array $d ) {
+		$qr = isset( $raw['qr_image_id'] ) ? absint( $raw['qr_image_id'] ) : 0;
+		return array(
+			'enabled'      => ! empty( $raw['enabled'] ),
+			'title'        => sanitize_text_field( $raw['title'] ?? $d['title'] ),
+			'play_url'     => esc_url_raw( $raw['play_url'] ?? '' ),
+			'appstore_url' => esc_url_raw( $raw['appstore_url'] ?? '' ),
+			'qr_image_id'  => ( $qr && wp_attachment_is_image( $qr ) ) ? $qr : 0,
+		);
+	}
+
+	/**
+	 * @param array $raw Raw.
+	 * @param array $d   Defaults.
+	 * @return array
+	 */
+	private static function sanitize_footer_store_row( array $raw, array $d ) {
+		return array(
+			'enabled'      => ! empty( $raw['enabled'] ),
+			'label'        => sanitize_text_field( $raw['label'] ?? $d['label'] ),
+			'map_url'      => esc_url_raw( $raw['map_url'] ?? '' ),
+			'address_text' => sanitize_text_field( $raw['address_text'] ?? '' ),
+		);
 	}
 
 	/**
@@ -1315,29 +1541,60 @@ class Themezur_Options {
 	 * @return array
 	 */
 	private static function sanitize_woocommerce( array $raw, array $d ) {
-		$mode  = isset( $raw['mode'] ) ? sanitize_key( $raw['mode'] ) : $d['mode'];
-		$shop  = isset( $raw['shop'] ) && is_array( $raw['shop'] ) ? $raw['shop'] : array();
-		$sing  = isset( $raw['single'] ) && is_array( $raw['single'] ) ? $raw['single'] : array();
-		$ds    = $d['shop'];
-		$dsi   = $d['single'];
-		$style = isset( $shop['card_style'] ) ? sanitize_key( $shop['card_style'] ) : $ds['card_style'];
+		$mode     = isset( $raw['mode'] ) ? sanitize_key( $raw['mode'] ) : $d['mode'];
+		$shop     = isset( $raw['shop'] ) && is_array( $raw['shop'] ) ? $raw['shop'] : array();
+		$sing     = isset( $raw['single'] ) && is_array( $raw['single'] ) ? $raw['single'] : array();
+		$cart     = isset( $raw['cart'] ) && is_array( $raw['cart'] ) ? $raw['cart'] : array();
+		$checkout = isset( $raw['checkout'] ) && is_array( $raw['checkout'] ) ? $raw['checkout'] : array();
+		$account  = isset( $raw['account'] ) && is_array( $raw['account'] ) ? $raw['account'] : array();
+		$ds       = $d['shop'];
+		$dsi      = $d['single'];
+		$dc       = $d['cart'];
+		$dch      = $d['checkout'];
+		$da       = $d['account'];
+		$style    = isset( $shop['card_style'] ) ? sanitize_key( $shop['card_style'] ) : $ds['card_style'];
+		$sidebar  = isset( $shop['sidebar'] ) ? sanitize_key( $shop['sidebar'] ) : $ds['sidebar'];
+		$layout   = isset( $sing['layout'] ) ? sanitize_key( $sing['layout'] ) : $dsi['layout'];
+		$density  = isset( $account['density'] ) ? sanitize_key( $account['density'] ) : $da['density'];
+		$new_days = isset( $shop['new_badge_days'] ) ? absint( $shop['new_badge_days'] ) : (int) $ds['new_badge_days'];
 
 		return array(
-			'mode'   => in_array( $mode, array( 'theme', 'default' ), true ) ? $mode : 'theme',
-			'shop'   => array(
-				'columns'            => max( 2, min( 5, isset( $shop['columns'] ) ? absint( $shop['columns'] ) : (int) $ds['columns'] ) ),
-				'products_per_page'  => max( 4, min( 48, isset( $shop['products_per_page'] ) ? absint( $shop['products_per_page'] ) : (int) $ds['products_per_page'] ) ),
-				'card_style'         => in_array( $style, array( 'soft', 'minimal', 'bordered' ), true ) ? $style : 'soft',
-				'show_result_count'  => ! empty( $shop['show_result_count'] ),
-				'show_ordering'      => ! empty( $shop['show_ordering'] ),
-				'quick_view'         => isset( $shop['quick_view'] ) ? (bool) $shop['quick_view'] : (bool) $ds['quick_view'],
-				'wishlist'           => isset( $shop['wishlist'] ) ? (bool) $shop['wishlist'] : (bool) $ds['wishlist'],
+			'mode'     => in_array( $mode, array( 'theme', 'default' ), true ) ? $mode : 'theme',
+			'shop'     => array(
+				'columns'           => max( 2, min( 5, isset( $shop['columns'] ) ? absint( $shop['columns'] ) : (int) $ds['columns'] ) ),
+				'products_per_page' => max( 4, min( 48, isset( $shop['products_per_page'] ) ? absint( $shop['products_per_page'] ) : (int) $ds['products_per_page'] ) ),
+				'card_style'        => in_array( $style, array( 'soft', 'minimal', 'bordered' ), true ) ? $style : 'soft',
+				'show_result_count' => ! empty( $shop['show_result_count'] ),
+				'show_ordering'     => ! empty( $shop['show_ordering'] ),
+				'quick_view'        => isset( $shop['quick_view'] ) ? (bool) $shop['quick_view'] : (bool) $ds['quick_view'],
+				'wishlist'          => isset( $shop['wishlist'] ) ? (bool) $shop['wishlist'] : (bool) $ds['wishlist'],
+				'hover_image'       => isset( $shop['hover_image'] ) ? (bool) $shop['hover_image'] : (bool) $ds['hover_image'],
+				'new_badge_days'    => max( 0, min( 90, $new_days ) ),
+				'sidebar'           => in_array( $sidebar, array( 'none', 'left', 'right' ), true ) ? $sidebar : 'none',
 			),
-			'single' => array(
+			'single'   => array(
 				'related_count'    => max( 0, min( 8, isset( $sing['related_count'] ) ? absint( $sing['related_count'] ) : (int) $dsi['related_count'] ) ),
 				'upsells_count'    => max( 0, min( 8, isset( $sing['upsells_count'] ) ? absint( $sing['upsells_count'] ) : (int) $dsi['upsells_count'] ) ),
 				'sticky_cart'      => isset( $sing['sticky_cart'] ) ? (bool) $sing['sticky_cart'] : (bool) $dsi['sticky_cart'],
 				'quantity_stepper' => isset( $sing['quantity_stepper'] ) ? (bool) $sing['quantity_stepper'] : (bool) $dsi['quantity_stepper'],
+				'layout'           => in_array( $layout, array( 'classic', 'gallery_wide', 'stacked' ), true ) ? $layout : 'classic',
+				'sale_percent'     => isset( $sing['sale_percent'] ) ? (bool) $sing['sale_percent'] : (bool) $dsi['sale_percent'],
+				'show_rating'      => isset( $sing['show_rating'] ) ? (bool) $sing['show_rating'] : (bool) $dsi['show_rating'],
+				'show_sku'         => isset( $sing['show_sku'] ) ? (bool) $sing['show_sku'] : (bool) $dsi['show_sku'],
+				'show_stock'       => isset( $sing['show_stock'] ) ? (bool) $sing['show_stock'] : (bool) $dsi['show_stock'],
+				'trust_note'       => isset( $sing['trust_note'] ) ? sanitize_textarea_field( $sing['trust_note'] ) : '',
+				'show_related'     => isset( $sing['show_related'] ) ? (bool) $sing['show_related'] : (bool) $dsi['show_related'],
+				'show_upsells'     => isset( $sing['show_upsells'] ) ? (bool) $sing['show_upsells'] : (bool) $dsi['show_upsells'],
+			),
+			'cart'     => array(
+				'open_on_add' => isset( $cart['open_on_add'] ) ? (bool) $cart['open_on_add'] : (bool) $dc['open_on_add'],
+			),
+			'checkout' => array(
+				'trust_note'    => isset( $checkout['trust_note'] ) ? sanitize_textarea_field( $checkout['trust_note'] ) : '',
+				'sticky_review' => isset( $checkout['sticky_review'] ) ? (bool) $checkout['sticky_review'] : (bool) $dch['sticky_review'],
+			),
+			'account'  => array(
+				'density' => in_array( $density, array( 'comfortable', 'compact' ), true ) ? $density : 'comfortable',
 			),
 		);
 	}
@@ -1528,13 +1785,38 @@ class Themezur_Options {
 	}
 
 	/**
+	 * Second logo attachment ID from Themezur panel.
+	 *
+	 * @return int
+	 */
+	public static function get_logo_id_2() {
+		return (int) self::get( 'general.logo_id_2', 0 );
+	}
+
+	/**
+	 * Second logo image URL (empty if none).
+	 *
+	 * @param string $size Image size.
+	 * @return string
+	 */
+	public static function get_logo_url_2( $size = 'full' ) {
+		$logo_id = self::get_logo_id_2();
+		if ( $logo_id < 1 ) {
+			return '';
+		}
+		$url = wp_get_attachment_image_url( $logo_id, $size );
+		return $url ? $url : '';
+	}
+
+	/**
 	 * Options array enriched for the admin UI (includes logo_url).
 	 *
 	 * @return array
 	 */
 	public static function get_all_for_admin() {
 		$options = self::get_all();
-		$options['general']['logo_url'] = self::get_logo_url( 'medium' );
+		$options['general']['logo_url']   = self::get_logo_url( 'medium' );
+		$options['general']['logo_url_2'] = self::get_logo_url_2( 'medium' );
 
 		if ( ! empty( $options['footer']['columns'] ) && is_array( $options['footer']['columns'] ) ) {
 			foreach ( array( '1', '2', '3', '4' ) as $key ) {

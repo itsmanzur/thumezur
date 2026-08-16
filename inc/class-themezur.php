@@ -58,8 +58,11 @@ final class Themezur {
 		require_once THEMEZUR_DIR . '/inc/class-woocommerce.php';
 		require_once THEMEZUR_DIR . '/inc/class-wishlist.php';
 		require_once THEMEZUR_DIR . '/inc/class-ajax.php';
+		require_once THEMEZUR_DIR . '/inc/class-mega-content.php';
 		require_once THEMEZUR_DIR . '/inc/class-megamenu.php';
 		require_once THEMEZUR_DIR . '/inc/class-megamenu-walker.php';
+		require_once THEMEZUR_DIR . '/inc/class-mobile-nav-walker.php';
+		require_once THEMEZUR_DIR . '/inc/class-demo-ready.php';
 
 		if ( is_admin() ) {
 			require_once THEMEZUR_DIR . '/admin/class-admin.php';
@@ -72,12 +75,16 @@ final class Themezur {
 	 * @return void
 	 */
 	private function boot() {
+		Themezur_Categories::init();
+		Themezur_Mega_Content::init();
+		Themezur_Footer::init();
 		Themezur_Elementor::init();
 		Themezur_Frontend::init();
 		Themezur_Breadcrumbs::init();
 		Themezur_WooCommerce::init();
 		Themezur_Wishlist::init();
 		Themezur_Ajax::init();
+		Themezur_Demo_Ready::init();
 
 		if ( is_admin() ) {
 			Themezur_Admin::init();

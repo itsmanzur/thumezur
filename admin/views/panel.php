@@ -271,6 +271,56 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<p class="tz-hint"><?php esc_html_e( 'Shop matches WooCommerce shop, product archives, and single products. Blog matches the posts index, single posts, and post archives.', 'themezur' ); ?></p>
 						</div>
 					</div>
+
+					<div class="tz-group">
+						<div class="tz-group__head">
+							<div>
+								<h3 class="tz-group__title"><?php esc_html_e( 'Conditional footers', 'themezur' ); ?></h3>
+								<p class="tz-group__desc"><?php esc_html_e( 'Override the global Footer → Source mode for Home, Shop, Blog, or Checkout.', 'themezur' ); ?></p>
+							</div>
+						</div>
+						<div class="tz-group__body">
+							<template x-for="ctx in [
+								{ key: 'front_page', label: '<?php echo esc_js( __( 'Front page / Home', 'themezur' ) ); ?>' },
+								{ key: 'shop', label: '<?php echo esc_js( __( 'Shop (WooCommerce)', 'themezur' ) ); ?>' },
+								{ key: 'blog', label: '<?php echo esc_js( __( 'Blog', 'themezur' ) ); ?>' },
+								{ key: 'checkout', label: '<?php echo esc_js( __( 'Checkout', 'themezur' ) ); ?>' }
+							]" :key="ctx.key">
+								<div class="tz-cond-card">
+									<div class="tz-cond-card__head">
+										<strong x-text="ctx.label"></strong>
+										<label class="tz-field--row" style="margin:0;padding:0;border:0;">
+											<input type="checkbox" x-model="options.assignments.footer_overrides[ctx.key].enabled">
+											<span><?php esc_html_e( 'Override', 'themezur' ); ?></span>
+										</label>
+									</div>
+									<div class="tz-cond-card__body" x-show="options.assignments.footer_overrides[ctx.key].enabled">
+										<div class="tz-field">
+											<label><?php esc_html_e( 'Footer mode', 'themezur' ); ?></label>
+											<select
+												x-model="options.assignments.footer_overrides[ctx.key].mode"
+												@change="options.assignments.footer_overrides[ctx.key].mode === 'elementor' && loadTemplates('footer')"
+											>
+												<option value="inherit"><?php esc_html_e( 'Inherit (global Footer setting)', 'themezur' ); ?></option>
+												<option value="theme"><?php esc_html_e( 'Themezur footer', 'themezur' ); ?></option>
+												<option value="elementor"><?php esc_html_e( 'Elementor template', 'themezur' ); ?></option>
+												<option value="none"><?php esc_html_e( 'None (hide footer)', 'themezur' ); ?></option>
+											</select>
+										</div>
+										<div class="tz-field" x-show="options.assignments.footer_overrides[ctx.key].mode === 'elementor'">
+											<label><?php esc_html_e( 'Elementor template', 'themezur' ); ?></label>
+											<select x-model.number="options.assignments.footer_overrides[ctx.key].template_id">
+												<option :value="0"><?php esc_html_e( '— Select —', 'themezur' ); ?></option>
+												<template x-for="tpl in templates.footer" :key="tpl.id">
+													<option :value="tpl.id" x-text="tpl.title"></option>
+												</template>
+											</select>
+										</div>
+									</div>
+								</div>
+							</template>
+						</div>
+					</div>
 				</section>
 
 				<section x-show="tab === 'performance'" class="tz-section" x-cloak>
@@ -406,6 +456,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 											<button type="button" class="button" x-show="options.general.logo_id" @click="removeLogo()"><?php esc_html_e( 'Remove logo', 'themezur' ); ?></button>
 										</div>
 									</div>
+								</div>
+								<div class="tz-field">
+									<label><?php esc_html_e( 'Second logo (optional)', 'themezur' ); ?></label>
+									<p class="tz-hint"><?php esc_html_e( 'Shown next to the first logo in the header — e.g. a plugin icon beside a brand wordmark.', 'themezur' ); ?></p>
+									<div class="tz-logo-picker">
+										<div class="tz-logo-picker__preview" x-show="options.general.logo_url_2">
+											<img :src="options.general.logo_url_2" alt="" />
+										</div>
+										<div class="tz-logo-picker__empty" x-show="!options.general.logo_url_2">
+											<?php esc_html_e( 'No second logo selected.', 'themezur' ); ?>
+										</div>
+										<div class="tz-logo-picker__actions">
+											<button type="button" class="button button-primary" @click="pickLogo2()"><?php esc_html_e( 'Upload / Select second logo', 'themezur' ); ?></button>
+											<button type="button" class="button" x-show="options.general.logo_id_2" @click="removeLogo2()"><?php esc_html_e( 'Remove second logo', 'themezur' ); ?></button>
+										</div>
+									</div>
+								</div>
+								<div class="tz-field tz-field--row" x-show="options.general.logo_id_2">
+									<label>
+										<input type="checkbox" x-model="options.general.logo_divider">
+										<?php esc_html_e( 'Show divider line between the two logos', 'themezur' ); ?>
+									</label>
 								</div>
 								<div class="tz-field tz-field--row">
 									<label>

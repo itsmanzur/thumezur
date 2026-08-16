@@ -11,7 +11,7 @@
 .tz-mega-dropdown {
 	position: absolute !important;
 	top: calc(100% + 4px) !important;
-	left: 0 !important;
+	inset-inline-start: 0 !important;
 	z-index: 99999 !important;
 	display: none !important;
 	opacity: 0;
@@ -307,7 +307,7 @@
 .tz-mega-promo-card__badge {
 	position: absolute;
 	top: 12px;
-	left: 12px;
+	inset-inline-start: 12px;
 	z-index: 2;
 	background: #ef4444;
 	color: #ffffff;
@@ -360,7 +360,7 @@
 	line-height: 1;
 	padding: 3px 7px;
 	border-radius: 999px;
-	margin-left: 6px;
+	margin-inline-start: 6px;
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 	color: #ffffff;
@@ -466,16 +466,240 @@
 	text-decoration: underline !important;
 }
 
-/* Mobile Responsive Accordion */
+/* Product collection cards */
+.tz-mega-products {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.tz-mega-product {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	text-decoration: none !important;
+	color: inherit;
+	padding: 6px;
+	border-radius: 10px;
+	transition: background 140ms ease;
+}
+
+.tz-mega-product:hover {
+	background: rgba(255, 255, 255, 0.06);
+}
+
+.tz-mega-product__thumb {
+	flex: 0 0 56px;
+	width: 56px;
+	height: 56px;
+	border-radius: 8px;
+	overflow: hidden;
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.tz-mega-product__thumb img,
+.tz-mega-product__img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.tz-mega-product__title {
+	display: block;
+	font-size: 0.86rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.tz-mega-product__price {
+	display: block;
+	font-size: 0.78rem;
+	opacity: 0.85;
+	margin-top: 2px;
+}
+
+/* Generic content column: recent posts (any post type) */
+.tz-mega-posts {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.tz-mega-post {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	text-decoration: none !important;
+	color: inherit;
+	padding: 6px;
+	border-radius: 10px;
+	transition: background 140ms ease;
+}
+
+.tz-mega-post:hover {
+	background: rgba(255, 255, 255, 0.06);
+}
+
+.tz-mega-post__thumb {
+	flex: 0 0 56px;
+	width: 56px;
+	height: 56px;
+	border-radius: 8px;
+	overflow: hidden;
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.tz-mega-post__thumb img,
+.tz-mega-post__img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.tz-mega-post__title {
+	display: block;
+	font-size: 0.86rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+/* Generic content column: widget area / raw HTML */
+.tz-mega-custom {
+	font-size: 0.86rem;
+	line-height: 1.5;
+}
+
+/* Brand logos */
+.tz-mega-brands {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.tz-mega-brand {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 52px;
+	padding: 8px;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	text-decoration: none !important;
+	color: inherit;
+}
+
+.tz-mega-brand__img {
+	max-width: 100%;
+	max-height: 36px;
+	object-fit: contain;
+}
+
+.tz-mega-brand__name {
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-align: center;
+}
+
+/* Tabs */
+.tz-mega-tabs__nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 12px 20px 0;
+	position: relative;
+	z-index: 1;
+}
+
+.tz-mega-tabs__btn {
+	appearance: none;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	background: rgba(255, 255, 255, 0.04);
+	color: inherit;
+	border-radius: 999px;
+	padding: 0.35rem 0.85rem;
+	font-size: 0.8rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.tz-mega-tabs__btn.is-active,
+.tz-mega-tabs__btn[aria-selected="true"] {
+	background: rgba(255, 255, 255, 0.14);
+	border-color: rgba(255, 255, 255, 0.28);
+}
+
+.tz-mega-tabpanel[hidden] {
+	display: none !important;
+}
+
+.tz-mega-tabs-promo {
+	padding: 0 16px 16px;
+}
+
+.tz-mega-promo-card--image_overlay {
+	position: relative;
+	overflow: hidden;
+	min-height: 220px;
+}
+
+.tz-mega-promo-card--image_overlay .tz-mega-promo-card__img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.tz-mega-promo-card--image_overlay .tz-mega-promo-card__body {
+	position: relative;
+	z-index: 1;
+	margin-top: auto;
+	padding: 16px;
+	background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+	color: #fff;
+}
+
+.tz-mega-promo-html,
+.tz-mega-promo-card__html {
+	font-size: 0.85rem;
+	line-height: 1.45;
+	opacity: 0.92;
+}
+
+.tz-mega-dropdown--theme-light .tz-mega-product:hover,
+.tz-mega-dropdown--theme-light .tz-mega-post:hover,
+.tz-mega-dropdown--theme-light .tz-mega-brand {
+	background: #f1f5f9;
+}
+
+.tz-mega-dropdown--theme-light .tz-mega-tabs__btn {
+	border-color: #e2e8f0;
+	background: #f8fafc;
+	color: #0f172a;
+}
+
+.tz-mega-dropdown--theme-light .tz-mega-tabs__btn.is-active {
+	background: #e2e8f0;
+}
+
+/* Mobile: mega panels collapse; accordion opens via .sub-menu-open */
 @media (max-width: 991px) {
 	.tz-mega-dropdown {
 		position: static !important;
 		transform: none !important;
 		opacity: 1 !important;
-		display: block !important;
+		display: none !important;
 		pointer-events: auto !important;
 		width: 100% !important;
 		padding-top: 0 !important;
+	}
+
+	.tz-nav-list > li.tz-menu-item--mega.sub-menu-open > .tz-mega-dropdown,
+	.tz-nav-list > li.tz-menu-item--mega.is-active > .tz-mega-dropdown {
+		display: block !important;
 	}
 
 	.tz-mega-dropdown__inner {
@@ -492,5 +716,14 @@
 	.tz-mega-cat-grid {
 		grid-template-columns: repeat(2, 1fr) !important;
 		padding: 8px 0 !important;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tz-mega-dropdown,
+	.tz-mega-dropdown__inner,
+	.tz-glowing-badge {
+		animation: none !important;
+		transition: none !important;
 	}
 }

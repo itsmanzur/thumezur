@@ -16,8 +16,10 @@ $bottom    = isset( $h['bottom'] ) && is_array( $h['bottom'] ) ? $h['bottom'] : 
 $scroll    = isset( $h['scroll'] ) && is_array( $h['scroll'] ) ? $h['scroll'] : array();
 $announce  = isset( $h['announce'] ) && is_array( $h['announce'] ) ? $h['announce'] : array();
 $sticky    = ! empty( $h['sticky'] );
-$logo_id   = Themezur_Options::get_logo_id();
-$site_name = get_bloginfo( 'name' );
+$logo_id      = Themezur_Options::get_logo_id();
+$logo_id_2    = Themezur_Options::get_logo_id_2();
+$logo_divider = Themezur_Options::get( 'general.logo_divider', true );
+$site_name    = get_bloginfo( 'name' );
 
 $scroll_behavior = isset( $scroll['behavior'] ) ? $scroll['behavior'] : 'none';
 $scroll_offset   = isset( $scroll['offset'] ) ? (int) $scroll['offset'] : 40;
@@ -30,7 +32,8 @@ $show_announce   = Themezur_Frontend::should_show_announce();
 $announce_cookie = Themezur_Frontend::announce_cookie_name( $announce['version'] ?? '1' );
 $announce_days   = isset( $announce['cookie_days'] ) ? (int) $announce['cookie_days'] : 7;
 
-$nav_menu = '';
+$nav_menu        = '';
+$nav_menu_mobile = '';
 if ( ! empty( $bottom['show_menu'] ) ) {
 	$bot_menu_id = isset( $bottom['menu_id'] ) ? absint( $bottom['menu_id'] ) : 0;
 	$bot_args    = array(
@@ -47,6 +50,18 @@ if ( ! empty( $bottom['show_menu'] ) ) {
 		$bot_args['theme_location'] = 'menu-1';
 	}
 	$nav_menu = wp_nav_menu( $bot_args );
+
+	// Mobile drawer: lite walker (no desktop mega panels) + unique item IDs.
+	$mobile_args               = $bot_args;
+	$mobile_args['walker']     = new Themezur_Mobile_Nav_Walker();
+	$mobile_args['menu_class'] = 'tz-nav-list tz-nav-list--mobile';
+	$mobile_args['menu_id']    = 'tz-mobile-menu';
+	$mobile_id_filter          = static function ( $id, $item ) {
+		return 'tz-m-menu-item-' . (int) $item->ID;
+	};
+	add_filter( 'nav_menu_item_id', $mobile_id_filter, 10, 2 );
+	$nav_menu_mobile = wp_nav_menu( $mobile_args );
+	remove_filter( 'nav_menu_item_id', $mobile_id_filter, 10 );
 }
 
 $cart_count = 0;
@@ -105,6 +120,8 @@ $vis            = array(
 	'social'     => Themezur_Frontend::visibility_classes( $top, 'social' ),
 	'phone'      => Themezur_Frontend::visibility_classes( $top, 'phone' ),
 	'date'       => Themezur_Frontend::visibility_classes( $top, 'date' ),
+	'top_custom' => Themezur_Frontend::visibility_classes( $top, 'custom' ),
+	'middle_custom' => Themezur_Frontend::visibility_classes( $middle, 'custom' ),
 	'logo'       => Themezur_Frontend::visibility_classes( $middle, 'logo' ),
 	'address'    => Themezur_Frontend::visibility_classes( $middle, 'address' ),
 	'search'     => Themezur_Frontend::visibility_classes( $middle, 'search' ),
@@ -259,6 +276,11 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 					<?php if ( '' !== trim( $meta_str ) ) : ?>
 						<span class="tz-header-top__date<?php echo $vis['date'] ? ' ' . esc_attr( $vis['date'] ) : ''; ?>"><?php echo esc_html( $meta_str ); ?></span>
 					<?php endif; ?>
+					<?php if ( ! empty( $top['show_custom'] ) && '' !== trim( $top['custom_html'] ) ) : ?>
+						<div class="tz-header-top__custom<?php echo $vis['top_custom'] ? ' ' . esc_attr( $vis['top_custom'] ) : ''; ?>">
+							<?php echo do_shortcode( $top['custom_html'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized with wp_kses_post() on save. ?>
+						</div>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
@@ -288,6 +310,27 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 						<?php elseif ( $site_name ) : ?>
 							<a class="tz-header-middle__title<?php echo $vis['logo'] ? ' ' . esc_attr( $vis['logo'] ) : ''; ?>" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
 								<?php echo esc_html( $site_name ); ?>
+							</a>
+						<?php endif; ?>
+
+						<?php if ( $logo_id_2 ) : ?>
+							<?php if ( $logo_divider ) : ?>
+								<span class="tz-header-middle__logo-divider" aria-hidden="true"></span>
+							<?php endif; ?>
+							<a class="tz-header-middle__logo tz-header-middle__logo--2" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+								<?php
+								echo wp_get_attachment_image(
+									$logo_id_2,
+									'full',
+									false,
+									array(
+										'class'    => 'tz-header-middle__logo-img tz-header-middle__logo-img--2',
+										'alt'      => $site_name ? $site_name : __( 'Secondary logo', 'themezur' ),
+										'loading'  => 'eager',
+										'decoding' => 'async',
+									)
+								);
+								?>
 							</a>
 						<?php endif; ?>
 					<?php endif; ?>
@@ -373,6 +416,12 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 						</a>
 					<?php endif; ?>
 
+					<?php if ( ! empty( $middle['show_custom'] ) && '' !== trim( $middle['custom_html'] ) ) : ?>
+						<div class="tz-header-middle__custom<?php echo $vis['middle_custom'] ? ' ' . esc_attr( $vis['middle_custom'] ) : ''; ?>">
+							<?php echo do_shortcode( $middle['custom_html'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized with wp_kses_post() on save. ?>
+						</div>
+					<?php endif; ?>
+
 					<?php if ( ! empty( $middle['show_dark_mode'] ) ) : ?>
 						<button type="button" class="tz-icon-btn<?php echo $vis['dark'] ? ' ' . esc_attr( $vis['dark'] ) : ''; ?>" data-tz-dark-toggle aria-label="<?php echo esc_attr__( 'Toggle dark mode', 'themezur' ); ?>">
 							<svg class="tz-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 14.3A8.5 8.5 0 119.7 3a7 7 0 0011.3 11.3z"/></svg>
@@ -406,6 +455,7 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 						<a
 							class="tz-icon-btn tz-cart-btn<?php echo $vis['cart'] ? ' ' . esc_attr( $vis['cart'] ) : ''; ?>"
 							href="<?php echo esc_url( $cart_url ); ?>"
+							aria-label="<?php echo esc_attr__( 'Cart', 'themezur' ); ?>"
 							<?php if ( $mini_cart ) : ?>
 								aria-controls="tz-mini-cart"
 								aria-expanded="false"
@@ -485,7 +535,7 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 	<?php if ( $nav_menu || ! empty( $bottom['show_categories'] ) ) : ?>
 		<div id="tz-mobile-drawer" class="tz-mobile-drawer" hidden data-tz-mobile-drawer>
 			<div class="tz-mobile-drawer__overlay" data-tz-drawer-close aria-hidden="true"></div>
-			<div class="tz-mobile-drawer__panel" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr__( 'Navigation Menu', 'themezur' ); ?>">
+			<div class="tz-mobile-drawer__panel" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr__( 'Navigation Menu', 'themezur' ); ?>" tabindex="-1">
 				<div class="tz-mobile-drawer__header">
 					<div class="tz-mobile-drawer__brand">
 						<?php if ( $logo_id ) : ?>
@@ -504,6 +554,25 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 							</a>
 						<?php else : ?>
 							<span class="tz-mobile-drawer__title"><?php echo esc_html( $site_name ); ?></span>
+						<?php endif; ?>
+
+						<?php if ( $logo_id_2 ) : ?>
+							<?php if ( $logo_divider ) : ?>
+								<span class="tz-mobile-drawer__logo-divider" aria-hidden="true"></span>
+							<?php endif; ?>
+							<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+								<?php
+								echo wp_get_attachment_image(
+									$logo_id_2,
+									'full',
+									false,
+									array(
+										'class' => 'tz-mobile-drawer__logo-img tz-mobile-drawer__logo-img--2',
+										'alt'   => $site_name ? $site_name : __( 'Secondary logo', 'themezur' ),
+									)
+								);
+								?>
+							</a>
 						<?php endif; ?>
 					</div>
 					<button type="button" class="tz-mobile-drawer__close" data-tz-drawer-close aria-label="<?php echo esc_attr__( 'Close menu', 'themezur' ); ?>">
@@ -534,9 +603,9 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 					<?php endif; ?>
 
 					<div class="tz-mobile-drawer__pane is-active" data-tz-drawer-pane="menu">
-						<?php if ( $nav_menu ) : ?>
+						<?php if ( $nav_menu_mobile || $nav_menu ) : ?>
 							<nav class="tz-mobile-drawer__nav" aria-label="<?php echo esc_attr__( 'Mobile navigation', 'themezur' ); ?>">
-								<?php echo $nav_menu; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+								<?php echo $nav_menu_mobile ? $nav_menu_mobile : $nav_menu; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							</nav>
 						<?php endif; ?>
 					</div>

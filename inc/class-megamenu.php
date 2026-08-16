@@ -43,8 +43,24 @@ class Themezur_Mega_Menu {
 		// Inline script for Media Upload & Icon Picker helper
 		$inline_js = "
 		jQuery(document).ready(function($){
-			// Initialize color pickers
-			$('.tz-color-field').wpColorPicker();
+			function initTzColorPickers(context) {
+				var \$scope = context ? $(context) : $(document);
+				\$scope.find('.tz-color-field').each(function(){
+					var \$field = $(this);
+					if (\$field.hasClass('wp-color-picker') || \$field.closest('.wp-picker-container').length) {
+						return;
+					}
+					\$field.wpColorPicker();
+				});
+			}
+
+			initTzColorPickers();
+
+			// Re-init when a menu item accordion expands (fields were hidden at first paint).
+			$(document).on('click', '#menu-to-edit .item-edit', function(){
+				var \$item = $(this).closest('li.menu-item');
+				setTimeout(function(){ initTzColorPickers(\$item); }, 50);
+			});
 
 			// Media Upload Button Handler
 			$(document).on('click', '.tz-mega-upload-btn', function(e){
@@ -104,7 +120,28 @@ class Themezur_Mega_Menu {
 		$promo_btn_label  = get_post_meta( $item_id, '_tz_mega_promo_btn_label', true );
 		$promo_btn_url    = get_post_meta( $item_id, '_tz_mega_promo_btn_url', true );
 		$promo_badge      = get_post_meta( $item_id, '_tz_mega_promo_badge', true );
+		$promo_html       = get_post_meta( $item_id, '_tz_mega_promo_html', true );
+		$promo_layout     = get_post_meta( $item_id, '_tz_mega_promo_layout', true );
 		$cat_grid_enable  = get_post_meta( $item_id, '_tz_mega_cat_grid_enable', true );
+		$products_enable  = get_post_meta( $item_id, '_tz_mega_products_enable', true );
+		$products_source  = get_post_meta( $item_id, '_tz_mega_products_source', true );
+		$products_ids     = get_post_meta( $item_id, '_tz_mega_products_ids', true );
+		$products_limit   = get_post_meta( $item_id, '_tz_mega_products_limit', true );
+		$products_title   = get_post_meta( $item_id, '_tz_mega_products_title', true );
+		$brands_enable    = get_post_meta( $item_id, '_tz_mega_brands_enable', true );
+		$brands_taxonomy  = get_post_meta( $item_id, '_tz_mega_brands_taxonomy', true );
+		$brands_limit     = get_post_meta( $item_id, '_tz_mega_brands_limit', true );
+		$custom_enable    = get_post_meta( $item_id, '_tz_mega_custom_enable', true );
+		$custom_title     = get_post_meta( $item_id, '_tz_mega_custom_title', true );
+		$custom_source    = get_post_meta( $item_id, '_tz_mega_custom_source', true );
+		$custom_post_type = get_post_meta( $item_id, '_tz_mega_custom_post_type', true );
+		$custom_limit     = get_post_meta( $item_id, '_tz_mega_custom_limit', true );
+		$custom_sidebar   = get_post_meta( $item_id, '_tz_mega_custom_sidebar', true );
+		$custom_html      = get_post_meta( $item_id, '_tz_mega_custom_html', true );
+		$tabs_enable      = get_post_meta( $item_id, '_tz_mega_tabs_enable', true );
+		$schedule_enable  = get_post_meta( $item_id, '_tz_mega_schedule_enable', true );
+		$schedule_start   = get_post_meta( $item_id, '_tz_mega_schedule_start', true );
+		$schedule_end     = get_post_meta( $item_id, '_tz_mega_schedule_end', true );
 		$elementor_id     = get_post_meta( $item_id, '_tz_mega_elementor_id', true );
 		$section_label    = get_post_meta( $item_id, '_tz_mega_section_label', true );
 		$icon             = get_post_meta( $item_id, '_tz_mega_icon', true );
@@ -122,6 +159,13 @@ class Themezur_Mega_Menu {
 		$animation        = $animation ? $animation : 'slide';
 		$top_badge_color  = $top_badge_color ? $top_badge_color : 'red';
 		$badge_color      = $badge_color ? $badge_color : 'green';
+		$promo_layout     = $promo_layout ? $promo_layout : 'card';
+		$products_source  = $products_source ? $products_source : 'latest';
+		$products_limit   = $products_limit ? (int) $products_limit : 4;
+		$brands_limit     = $brands_limit ? (int) $brands_limit : 8;
+		$custom_source    = $custom_source ? $custom_source : 'html';
+		$custom_post_type = $custom_post_type ? $custom_post_type : 'post';
+		$custom_limit     = $custom_limit ? (int) $custom_limit : 4;
 
 		$presets = array(
 			''                                => '— Select Preset Icon —',
@@ -263,13 +307,110 @@ class Themezur_Mega_Menu {
 					</label>
 				</p>
 
+				<!-- Product collection block -->
+				<div class="description description-wide" style="margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
+					<label>
+						<input type="checkbox" name="tz_mega_products_enable[<?php echo esc_attr( (string) $item_id ); ?>]" value="1" <?php checked( $products_enable, '1' ); ?> />
+						<strong><?php esc_html_e( 'Product / collection block', 'themezur' ); ?></strong>
+					</label>
+					<div style="margin-top: 8px; display: grid; gap: 6px;">
+						<input type="text" name="tz_mega_products_title[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $products_title ); ?>" placeholder="<?php esc_attr_e( 'Column title (e.g. New arrivals)', 'themezur' ); ?>" class="widefat" />
+						<select name="tz_mega_products_source[<?php echo esc_attr( (string) $item_id ); ?>]" style="width:100%;">
+							<option value="latest" <?php selected( $products_source, 'latest' ); ?>><?php esc_html_e( 'Latest products', 'themezur' ); ?></option>
+							<option value="on_sale" <?php selected( $products_source, 'on_sale' ); ?>><?php esc_html_e( 'On sale', 'themezur' ); ?></option>
+							<option value="best_sellers" <?php selected( $products_source, 'best_sellers' ); ?>><?php esc_html_e( 'Best sellers', 'themezur' ); ?></option>
+							<option value="manual" <?php selected( $products_source, 'manual' ); ?>><?php esc_html_e( 'Manual product IDs', 'themezur' ); ?></option>
+						</select>
+						<input type="text" name="tz_mega_products_ids[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $products_ids ); ?>" placeholder="<?php esc_attr_e( 'Manual IDs: 12,45,78', 'themezur' ); ?>" class="widefat" />
+						<label><?php esc_html_e( 'Limit (2–8)', 'themezur' ); ?>
+							<input type="number" min="2" max="8" name="tz_mega_products_limit[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( (string) $products_limit ); ?>" style="width:80px;" />
+						</label>
+					</div>
+				</div>
+
+				<!-- Brand logo grid -->
+				<div class="description description-wide" style="margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
+					<label>
+						<input type="checkbox" name="tz_mega_brands_enable[<?php echo esc_attr( (string) $item_id ); ?>]" value="1" <?php checked( $brands_enable, '1' ); ?> />
+						<strong><?php esc_html_e( 'Brand logo grid', 'themezur' ); ?></strong>
+					</label>
+					<div style="margin-top: 8px; display: grid; gap: 6px;">
+						<input type="text" name="tz_mega_brands_taxonomy[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $brands_taxonomy ); ?>" placeholder="<?php esc_attr_e( 'Taxonomy (blank = auto: product_brand / pwb-brand / yith_product_brand)', 'themezur' ); ?>" class="widefat" />
+						<label><?php esc_html_e( 'Limit (2–16)', 'themezur' ); ?>
+							<input type="number" min="2" max="16" name="tz_mega_brands_limit[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( (string) $brands_limit ); ?>" style="width:80px;" />
+						</label>
+					</div>
+				</div>
+
+				<!-- Custom content column (works for any post type / plugin) -->
+				<div class="description description-wide" style="margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
+					<label>
+						<input type="checkbox" name="tz_mega_custom_enable[<?php echo esc_attr( (string) $item_id ); ?>]" value="1" <?php checked( $custom_enable, '1' ); ?> />
+						<strong>🧩 <?php esc_html_e( 'Custom content column (not WooCommerce-only — any post type, widget area, or raw HTML/shortcode)', 'themezur' ); ?></strong>
+					</label>
+					<div style="margin-top: 8px; display: grid; gap: 6px;">
+						<input type="text" name="tz_mega_custom_title[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $custom_title ); ?>" placeholder="<?php esc_attr_e( 'Column title (e.g. Latest tutorials)', 'themezur' ); ?>" class="widefat" />
+						<select name="tz_mega_custom_source[<?php echo esc_attr( (string) $item_id ); ?>]" style="width:100%;">
+							<option value="recent_posts" <?php selected( $custom_source, 'recent_posts' ); ?>><?php esc_html_e( 'Recent posts (any post type)', 'themezur' ); ?></option>
+							<option value="widget_area" <?php selected( $custom_source, 'widget_area' ); ?>><?php esc_html_e( 'Widget area', 'themezur' ); ?></option>
+							<option value="html" <?php selected( $custom_source, 'html' ); ?>><?php esc_html_e( 'Raw HTML / shortcode', 'themezur' ); ?></option>
+						</select>
+						<div style="display: flex; gap: 6px;">
+							<input type="text" name="tz_mega_custom_post_type[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $custom_post_type ); ?>" placeholder="<?php esc_attr_e( 'Post type slug (post, page, docs…)', 'themezur' ); ?>" style="flex:1;" />
+							<label style="white-space:nowrap;"><?php esc_html_e( 'Limit', 'themezur' ); ?>
+								<input type="number" min="2" max="8" name="tz_mega_custom_limit[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( (string) $custom_limit ); ?>" style="width:70px;" />
+							</label>
+						</div>
+						<select name="tz_mega_custom_sidebar[<?php echo esc_attr( (string) $item_id ); ?>]" style="width:100%;">
+							<option value=""><?php esc_html_e( '— Select widget area —', 'themezur' ); ?></option>
+							<?php foreach ( $GLOBALS['wp_registered_sidebars'] as $sidebar_id => $sidebar ) : ?>
+								<option value="<?php echo esc_attr( $sidebar_id ); ?>" <?php selected( $custom_sidebar, $sidebar_id ); ?>><?php echo esc_html( $sidebar['name'] ); ?></option>
+							<?php endforeach; ?>
+						</select>
+						<textarea name="tz_mega_custom_html[<?php echo esc_attr( (string) $item_id ); ?>]" rows="3" class="widefat" placeholder="[my_plugin_shortcode]"><?php echo esc_textarea( $custom_html ); ?></textarea>
+						<p class="description" style="margin:0;"><?php esc_html_e( 'Only the field matching the selected source above is used.', 'themezur' ); ?></p>
+					</div>
+				</div>
+
+				<!-- Tabbed mega -->
+				<p class="description description-wide" style="margin-top: 8px;">
+					<label>
+						<input type="checkbox" name="tz_mega_tabs_enable[<?php echo esc_attr( (string) $item_id ); ?>]" value="1" <?php checked( $tabs_enable, '1' ); ?> />
+						<strong><?php esc_html_e( 'Tabbed mega panel (Links | Categories | New | Sale | Brands)', 'themezur' ); ?></strong>
+					</label>
+				</p>
+
+				<!-- Schedule -->
+				<div class="description description-wide" style="margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
+					<label>
+						<input type="checkbox" name="tz_mega_schedule_enable[<?php echo esc_attr( (string) $item_id ); ?>]" value="1" <?php checked( $schedule_enable, '1' ); ?> />
+						<strong><?php esc_html_e( 'Campaign schedule (site timezone)', 'themezur' ); ?></strong>
+					</label>
+					<div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+						<label><?php esc_html_e( 'Start', 'themezur' ); ?><br>
+							<input type="datetime-local" name="tz_mega_schedule_start[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $schedule_start ); ?>" />
+						</label>
+						<label><?php esc_html_e( 'End', 'themezur' ); ?><br>
+							<input type="datetime-local" name="tz_mega_schedule_end[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $schedule_end ); ?>" />
+						</label>
+					</div>
+					<p class="description" style="margin:6px 0 0;"><?php esc_html_e( 'Outside this window the item falls back to a normal dropdown (mega panel off).', 'themezur' ); ?></p>
+				</div>
+
 				<!-- Featured Product / Promo Card Column (Feature 1) -->
 				<div class="description description-wide" style="margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
 					<label for="tz-mega-promo-enable-<?php echo esc_attr( (string) $item_id ); ?>">
 						<input type="checkbox" id="tz-mega-promo-enable-<?php echo esc_attr( (string) $item_id ); ?>" name="tz_mega_promo_enable[<?php echo esc_attr( (string) $item_id ); ?>]" value="1" <?php checked( $promo_enable, '1' ); ?> />
 						<strong>🛍️ <?php esc_html_e( 'Add Featured Product / Promo Banner Card Column', 'themezur' ); ?></strong>
 					</label>
-					<div style="margin-top: 8px;" x-show="true">
+					<div style="margin-top: 8px;">
+						<label style="display:block;margin-bottom:6px;"><?php esc_html_e( 'Promo layout', 'themezur' ); ?>
+							<select name="tz_mega_promo_layout[<?php echo esc_attr( (string) $item_id ); ?>]" style="width:100%;">
+								<option value="card" <?php selected( $promo_layout, 'card' ); ?>><?php esc_html_e( 'Card', 'themezur' ); ?></option>
+								<option value="image_overlay" <?php selected( $promo_layout, 'image_overlay' ); ?>><?php esc_html_e( 'Image overlay', 'themezur' ); ?></option>
+								<option value="html_only" <?php selected( $promo_layout, 'html_only' ); ?>><?php esc_html_e( 'HTML only', 'themezur' ); ?></option>
+							</select>
+						</label>
 						<div style="display: flex; gap: 6px; margin-bottom: 6px;">
 							<input type="text" class="tz-mega-icon-input widefat" name="tz_mega_promo_img[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_img ); ?>" placeholder="Product / Banner Image URL" />
 							<button type="button" class="button tz-mega-upload-btn" style="white-space: nowrap;">🖼️ <?php esc_html_e( 'Upload', 'themezur' ); ?></button>
@@ -279,10 +420,13 @@ class Themezur_Mega_Menu {
 							<input type="text" name="tz_mega_promo_badge[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_badge ); ?>" placeholder="Badge (50% OFF)" style="flex:1;" />
 						</div>
 						<input type="text" name="tz_mega_promo_desc[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_desc ); ?>" placeholder="Subtitle / Price (e.g. Starting from $49.00)" class="widefat" style="margin-bottom: 6px;" />
-						<div style="display: flex; gap: 6px;">
+						<div style="display: flex; gap: 6px; margin-bottom: 6px;">
 							<input type="text" name="tz_mega_promo_btn_label[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_btn_label ); ?>" placeholder="Button Text (Shop Now →)" style="flex:1;" />
 							<input type="text" name="tz_mega_promo_btn_url[<?php echo esc_attr( (string) $item_id ); ?>]" value="<?php echo esc_attr( $promo_btn_url ); ?>" placeholder="Link URL (https://...)" style="flex:1;" />
 						</div>
+						<label><?php esc_html_e( 'Rich HTML (below image / html_only)', 'themezur' ); ?>
+							<textarea name="tz_mega_promo_html[<?php echo esc_attr( (string) $item_id ); ?>]" rows="3" class="widefat"><?php echo esc_textarea( $promo_html ); ?></textarea>
+						</label>
 					</div>
 				</div>
 
@@ -460,10 +604,83 @@ class Themezur_Mega_Menu {
 		if ( isset( $_POST['tz_mega_promo_badge'][ $menu_item_db_id ] ) ) {
 			update_post_meta( $menu_item_db_id, '_tz_mega_promo_badge', sanitize_text_field( $_POST['tz_mega_promo_badge'][ $menu_item_db_id ] ) );
 		}
+		if ( isset( $_POST['tz_mega_promo_html'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_promo_html', wp_kses_post( wp_unslash( $_POST['tz_mega_promo_html'][ $menu_item_db_id ] ) ) );
+		}
+		if ( isset( $_POST['tz_mega_promo_layout'][ $menu_item_db_id ] ) ) {
+			$pl = sanitize_key( $_POST['tz_mega_promo_layout'][ $menu_item_db_id ] );
+			if ( ! in_array( $pl, array( 'card', 'image_overlay', 'html_only' ), true ) ) {
+				$pl = 'card';
+			}
+			update_post_meta( $menu_item_db_id, '_tz_mega_promo_layout', $pl );
+		}
 
 		// WooCommerce Cat Grid (Feature 5)
 		$cat_grid = ! empty( $_POST['tz_mega_cat_grid_enable'][ $menu_item_db_id ] ) ? '1' : '';
 		update_post_meta( $menu_item_db_id, '_tz_mega_cat_grid_enable', $cat_grid );
+
+		// Products block
+		update_post_meta( $menu_item_db_id, '_tz_mega_products_enable', ! empty( $_POST['tz_mega_products_enable'][ $menu_item_db_id ] ) ? '1' : '' );
+		if ( isset( $_POST['tz_mega_products_source'][ $menu_item_db_id ] ) ) {
+			$ps = sanitize_key( $_POST['tz_mega_products_source'][ $menu_item_db_id ] );
+			if ( ! in_array( $ps, array( 'latest', 'on_sale', 'best_sellers', 'manual' ), true ) ) {
+				$ps = 'latest';
+			}
+			update_post_meta( $menu_item_db_id, '_tz_mega_products_source', $ps );
+		}
+		if ( isset( $_POST['tz_mega_products_ids'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_products_ids', sanitize_text_field( wp_unslash( $_POST['tz_mega_products_ids'][ $menu_item_db_id ] ) ) );
+		}
+		if ( isset( $_POST['tz_mega_products_limit'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_products_limit', max( 2, min( 8, absint( $_POST['tz_mega_products_limit'][ $menu_item_db_id ] ) ) ) );
+		}
+		if ( isset( $_POST['tz_mega_products_title'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_products_title', sanitize_text_field( wp_unslash( $_POST['tz_mega_products_title'][ $menu_item_db_id ] ) ) );
+		}
+
+		// Brands
+		update_post_meta( $menu_item_db_id, '_tz_mega_brands_enable', ! empty( $_POST['tz_mega_brands_enable'][ $menu_item_db_id ] ) ? '1' : '' );
+		if ( isset( $_POST['tz_mega_brands_taxonomy'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_brands_taxonomy', sanitize_key( $_POST['tz_mega_brands_taxonomy'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_brands_limit'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_brands_limit', max( 2, min( 16, absint( $_POST['tz_mega_brands_limit'][ $menu_item_db_id ] ) ) ) );
+		}
+
+		// Custom content column
+		update_post_meta( $menu_item_db_id, '_tz_mega_custom_enable', ! empty( $_POST['tz_mega_custom_enable'][ $menu_item_db_id ] ) ? '1' : '' );
+		if ( isset( $_POST['tz_mega_custom_title'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_custom_title', sanitize_text_field( wp_unslash( $_POST['tz_mega_custom_title'][ $menu_item_db_id ] ) ) );
+		}
+		if ( isset( $_POST['tz_mega_custom_source'][ $menu_item_db_id ] ) ) {
+			$cs = sanitize_key( $_POST['tz_mega_custom_source'][ $menu_item_db_id ] );
+			if ( ! in_array( $cs, array( 'recent_posts', 'widget_area', 'html' ), true ) ) {
+				$cs = 'html';
+			}
+			update_post_meta( $menu_item_db_id, '_tz_mega_custom_source', $cs );
+		}
+		if ( isset( $_POST['tz_mega_custom_post_type'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_custom_post_type', sanitize_key( $_POST['tz_mega_custom_post_type'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_custom_limit'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_custom_limit', max( 2, min( 8, absint( $_POST['tz_mega_custom_limit'][ $menu_item_db_id ] ) ) ) );
+		}
+		if ( isset( $_POST['tz_mega_custom_sidebar'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_custom_sidebar', sanitize_key( $_POST['tz_mega_custom_sidebar'][ $menu_item_db_id ] ) );
+		}
+		if ( isset( $_POST['tz_mega_custom_html'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_custom_html', wp_kses_post( wp_unslash( $_POST['tz_mega_custom_html'][ $menu_item_db_id ] ) ) );
+		}
+
+		// Tabs + schedule
+		update_post_meta( $menu_item_db_id, '_tz_mega_tabs_enable', ! empty( $_POST['tz_mega_tabs_enable'][ $menu_item_db_id ] ) ? '1' : '' );
+		update_post_meta( $menu_item_db_id, '_tz_mega_schedule_enable', ! empty( $_POST['tz_mega_schedule_enable'][ $menu_item_db_id ] ) ? '1' : '' );
+		if ( isset( $_POST['tz_mega_schedule_start'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_schedule_start', sanitize_text_field( wp_unslash( $_POST['tz_mega_schedule_start'][ $menu_item_db_id ] ) ) );
+		}
+		if ( isset( $_POST['tz_mega_schedule_end'][ $menu_item_db_id ] ) ) {
+			update_post_meta( $menu_item_db_id, '_tz_mega_schedule_end', sanitize_text_field( wp_unslash( $_POST['tz_mega_schedule_end'][ $menu_item_db_id ] ) ) );
+		}
 
 		// Elementor ID
 		if ( isset( $_POST['tz_mega_elementor_id'][ $menu_item_db_id ] ) ) {

@@ -16,6 +16,7 @@ class Themezur_Mega_Content {
 
 	const PRODUCTS_TRANSIENT = 'themezur_mega_products_';
 	const BRANDS_TRANSIENT   = 'themezur_mega_brands_';
+	const POSTS_TRANSIENT    = 'themezur_mega_posts_';
 
 	/**
 	 * Register cache bust hooks.
@@ -26,6 +27,8 @@ class Themezur_Mega_Content {
 		add_action( 'save_post_product', array( __CLASS__, 'bust_products_cache' ) );
 		add_action( 'woocommerce_update_product', array( __CLASS__, 'bust_products_cache' ) );
 		add_action( 'deleted_post', array( __CLASS__, 'maybe_bust_product_cache' ) );
+		add_action( 'save_post', array( __CLASS__, 'bust_posts_cache' ) );
+		add_action( 'deleted_post', array( __CLASS__, 'bust_posts_cache' ) );
 
 		foreach ( self::detect_brand_taxonomies() as $tax ) {
 			add_action( "created_{$tax}", array( __CLASS__, 'bust_brands_cache' ) );
@@ -89,6 +92,15 @@ class Themezur_Mega_Content {
 	 */
 	public static function bust_brands_cache() {
 		self::delete_transients_by_prefix( self::BRANDS_TRANSIENT );
+	}
+
+	/**
+	 * Bust recent-posts block transients.
+	 *
+	 * @return void
+	 */
+	public static function bust_posts_cache() {
+		self::delete_transients_by_prefix( self::POSTS_TRANSIENT );
 	}
 
 	/**
@@ -315,6 +327,100 @@ class Themezur_Mega_Content {
 			$html .= '</a>';
 		}
 		$html .= '</div></div>';
+		return $html;
+	}
+
+	/**
+	 * Recent post IDs for the generic content column (works for any post type).
+	 *
+	 * @param string $post_type Post type slug.
+	 * @param int    $limit     Max posts.
+	 * @return int[]
+	 */
+	public static function get_recent_post_ids( $post_type, $limit = 4 ) {
+		$post_type = sanitize_key( $post_type );
+		if ( ! $post_type || ! post_type_exists( $post_type ) ) {
+			$post_type = 'post';
+		}
+		$limit = max( 2, min( 8, absint( $limit ) ) );
+		$key   = self::POSTS_TRANSIENT . $post_type . '_' . $limit;
+
+		$cached = get_transient( $key );
+		if ( is_array( $cached ) ) {
+			return array_map( 'absint', $cached );
+		}
+
+		$query = new WP_Query(
+			array(
+				'post_type'           => $post_type,
+				'posts_per_page'      => $limit,
+				'orderby'             => 'date',
+				'order'               => 'DESC',
+				'fields'              => 'ids',
+				'no_found_rows'       => true,
+				'ignore_sticky_posts' => true,
+			)
+		);
+
+		$ids = array_map( 'absint', $query->posts );
+		set_transient( $key, $ids, HOUR_IN_SECONDS );
+		return $ids;
+	}
+
+	/**
+	 * Render a plugin-agnostic content column: recent posts of any post type,
+	 * a registered widget area, or raw HTML/shortcode.
+	 *
+	 * @param array $args source, title, post_type, limit, sidebar, html.
+	 * @return string
+	 */
+	public static function render_custom_column( array $args ) {
+		$source = isset( $args['source'] ) ? sanitize_key( $args['source'] ) : 'html';
+		$title  = isset( $args['title'] ) ? (string) $args['title'] : '';
+		$body   = '';
+
+		if ( 'recent_posts' === $source ) {
+			$post_type = isset( $args['post_type'] ) ? $args['post_type'] : 'post';
+			$limit     = isset( $args['limit'] ) ? (int) $args['limit'] : 4;
+			$post_ids  = self::get_recent_post_ids( $post_type, $limit );
+			if ( empty( $post_ids ) ) {
+				return '';
+			}
+			$body = '<div class="tz-mega-posts">';
+			foreach ( $post_ids as $post_id ) {
+				$thumb = get_the_post_thumbnail( $post_id, 'thumbnail', array( 'class' => 'tz-mega-post__img', 'loading' => 'lazy' ) );
+				$body .= '<a class="tz-mega-post" href="' . esc_url( get_permalink( $post_id ) ) . '">';
+				if ( $thumb ) {
+					$body .= '<span class="tz-mega-post__thumb">' . $thumb . '</span>';
+				}
+				$body .= '<span class="tz-mega-post__title">' . esc_html( get_the_title( $post_id ) ) . '</span></a>';
+			}
+			$body .= '</div>';
+		} elseif ( 'widget_area' === $source ) {
+			$sidebar = isset( $args['sidebar'] ) ? sanitize_key( $args['sidebar'] ) : '';
+			if ( ! $sidebar || ! is_active_sidebar( $sidebar ) ) {
+				return '';
+			}
+			ob_start();
+			dynamic_sidebar( $sidebar );
+			$body = (string) ob_get_clean();
+		} else {
+			$raw = isset( $args['html'] ) ? (string) $args['html'] : '';
+			if ( '' === trim( $raw ) ) {
+				return '';
+			}
+			$body = do_shortcode( $raw );
+		}
+
+		if ( '' === trim( $body ) ) {
+			return '';
+		}
+
+		$html = '<div class="tz-mega-col tz-mega-col--custom">';
+		if ( $title ) {
+			$html .= '<div class="tz-mega-section__label"><span>' . esc_html( $title ) . '</span></div>';
+		}
+		$html .= '<div class="tz-mega-custom">' . $body . '</div></div>';
 		return $html;
 	}
 
