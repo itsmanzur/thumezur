@@ -14,6 +14,72 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Themezur_Footer {
 
+	const POSTS_TRANSIENT_PREFIX    = 'themezur_footer_posts_';
+	const PRODUCTS_TRANSIENT_PREFIX = 'themezur_footer_products_';
+
+	/**
+	 * Register cache bust hooks.
+	 *
+	 * @return void
+	 */
+	public static function init() {
+		add_action( 'save_post_post', array( __CLASS__, 'bust_posts_cache' ) );
+		add_action( 'deleted_post', array( __CLASS__, 'bust_posts_cache' ) );
+		add_action( 'save_post_product', array( __CLASS__, 'bust_products_cache' ) );
+		add_action( 'woocommerce_update_product', array( __CLASS__, 'bust_products_cache' ) );
+		add_action( 'deleted_post', array( __CLASS__, 'maybe_bust_product_cache' ) );
+	}
+
+	/**
+	 * Clear footer posts transients.
+	 *
+	 * @return void
+	 */
+	public static function bust_posts_cache() {
+		self::delete_transients_by_prefix( self::POSTS_TRANSIENT_PREFIX );
+	}
+
+	/**
+	 * Clear footer products transients.
+	 *
+	 * @return void
+	 */
+	public static function bust_products_cache() {
+		self::delete_transients_by_prefix( self::PRODUCTS_TRANSIENT_PREFIX );
+	}
+
+	/**
+	 * Bust product cache when a product post is deleted.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return void
+	 */
+	public static function maybe_bust_product_cache( $post_id ) {
+		if ( 'product' === get_post_type( $post_id ) ) {
+			self::bust_products_cache();
+		}
+	}
+
+	/**
+	 * Delete transients matching a prefix.
+	 *
+	 * @param string $prefix Transient key prefix.
+	 * @return void
+	 */
+	private static function delete_transients_by_prefix( $prefix ) {
+		global $wpdb;
+		$like = $wpdb->esc_like( '_transient_' . $prefix ) . '%';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$keys = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $like ) );
+		if ( empty( $keys ) ) {
+			return;
+		}
+		foreach ( $keys as $option_name ) {
+			$key = str_replace( '_transient_', '', $option_name );
+			delete_transient( $key );
+		}
+	}
+
 	/**
 	 * Recent posts for a footer column.
 	 *
@@ -23,19 +89,31 @@ class Themezur_Footer {
 	public static function query_posts( array $col ) {
 		$count = isset( $col['posts_count'] ) ? (int) $col['posts_count'] : 3;
 		$count = max( 1, min( 8, $count ) );
-		$args  = array(
+		$cat   = isset( $col['posts_category'] ) ? (int) $col['posts_category'] : 0;
+		$key   = self::POSTS_TRANSIENT_PREFIX . $count . '_' . $cat;
+
+		$cached = get_transient( $key );
+		if ( is_array( $cached ) ) {
+			return array_filter( array_map( 'get_post', $cached ) );
+		}
+
+		$args = array(
 			'post_type'           => 'post',
 			'post_status'         => 'publish',
 			'posts_per_page'      => $count,
 			'ignore_sticky_posts' => true,
 			'no_found_rows'       => true,
+			'fields'              => 'ids',
 		);
-		$cat = isset( $col['posts_category'] ) ? (int) $col['posts_category'] : 0;
 		if ( $cat > 0 ) {
 			$args['cat'] = $cat;
 		}
+
 		$query = new WP_Query( $args );
-		return $query->posts;
+		$ids   = is_array( $query->posts ) ? $query->posts : array();
+		set_transient( $key, $ids, HOUR_IN_SECONDS );
+
+		return array_filter( array_map( 'get_post', $ids ) );
 	}
 
 	/**
@@ -52,12 +130,26 @@ class Themezur_Footer {
 		$count  = isset( $col['products_count'] ) ? (int) $col['products_count'] : 3;
 		$count  = max( 1, min( 8, $count ) );
 		$source = isset( $col['products_source'] ) ? $col['products_source'] : 'recent';
-		$args   = array(
+		$key    = self::PRODUCTS_TRANSIENT_PREFIX . $count . '_' . sanitize_key( $source );
+
+		$cached = get_transient( $key );
+		if ( is_array( $cached ) ) {
+			$products = array();
+			foreach ( $cached as $product_id ) {
+				$product = wc_get_product( $product_id );
+				if ( $product ) {
+					$products[] = $product;
+				}
+			}
+			return $products;
+		}
+
+		$args = array(
 			'status'  => 'publish',
 			'limit'   => $count,
 			'orderby' => 'date',
 			'order'   => 'DESC',
-			'return'  => 'objects',
+			'return'  => 'ids',
 		);
 
 		switch ( $source ) {
@@ -67,6 +159,7 @@ class Themezur_Footer {
 			case 'on_sale':
 				$args['include'] = array_map( 'absint', wc_get_product_ids_on_sale() );
 				if ( empty( $args['include'] ) ) {
+					set_transient( $key, array(), HOUR_IN_SECONDS );
 					return array();
 				}
 				break;
@@ -79,8 +172,18 @@ class Themezur_Footer {
 				break;
 		}
 
-		$products = wc_get_products( $args );
-		return is_array( $products ) ? $products : array();
+		$ids = wc_get_products( $args );
+		$ids = is_array( $ids ) ? $ids : array();
+		set_transient( $key, $ids, HOUR_IN_SECONDS );
+
+		$products = array();
+		foreach ( $ids as $product_id ) {
+			$product = wc_get_product( $product_id );
+			if ( $product ) {
+				$products[] = $product;
+			}
+		}
+		return $products;
 	}
 
 	/**
