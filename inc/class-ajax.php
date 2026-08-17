@@ -26,6 +26,8 @@ class Themezur_Ajax {
 		add_action( 'wp_ajax_nopriv_themezur_product_search', array( __CLASS__, 'product_search' ) );
 		add_action( 'wp_ajax_themezur_cart_count', array( __CLASS__, 'cart_count' ) );
 		add_action( 'wp_ajax_nopriv_themezur_cart_count', array( __CLASS__, 'cart_count' ) );
+		add_action( 'wp_ajax_themezur_newsletter_subscribe', array( __CLASS__, 'newsletter_subscribe' ) );
+		add_action( 'wp_ajax_nopriv_themezur_newsletter_subscribe', array( __CLASS__, 'newsletter_subscribe' ) );
 	}
 
 	/**
@@ -142,6 +144,90 @@ class Themezur_Ajax {
 		}
 
 		wp_send_json_success( array( 'items' => $items ) );
+	}
+
+	/**
+	 * Newsletter endpoints an administrator has actually configured.
+	 *
+	 * The browser sends back the form action, but it must never be trusted as the
+	 * request target — otherwise any visitor could point the server at an internal
+	 * host. Only URLs saved in the Themezur panel are accepted.
+	 *
+	 * @return string[]
+	 */
+	private static function allowed_newsletter_endpoints() {
+		$allowed = array();
+
+		$row = Themezur_Options::get( 'footer.newsletter_row.action', '' );
+		if ( is_string( $row ) && '' !== $row ) {
+			$allowed[] = esc_url_raw( $row );
+		}
+
+		$columns = Themezur_Options::get( 'footer.columns', array() );
+		if ( is_array( $columns ) ) {
+			foreach ( $columns as $col ) {
+				if ( ! is_array( $col ) || empty( $col['newsletter_action'] ) ) {
+					continue;
+				}
+				$allowed[] = esc_url_raw( (string) $col['newsletter_action'] );
+			}
+		}
+
+		return array_values( array_unique( array_filter( $allowed ) ) );
+	}
+
+	/**
+	 * Forward newsletter signup to an external form action URL (Mailchimp / FluentCRM / etc).
+	 *
+	 * @return void
+	 */
+	public static function newsletter_subscribe() {
+		check_ajax_referer( 'themezur_front', 'nonce' );
+
+		$email      = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+		$action_url = isset( $_POST['action_url'] ) ? esc_url_raw( wp_unslash( $_POST['action_url'] ) ) : '';
+		$email_name = isset( $_POST['email_name'] ) ? preg_replace( '/[^A-Za-z0-9_\-\[\]]/', '', wp_unslash( $_POST['email_name'] ) ) : 'EMAIL';
+		if ( ! $email_name ) {
+			$email_name = 'EMAIL';
+		}
+
+		if ( ! is_email( $email ) ) {
+			wp_send_json_error( array( 'message' => __( 'Please enter a valid email address.', 'themezur' ) ), 400 );
+		}
+
+		$allowed = self::allowed_newsletter_endpoints();
+		if ( empty( $allowed ) ) {
+			wp_send_json_error( array( 'message' => __( 'Newsletter form action URL is not configured.', 'themezur' ) ), 400 );
+		}
+		if ( ! $action_url || ! in_array( $action_url, $allowed, true ) ) {
+			wp_send_json_error( array( 'message' => __( 'Newsletter form action URL is not configured.', 'themezur' ) ), 400 );
+		}
+
+		$response = wp_safe_remote_post(
+			$action_url,
+			array(
+				'timeout'     => 15,
+				'redirection' => 0,
+				'blocking'    => true,
+				'headers'     => array(
+					'Content-Type' => 'application/x-www-form-urlencoded',
+				),
+				'body'        => array(
+					$email_name => $email,
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( array( 'message' => __( 'Could not reach the newsletter service. Try again later.', 'themezur' ) ), 502 );
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( $code >= 400 && 0 !== $code ) {
+			wp_send_json_error( array( 'message' => __( 'Newsletter service rejected the request.', 'themezur' ) ), 502 );
+		}
+
+		wp_send_json_success( array( 'message' => __( 'Thanks for subscribing!', 'themezur' ) ) );
 	}
 
 	/**
