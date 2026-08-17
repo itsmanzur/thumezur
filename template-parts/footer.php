@@ -17,9 +17,18 @@ $bottom  = isset( $f['bottom'] ) && is_array( $f['bottom'] ) ? $f['bottom'] : ar
 $logo_id = Themezur_Options::get_logo_id();
 $site_name = get_bloginfo( 'name' );
 
+$order = isset( $f['column_order'] ) && is_array( $f['column_order'] ) ? $f['column_order'] : array( '1', '2', '3', '4', '5' );
+$widths = isset( $f['column_widths'] ) ? sanitize_key( $f['column_widths'] ) : 'equal';
 $active_cols = array();
-foreach ( array( '1', '2', '3', '4', '5' ) as $key ) {
+foreach ( $order as $key ) {
+	$key = (string) $key;
 	if ( ! empty( $columns[ $key ]['enabled'] ) ) {
+		$active_cols[ $key ] = $columns[ $key ];
+	}
+}
+// Append any enabled cols missing from order.
+foreach ( array( '1', '2', '3', '4', '5' ) as $key ) {
+	if ( ! isset( $active_cols[ $key ] ) && ! empty( $columns[ $key ]['enabled'] ) ) {
 		$active_cols[ $key ] = $columns[ $key ];
 	}
 }
@@ -266,9 +275,9 @@ $render_col = static function ( $col ) use ( $logo_id, $site_name ) {
 		$placeholder = ! empty( $col['newsletter_placeholder'] ) ? $col['newsletter_placeholder'] : __( 'Your email', 'themezur' );
 		$button      = ! empty( $col['newsletter_button'] ) ? $col['newsletter_button'] : __( 'Subscribe', 'themezur' );
 		$email_name  = ! empty( $col['newsletter_email_name'] ) ? $col['newsletter_email_name'] : 'EMAIL';
-		echo '<form class="tz-footer-newsletter" method="post"';
+		echo '<form class="tz-footer-newsletter" method="post" data-tz-newsletter';
 		if ( $action ) {
-			echo ' action="' . esc_url( $action ) . '" target="_blank"';
+			echo ' action="' . esc_url( $action ) . '" data-tz-nl-action="' . esc_url( $action ) . '" data-tz-nl-email-name="' . esc_attr( $email_name ) . '"';
 		} else {
 			echo ' action="#" data-tz-nl-empty="1"';
 		}
@@ -279,6 +288,7 @@ $render_col = static function ( $col ) use ( $logo_id, $site_name ) {
 		echo '<input id="' . esc_attr( $uid ) . '" type="email" name="' . esc_attr( $email_name ) . '" placeholder="' . esc_attr( $placeholder ) . '" required autocomplete="email">';
 		echo '<button type="submit"' . ( $action ? '' : ' disabled' ) . '>' . esc_html( $button ) . '</button>';
 		echo '</div>';
+		echo '<p class="tz-footer-newsletter__msg" data-tz-nl-msg hidden></p>';
 		if ( ! $action ) {
 			echo '<p class="tz-footer-col__hint">' . esc_html__( 'Set a form action URL (e.g. Mailchimp) or switch to Shortcode mode.', 'themezur' ) . '</p>';
 		}
@@ -289,16 +299,17 @@ Themezur_Footer::render_trust_badges();
 ?>
 <footer
 	id="themezur-footer"
-	class="tz-site-footer tz-site-footer--columns<?php echo esc_attr( (string) max( 1, $col_count ) ); ?>"
+	class="tz-site-footer tz-site-footer--columns<?php echo esc_attr( (string) max( 1, $col_count ) ); ?> tz-site-footer--widths-<?php echo esc_attr( $widths ); ?>"
 	data-tz-footer
 	data-tz-footer-cols="<?php echo esc_attr( (string) max( 1, $col_count ) ); ?>"
 >
 	<?php
 	$nl_row = isset( $f['newsletter_row'] ) && is_array( $f['newsletter_row'] ) ? $f['newsletter_row'] : array();
 	if ( ! empty( $nl_row['enabled'] ) ) :
-		$action      = ! empty( $nl_row['action'] ) ? $nl_row['action'] : '#';
+		$action      = ! empty( $nl_row['action'] ) ? $nl_row['action'] : '';
 		$placeholder = ! empty( $nl_row['placeholder'] ) ? $nl_row['placeholder'] : __( 'Enter your email address', 'themezur' );
 		$button      = ! empty( $nl_row['button'] ) ? $nl_row['button'] : __( 'Subscribe Now', 'themezur' );
+		$email_name  = ! empty( $nl_row['email_name'] ) ? $nl_row['email_name'] : 'EMAIL';
 		?>
 		<div class="tz-footer-newsletter-row">
 			<div class="tz-footer-newsletter-row__inner">
@@ -310,19 +321,50 @@ Themezur_Footer::render_trust_badges();
 						<p class="tz-footer-newsletter-row__subtitle"><?php echo esc_html( $nl_row['subtitle'] ); ?></p>
 					<?php endif; ?>
 				</div>
-				<form class="tz-footer-newsletter-row__form" method="post" action="<?php echo esc_url( $action ); ?>">
-					<input type="email" name="EMAIL" placeholder="<?php echo esc_attr( $placeholder ); ?>" required autocomplete="email" />
-					<button type="submit" class="tz-btn"><?php echo esc_html( $button ); ?></button>
+				<form
+					class="tz-footer-newsletter-row__form"
+					method="post"
+					action="<?php echo $action ? esc_url( $action ) : '#'; ?>"
+					data-tz-newsletter
+					<?php if ( $action ) : ?>
+						data-tz-nl-action="<?php echo esc_url( $action ); ?>"
+						data-tz-nl-email-name="<?php echo esc_attr( $email_name ); ?>"
+					<?php else : ?>
+						data-tz-nl-empty="1"
+					<?php endif; ?>
+				>
+					<input type="email" name="<?php echo esc_attr( $email_name ); ?>" placeholder="<?php echo esc_attr( $placeholder ); ?>" required autocomplete="email" />
+					<button type="submit" class="tz-btn" <?php disabled( ! $action ); ?>><?php echo esc_html( $button ); ?></button>
+					<p class="tz-footer-newsletter__msg" data-tz-nl-msg hidden></p>
 				</form>
 			</div>
 		</div>
 	<?php endif; ?>
+
+	<?php
+	$store = isset( $f['store_row'] ) && is_array( $f['store_row'] ) ? $f['store_row'] : array();
+	if ( ! empty( $store['enabled'] ) && ( ! empty( $store['map_url'] ) || ! empty( $store['address_text'] ) ) ) :
+		?>
+		<div class="tz-footer-store-row">
+			<div class="tz-footer-store-row__inner">
+				<?php if ( ! empty( $store['address_text'] ) ) : ?>
+					<p class="tz-footer-store-row__address"><?php echo esc_html( $store['address_text'] ); ?></p>
+				<?php endif; ?>
+				<?php if ( ! empty( $store['map_url'] ) ) : ?>
+					<a class="tz-footer-store-row__link" href="<?php echo esc_url( $store['map_url'] ); ?>" target="_blank" rel="noopener noreferrer">
+						<?php echo esc_html( ! empty( $store['label'] ) ? $store['label'] : __( 'Find a store', 'themezur' ) ); ?>
+					</a>
+				<?php endif; ?>
+			</div>
+		</div>
+	<?php endif; ?>
+
 	<?php if ( $col_count > 0 ) : ?>
 		<div class="tz-footer-main">
 			<div class="tz-footer-main__inner">
-				<div class="tz-footer-cols" style="--tz-footer-col-count: <?php echo esc_attr( (string) $col_count ); ?>">
+				<div class="tz-footer-cols tz-footer-cols--<?php echo esc_attr( $widths ); ?>" style="--tz-footer-col-count: <?php echo esc_attr( (string) $col_count ); ?>">
 					<?php foreach ( $active_cols as $key => $col ) : ?>
-						<div class="tz-footer-col" data-tz-footer-col="<?php echo esc_attr( $key ); ?>">
+						<div class="tz-footer-col<?php echo ( '1' === (string) $key && 'about_wide' === $widths ) ? ' tz-footer-col--wide' : ''; ?>" data-tz-footer-col="<?php echo esc_attr( $key ); ?>">
 							<?php if ( ! empty( $col['title'] ) ) : ?>
 								<h3 class="tz-footer-col__title"><?php echo esc_html( $col['title'] ); ?></h3>
 							<?php endif; ?>
@@ -334,6 +376,32 @@ Themezur_Footer::render_trust_badges();
 							</div>
 						</div>
 					<?php endforeach; ?>
+				</div>
+			</div>
+		</div>
+	<?php endif; ?>
+
+	<?php
+	$apps = isset( $f['app_badges'] ) && is_array( $f['app_badges'] ) ? $f['app_badges'] : array();
+	if ( ! empty( $apps['enabled'] ) && ( ! empty( $apps['play_url'] ) || ! empty( $apps['appstore_url'] ) || ! empty( $apps['qr_image_id'] ) ) ) :
+		?>
+		<div class="tz-footer-apps">
+			<div class="tz-footer-apps__inner">
+				<?php if ( ! empty( $apps['title'] ) ) : ?>
+					<p class="tz-footer-apps__title"><?php echo esc_html( $apps['title'] ); ?></p>
+				<?php endif; ?>
+				<div class="tz-footer-apps__badges">
+					<?php if ( ! empty( $apps['play_url'] ) ) : ?>
+						<a class="tz-footer-apps__badge" href="<?php echo esc_url( $apps['play_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Google Play', 'themezur' ); ?></a>
+					<?php endif; ?>
+					<?php if ( ! empty( $apps['appstore_url'] ) ) : ?>
+						<a class="tz-footer-apps__badge" href="<?php echo esc_url( $apps['appstore_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'App Store', 'themezur' ); ?></a>
+					<?php endif; ?>
+					<?php
+					if ( ! empty( $apps['qr_image_id'] ) ) {
+						echo wp_get_attachment_image( (int) $apps['qr_image_id'], 'thumbnail', false, array( 'class' => 'tz-footer-apps__qr' ) );
+					}
+					?>
 				</div>
 			</div>
 		</div>
