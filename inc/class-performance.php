@@ -121,18 +121,19 @@ class Themezur_Performance {
 			array(
 				'handle'  => 'themezur-woocommerce',
 				'type'    => 'js',
-				'when'    => __( 'Sticky ATC / filters / mini-cart', 'themezur' ),
+				'when'    => __( 'Sticky ATC / stepper / filters / mini qty', 'themezur' ),
 				'status'  => (
 					'theme' === $woo_mode
 					&& class_exists( 'WooCommerce' )
 					&& ! empty( $scripts_on )
 					&& (
-						! empty( $options['woocommerce']['single']['sticky_atc'] )
+						! empty( $options['woocommerce']['single']['sticky_cart'] )
+						|| ! empty( $options['woocommerce']['single']['quantity_stepper'] )
 						|| (
 							isset( $options['woocommerce']['shop']['sidebar'] )
 							&& in_array( $options['woocommerce']['shop']['sidebar'], array( 'left', 'right' ), true )
 						)
-						|| ! empty( $options['woocommerce']['cart']['mini_cart'] )
+						|| ! empty( $options['header']['middle']['mini_cart'] )
 					)
 				) ? 'cond' : 'off',
 				'note'    => 'woocommerce.js',

@@ -11,10 +11,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="wrap themezur-wrap">
 	<div
+		id="themezur-panel"
 		class="tz-panel"
+		data-tz-admin-theme="dark"
 		x-data="themezurPanel()"
+		:data-tz-admin-theme="adminTheme"
 		x-cloak
 	>
+		<script>
+		(function () {
+			try {
+				var t = localStorage.getItem('themezur_admin_theme');
+				if (t === 'light' || t === 'dark') {
+					var p = document.getElementById('themezur-panel');
+					if (p) {
+						p.setAttribute('data-tz-admin-theme', t);
+					}
+				}
+			} catch (e) {}
+		})();
+		</script>
 		<header class="tz-panel__header">
 			<div class="tz-panel__brand">
 				<span class="tz-panel__mark" aria-hidden="true">Tz</span>
@@ -25,6 +41,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="tz-panel__actions">
 				<span class="tz-toast" x-show="toast" x-text="toast" x-transition.opacity></span>
+				<button
+					type="button"
+					class="tz-admin-theme-toggle"
+					@click="toggleAdminTheme()"
+					:aria-label="adminTheme === 'dark' ? '<?php echo esc_js( __( 'Switch to light mode', 'themezur' ) ); ?>' : '<?php echo esc_js( __( 'Switch to dark mode', 'themezur' ) ); ?>'"
+					:title="adminTheme === 'dark' ? '<?php echo esc_js( __( 'Light mode', 'themezur' ) ); ?>' : '<?php echo esc_js( __( 'Dark mode', 'themezur' ) ); ?>'"
+				>
+					<svg class="tz-admin-theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 14.3A8.5 8.5 0 119.7 3a7 7 0 0011.3 11.3z"/></svg>
+					<svg class="tz-admin-theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+				</button>
 				<button
 					type="button"
 					class="button button-primary tz-save"

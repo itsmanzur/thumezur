@@ -60,15 +60,6 @@
 		if (thumb && modal && modal.contains(thumb)) {
 			e.preventDefault();
 			switchMainImage(thumb);
-			return;
-		}
-
-		// Sticky bar add-to-cart
-		var stickyBtn = e.target.closest('.tz-sticky-bar__btn[data-product-id]');
-		if (stickyBtn) {
-			e.preventDefault();
-			ajaxAddToCartById(parseInt(stickyBtn.dataset.productId, 10), stickyBtn);
-			return;
 		}
 	}
 
@@ -207,94 +198,38 @@
 	function updateCartUI(data) {
 		if (!data) return;
 
-		// Count badges
-		var badges = document.querySelectorAll('.tz-cart-count, [data-cart-count]');
-		badges.forEach(function (el) {
-			if (data.label !== undefined) el.textContent = data.label;
+		// Count badges (Themezur header)
+		document.querySelectorAll('[data-tz-cart-count]').forEach(function (badge) {
+			var visual = badge.querySelector('[aria-hidden="true"]');
+			var accessible = badge.querySelector('.screen-reader-text');
+			if (visual && typeof data.count !== 'undefined') {
+				visual.textContent = String(data.count);
+			}
+			if (accessible && data.label) {
+				accessible.textContent = data.label;
+			}
 		});
 
-		// Mini-cart HTML
+		// Mini-cart fragment root
 		if (data.mini_cart) {
-			var miniContainers = document.querySelectorAll('.tz-mini-cart-content');
-			miniContainers.forEach(function (el) {
-				el.innerHTML = data.mini_cart;
-			});
+			var current = document.querySelector('[data-tz-mini-cart] .widget_shopping_cart_content');
+			if (current) {
+				var template = document.createElement('template');
+				template.innerHTML = data.mini_cart.trim();
+				var replacement = template.content.firstElementChild;
+				if (replacement && replacement.classList.contains('widget_shopping_cart_content')) {
+					current.replaceWith(replacement);
+				} else {
+					current.outerHTML = data.mini_cart;
+				}
+			}
 		}
 
 		// Fire WC fragment refresh event so WooCommerce block cart also updates.
 		document.body.dispatchEvent(new CustomEvent('wc_fragment_refresh', { bubbles: true }));
-	}
-
-	/* ----------------------------------------------------------------
-	 * Sticky Add to Cart bar
-	 * -------------------------------------------------------------- */
-	(function initStickyBar() {
-		var bar      = document.getElementById('tz-sticky-bar');
-		var dataEl   = document.querySelector('.tz-sticky-data');
-		var formBtn  = document.querySelector('.single_add_to_cart_button');
-
-		if (!bar || !formBtn) return;
-
-		var observer = new IntersectionObserver(
-			function (entries) {
-				entries.forEach(function (entry) {
-					var visible = !entry.isIntersecting;
-					bar.hidden  = !visible;
-					bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
-				});
-			},
-			{ threshold: 0 }
-		);
-		observer.observe(formBtn);
-	})();
-
-	/* ----------------------------------------------------------------
-	 * Quantity Stepper (+/− buttons)
-	 * -------------------------------------------------------------- */
-	(function initQuantityStepper() {
-		function wrapInputs() {
-			document.querySelectorAll('.tz-qty-input:not(.tz-qty-wrapped)').forEach(function (input) {
-				var wrapper = document.createElement('div');
-				wrapper.className = 'tz-qty-wrap';
-				input.parentNode.insertBefore(wrapper, input);
-
-				var minus = document.createElement('button');
-				minus.type      = 'button';
-				minus.className = 'tz-qty-btn tz-qty-minus';
-				minus.setAttribute('aria-label', '−');
-				minus.textContent = '−';
-
-				var plus = document.createElement('button');
-				plus.type      = 'button';
-				plus.className = 'tz-qty-btn tz-qty-plus';
-				plus.setAttribute('aria-label', '+');
-				plus.textContent = '+';
-
-				wrapper.appendChild(minus);
-				wrapper.appendChild(input);
-				wrapper.appendChild(plus);
-				input.classList.add('tz-qty-wrapped');
-
-				minus.addEventListener('click', function () {
-					var val = parseInt(input.value, 10) || 1;
-					var min = parseInt(input.getAttribute('min'), 10) || 1;
-					if (val > min) {
-						input.value = val - 1;
-						input.dispatchEvent(new Event('change', { bubbles: true }));
-					}
-				});
-				plus.addEventListener('click', function () {
-					var val = parseInt(input.value, 10) || 1;
-					var max = parseInt(input.getAttribute('max'), 10) || 9999;
-					if (val < max) {
-						input.value = val + 1;
-						input.dispatchEvent(new Event('change', { bubbles: true }));
-					}
-				});
-			});
+		if (typeof jQuery !== 'undefined') {
+			jQuery(document.body).trigger('added_to_cart');
 		}
-
-		document.addEventListener('DOMContentLoaded', wrapInputs);
-	})();
+	}
 
 })();

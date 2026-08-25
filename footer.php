@@ -9,7 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-Themezur_Frontend::render_footer();
+if ( class_exists( 'Themezur_Frontend' ) ) {
+	Themezur_Frontend::render_footer();
+}
 ?>
 
 <?php wp_footer(); ?>

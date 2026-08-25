@@ -135,6 +135,7 @@ $vis            = array(
 	'deal'          => Themezur_Frontend::visibility_classes( $bottom, 'deal' ),
 	'middle_menu'   => Themezur_Frontend::visibility_classes( $middle, 'menu' ),
 	'middle_button' => Themezur_Frontend::visibility_classes( $middle, 'button' ),
+	'hamburger'     => Themezur_Frontend::visibility_classes( $middle, 'hamburger' ),
 );
 $promo_messages = array();
 if ( ! empty( $top['promos'] ) && is_array( $top['promos'] ) ) {
@@ -383,6 +384,10 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 				<?php if ( ! empty( $middle['show_menu'] ) ) : ?>
 					<?php
 					$mid_menu_id = isset( $middle['menu_id'] ) ? absint( $middle['menu_id'] ) : 0;
+					$mid_pos     = isset( $middle['menu_position'] ) ? sanitize_key( $middle['menu_position'] ) : 'center';
+					if ( ! in_array( $mid_pos, array( 'left', 'center', 'right' ), true ) ) {
+						$mid_pos = 'center';
+					}
 					$mid_args    = array(
 						'fallback_cb' => false,
 						'container'   => false,
@@ -399,7 +404,7 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 					$middle_nav = wp_nav_menu( $mid_args );
 					?>
 					<?php if ( $middle_nav ) : ?>
-						<nav class="tz-header-middle__nav<?php echo $vis['middle_menu'] ? ' ' . esc_attr( $vis['middle_menu'] ) : ''; ?>">
+						<nav class="tz-header-middle__nav tz-header-middle__nav--<?php echo esc_attr( $mid_pos ); ?><?php echo $vis['middle_menu'] ? ' ' . esc_attr( $vis['middle_menu'] ) : ''; ?>" aria-label="<?php echo esc_attr__( 'Middle bar menu', 'themezur' ); ?>">
 							<?php echo $middle_nav; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						</nav>
 					<?php endif; ?>
@@ -467,8 +472,18 @@ $compare_url = ! empty( $middle['show_compare'] ) && ! empty( $middle['compare_u
 						</a>
 					<?php endif; ?>
 
-					<?php if ( $nav_menu || ! empty( $bottom['show_categories'] ) ) : ?>
-						<button type="button" class="tz-icon-btn tz-nav-toggle" aria-expanded="false" aria-controls="tz-mobile-drawer" data-tz-nav-toggle aria-label="<?php echo esc_attr__( 'Menu', 'themezur' ); ?>">
+					<?php
+					$show_hamburger = ! isset( $middle['show_hamburger'] ) || ! empty( $middle['show_hamburger'] );
+					if ( $show_hamburger && ( $nav_menu || ! empty( $bottom['show_categories'] ) ) ) :
+						?>
+						<button
+							type="button"
+							class="tz-icon-btn tz-nav-toggle<?php echo $vis['hamburger'] ? ' ' . esc_attr( $vis['hamburger'] ) : ''; ?>"
+							aria-expanded="false"
+							aria-controls="tz-mobile-drawer"
+							data-tz-nav-toggle
+							aria-label="<?php echo esc_attr__( 'Menu', 'themezur' ); ?>"
+						>
 							<span class="tz-nav-toggle__bars" aria-hidden="true"></span>
 						</button>
 					<?php endif; ?>

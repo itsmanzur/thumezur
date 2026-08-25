@@ -350,6 +350,77 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="tz-group">
 				<div class="tz-group__head">
 					<div>
+						<h3 class="tz-group__title"><?php esc_html_e( 'Middle bar menu', 'themezur' ); ?></h3>
+						<p class="tz-group__desc"><?php esc_html_e( 'Show a WordPress menu between the logo and action icons (desktop). Best with search off, or beside search.', 'themezur' ); ?></p>
+					</div>
+					<label class="tz-field--row" style="margin:0;padding:0;border:0;">
+						<input type="checkbox" x-model="options.header.middle.show_menu">
+						<span><?php esc_html_e( 'Enabled', 'themezur' ); ?></span>
+					</label>
+				</div>
+				<div class="tz-group__body" x-show="options.header.middle.show_menu">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Select menu', 'themezur' ); ?></label>
+						<select x-model.number="options.header.middle.menu_id">
+							<option value="0"><?php esc_html_e( 'Primary Menu (theme location)', 'themezur' ); ?></option>
+							<template x-for="m in menus" :key="'mid-m-' + m.id">
+								<option :value="m.id" x-text="m.name"></option>
+							</template>
+						</select>
+						<p class="tz-hint">
+							<?php esc_html_e( 'Create menus under Appearance → Menus, then pick one here. Mega menu items work the same as the bottom bar.', 'themezur' ); ?>
+							<span x-show="!menus.length"> <?php esc_html_e( 'No menus found yet.', 'themezur' ); ?></span>
+						</p>
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Alignment in middle bar', 'themezur' ); ?></label>
+						<select x-model="options.header.middle.menu_position">
+							<option value="left"><?php esc_html_e( 'Left (after logo)', 'themezur' ); ?></option>
+							<option value="center"><?php esc_html_e( 'Center', 'themezur' ); ?></option>
+							<option value="right"><?php esc_html_e( 'Right (before Order Now / icons)', 'themezur' ); ?></option>
+						</select>
+						<p class="tz-hint"><?php esc_html_e( 'Right places the menu next to the action buttons — useful when search is off.', 'themezur' ); ?></p>
+					</div>
+					<div class="tz-vis">
+						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_menu"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
+						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_menu"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
+					</div>
+					<p class="tz-hint"><?php esc_html_e( 'Middle-bar menu is desktop-only in CSS under 992px; hide on mobile is still recommended.', 'themezur' ); ?></p>
+				</div>
+				<div class="tz-group__body">
+					<div class="tz-field tz-field--row">
+						<label><input type="checkbox" x-model="options.header.middle.show_hamburger"> <?php esc_html_e( 'Show hamburger (mobile drawer) button', 'themezur' ); ?></label>
+					</div>
+					<div class="tz-vis" x-show="options.header.middle.show_hamburger">
+						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_hamburger"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
+						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_hamburger"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
+					</div>
+					<p class="tz-hint" x-show="options.header.middle.show_hamburger"><?php esc_html_e( 'On desktop with a visible bottom or middle menu, use Hide on desktop. Keep it on mobile unless you have another menu entry.', 'themezur' ); ?></p>
+
+					<div class="tz-field tz-field--row" style="margin-top:12px;"><label><input type="checkbox" x-model="options.header.middle.show_button"> <?php esc_html_e( 'Show custom CTA button in middle bar', 'themezur' ); ?></label></div>
+					<div class="tz-field-grid" x-show="options.header.middle.show_button">
+						<div class="tz-field">
+							<label><?php esc_html_e( 'Button text', 'themezur' ); ?></label>
+							<input type="text" x-model="options.header.middle.button_text" placeholder="Order Now">
+						</div>
+						<div class="tz-field">
+							<label><?php esc_html_e( 'Button URL', 'themezur' ); ?></label>
+							<input type="url" x-model="options.header.middle.button_url" placeholder="https://">
+						</div>
+					</div>
+					<div class="tz-field tz-field--row" x-show="options.header.middle.show_button">
+						<label><input type="checkbox" x-model="options.header.middle.button_target" :true-value="'_blank'" :false-value="'_self'"> <?php esc_html_e( 'Open link in new tab', 'themezur' ); ?></label>
+					</div>
+					<div class="tz-vis" x-show="options.header.middle.show_button">
+						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_button"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
+						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_button"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
+					</div>
+				</div>
+			</div>
+
+			<div class="tz-group">
+				<div class="tz-group__head">
+					<div>
 						<h3 class="tz-group__title"><?php esc_html_e( 'Search & actions', 'themezur' ); ?></h3>
 						<p class="tz-group__desc"><?php esc_html_e( 'Search box, dark mode, and cart icon.', 'themezur' ); ?></p>
 					</div>
@@ -416,49 +487,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 
-			<div class="tz-group">
-				<div class="tz-group__head">
-					<div>
-						<h3 class="tz-group__title"><?php esc_html_e( 'Middle Bar Navigation & Button', 'themezur' ); ?></h3>
-						<p class="tz-group__desc"><?php esc_html_e( 'Show main menu or CTA button inside middle bar for single-row / 2-row layouts.', 'themezur' ); ?></p>
-					</div>
-				</div>
-				<div class="tz-group__body">
-					<div class="tz-field tz-field--row"><label><input type="checkbox" x-model="options.header.middle.show_menu"> <?php esc_html_e( 'Show navigation menu in middle bar', 'themezur' ); ?></label></div>
-					<div class="tz-field" x-show="options.header.middle.show_menu">
-						<label><?php esc_html_e( 'Select Menu', 'themezur' ); ?></label>
-						<select x-model.number="options.header.middle.menu_id">
-							<option value="0"><?php esc_html_e( 'Primary Menu (Default Theme Location)', 'themezur' ); ?></option>
-							<template x-for="m in menus" :key="'mid-m-' + m.id">
-								<option :value="m.id" x-text="m.name"></option>
-							</template>
-						</select>
-					</div>
-					<div class="tz-vis" x-show="options.header.middle.show_menu">
-						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_menu"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
-						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_menu"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
-					</div>
-
-					<div class="tz-field tz-field--row" style="margin-top:12px;"><label><input type="checkbox" x-model="options.header.middle.show_button"> <?php esc_html_e( 'Show custom CTA button in middle bar', 'themezur' ); ?></label></div>
-					<div class="tz-field-grid" x-show="options.header.middle.show_button">
-						<div class="tz-field">
-							<label><?php esc_html_e( 'Button text', 'themezur' ); ?></label>
-							<input type="text" x-model="options.header.middle.button_text" placeholder="Order Now">
-						</div>
-						<div class="tz-field">
-							<label><?php esc_html_e( 'Button URL', 'themezur' ); ?></label>
-							<input type="url" x-model="options.header.middle.button_url" placeholder="https://">
-						</div>
-					</div>
-					<div class="tz-field tz-field--row" x-show="options.header.middle.show_button">
-						<label><input type="checkbox" x-model="options.header.middle.button_target" :true-value="'_blank'" :false-value="'_self'"> <?php esc_html_e( 'Open link in new tab', 'themezur' ); ?></label>
-					</div>
-					<div class="tz-vis" x-show="options.header.middle.show_button">
-						<label><input type="checkbox" x-model="options.header.middle.hide_mobile_button"> <?php esc_html_e( 'Hide on mobile', 'themezur' ); ?></label>
-						<label><input type="checkbox" x-model="options.header.middle.hide_desktop_button"> <?php esc_html_e( 'Hide on desktop', 'themezur' ); ?></label>
-					</div>
-				</div>
-			</div>
 			<div class="tz-group">
 				<div class="tz-group__head">
 					<div>

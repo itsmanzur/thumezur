@@ -29,4 +29,8 @@ $skip_link_url    = apply_filters( 'hello_elementor_skip_link_url', '#content' )
 	<a class="skip-link screen-reader-text" href="<?php echo esc_url( $skip_link_url ); ?>"><?php echo esc_html__( 'Skip to content', 'hello-elementor' ); ?></a>
 <?php endif; ?>
 
-<?php Themezur_Frontend::render_header(); ?>
+<?php
+if ( class_exists( 'Themezur_Frontend' ) ) {
+	Themezur_Frontend::render_header();
+}
+?>

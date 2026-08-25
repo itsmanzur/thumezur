@@ -39,7 +39,8 @@ class Themezur_Docs {
 								<li>Change settings in any tab.</li>
 								<li>Click <strong>Save changes</strong> (nothing is auto-saved).</li>
 								<li>View the front of the site to confirm.</li>
-							</ol>',
+							</ol>
+							<p><strong>Panel appearance</strong> — use the sun/moon button next to Save to switch the Themezur panel between <em>dark</em> and <em>light</em>. Preference is stored in this browser only (<code>localStorage</code>), not in site options.</p>',
 							'themezur'
 						),
 					),
@@ -62,9 +63,10 @@ class Themezur_Docs {
 							'<p>Each of Header and Footer has three modes:</p>
 							<ul>
 								<li><strong>Themezur header / footer</strong> — built-in markup (header: 3-row; footer: 4-column store layout).</li>
-								<li><strong>Elementor template</strong> — renders a published template from the Elementor library by ID.</li>
+								<li><strong>Elementor template</strong> — renders a published Elementor library template by ID (Themezur’s own assignment, not Theme Builder locations).</li>
 								<li><strong>None</strong> — hides that region completely.</li>
 							</ul>
+							<p><strong>Theme Builder vs Themezur:</strong> Themezur does <em>not</em> call <code>elementor_theme_do_location( \'header\' )</code> / <code>footer</code>. Choosing “Elementor template” here prints a specific template ID from the Themezur panel. If you also assign an Elementor Theme Builder header/footer, that Theme Builder template can still win via Elementor’s own theme support — use one approach to avoid double headers. Blog/shop/product Theme Builder archive/single templates still take priority for content areas when assigned.</p>
 							<p>If Elementor is inactive or the template ID is invalid, Themezur safely falls back to the Themezur built-in header/footer.</p>',
 							'themezur'
 						),
@@ -75,10 +77,11 @@ class Themezur_Docs {
 							'<p>Themezur uses a <strong>3-row header</strong> (structure inspired by store headers; colors are yours):</p>
 							<ol>
 								<li><strong>Top bar</strong> — promo/trending, social links, date</li>
-								<li><strong>Middle bar</strong> — logo (from Themezur panel), address, search, dark mode, cart</li>
+								<li><strong>Middle bar</strong> — logo (from Themezur panel), optional WordPress menu, address, search, dark mode, cart</li>
 								<li><strong>Bottom bar</strong> — categories button, main menu, deal CTA</li>
 							</ol>
 							<p>Every row and element can be enabled/disabled. Background and element colors, plus typography (font stack, sizes, weights, logo max height), are under <strong>Themezur → Header</strong> sub-tabs.</p>
+							<p><strong>Middle bar menu</strong> — Header → Middle bar → <em>Middle bar menu</em>. Enable it, pick a menu, set alignment (<em>Left / Center / Right</em>). Right sits the links before Order Now / icons. Use <em>Show hamburger</em> + Hide on desktop/mobile to control the drawer button (often hide on desktop when menus are already visible).</p>
 							<p><strong>Scroll behavior</strong> — none, sticky, shrink, bottom-bar sticky, or transparent→solid over a hero.</p>
 							<p><strong>Announcement bar</strong> — optional message above the header. Enable dismiss to store a cookie (days + version key). Bump the version key to show a new campaign after visitors dismissed the old one.</p>
 							<p><strong>Mobile / desktop visibility</strong> — each header element has Hide on mobile / Hide on desktop checkboxes (breakpoint 992px). Bottom-bar “Hide on mobile” for the menu does not remove the hamburger drawer.</p>
@@ -129,7 +132,9 @@ class Themezur_Docs {
 								<li><strong>🖼️ Background Image Overlay:</strong> Add a banner background image URL under <em>Dropdown Panel Background Image Overlay</em>.</li>
 								<li><strong>🔥 Main Bar Glowing Badges:</strong> Type badge text (e.g. <code>HOT</code>, <code>50% OFF</code>) under <em>Main Bar Glowing Animated Badge</em> to render pulsing glow badges on the main navigation bar.</li>
 								<li><strong>📂 WooCommerce Category Grid:</strong> Check <em>Auto Render WooCommerce Product Categories Grid</em> to automatically render visual product category thumbnail cards inside the mega dropdown.</li>
-							</ul>',
+							</ul>
+							<p><strong>Mobile drawer:</strong> uses a lite walker (unique IDs, no desktop mega panels). Mega-enabled items get accordion deep links (categories / new / sale / brands) instead of full product grids.</p>
+							<p><strong>Advanced blocks (Appearance → Menus):</strong> product collections (latest / on sale / best sellers / manual IDs), brand logo grid (auto taxonomy), rich promo HTML layouts, tabbed mega (Links | Categories | New | Sale | Brands), and campaign start/end scheduling (site timezone).</p>',
 							'themezur'
 						),
 					),
@@ -139,11 +144,11 @@ class Themezur_Docs {
 							'<p>Under <strong>Themezur → Footer</strong>, Source = Themezur footer (4-column):</p>
 							<ul>
 								<li>Each column can be <strong>enabled/disabled</strong>. Disabled columns are not rendered; remaining columns <strong>flex-grow</strong> to share the row.</li>
-								<li>Use the <strong>Columns overview</strong> cards to toggle and open an editor quickly.</li>
-								<li>Column types: <strong>About</strong> (site / custom logo), <strong>Menu</strong>, <strong>Links</strong>, <strong>Contact</strong>, <strong>Posts</strong> (recent WP posts), <strong>Products</strong> (WooCommerce), <strong>Newsletter</strong> (form or shortcode), <strong>Shortcode</strong> (any shortcode/HTML).</li>
-								<li>Optional subtitle under each column title.</li>
-								<li>Bottom bar: copyright + optional secondary menu.</li>
-								<li><strong>Back to top</strong> floating button (scroll threshold) — works with Themezur or Elementor footer.</li>
+								<li><strong>Column order &amp; widths</strong> — reorder with ↑/↓ and presets (equal, 2-1-1-1, 1-1-1-2, about wide).</li>
+								<li>Column types: <strong>About</strong>, <strong>Menu</strong>, <strong>Links</strong>, <strong>Contact</strong>, <strong>Posts</strong>, <strong>Products</strong>, <strong>Newsletter</strong> (AJAX to external action URL, or shortcode), <strong>Shortcode</strong>.</li>
+								<li><strong>Store locator row</strong> and <strong>App badges + QR</strong> (media library image ID).</li>
+								<li>Newsletter AJAX posts to your Mailchimp / FluentCRM form action — Themezur does not store subscribers.</li>
+								<li><strong>Back to top</strong> floating button (scroll threshold).</li>
 							</ul>
 							<p>Social icons in the About column reuse the links from <strong>Header → Top bar → Social icons</strong>. Products degrade gracefully if WooCommerce is inactive.</p>',
 							'themezur'
@@ -160,7 +165,8 @@ class Themezur_Docs {
 								<li>Optional: enable <strong>Sticky header</strong>.</li>
 								<li>Click <strong>Save changes</strong>.</li>
 							</ol>
-							<p>Footer works the same under <strong>Themezur → Footer</strong>.</p>',
+							<p>Footer works the same under <strong>Themezur → Footer</strong>.</p>
+							<p>This is Themezur’s template-ID mode — it is separate from Elementor Theme Builder’s Header/Footer locations. Prefer one system so visitors do not get two headers.</p>',
 							'themezur'
 						),
 					),
@@ -186,9 +192,9 @@ class Themezur_Docs {
 						),
 					),
 					array(
-						'title' => __( 'Conditional headers (Home / Shop / Blog)', 'themezur' ),
+						'title' => __( 'Conditional headers & footers', 'themezur' ),
 						'body'  => __(
-							'<p>Under <strong>Themezur → Assignments → Conditional headers</strong>, enable an override for Home, Shop, or Blog to use a different header source than the global Header tab:</p>
+							'<p>Under <strong>Themezur → Assignments</strong>, use <strong>Conditional headers</strong> (Home / Shop / Blog) and <strong>Conditional footers</strong> (Home / Shop / Blog / Checkout) to override the global Header/Footer source mode:</p>
 							<ul>
 								<li><strong>Inherit</strong> — use Header → Source mode.</li>
 								<li><strong>Themezur / Elementor / None</strong> — force that mode for the context (pick an Elementor template when needed).</li>
@@ -247,13 +253,14 @@ class Themezur_Docs {
 						'body'  => __(
 							'<p>Under <strong>Themezur → WooCommerce</strong> (requires WooCommerce active):</p>
 							<ul>
-								<li><strong>Shop archive</strong> — columns (2–4), products per page, soft/minimal cards, result count &amp; sorting toggles.</li>
+								<li><strong>Shop archive</strong> — columns (2–5), products per page, soft / bordered / minimal cards, result count &amp; sorting toggles.</li>
+								<li><strong>Quick View</strong> — Themezur AJAX modal on product cards (not a third-party plugin).</li>
+								<li><strong>Wishlist</strong> — Themezur heart button saving product IDs to <code>localStorage</code> (not YITH).</li>
 								<li><strong>Hover image</strong> — swaps to the first gallery image on card hover.</li>
-								<li><strong>New badge</strong> — optional day window (0 = off) for recently published products. Sale <code>-X%</code> uses the Single → Sale percent toggle.</li>
-								<li><strong>Wishlist on cards</strong> — YITH Add to Wishlist shortcode when that plugin is active; otherwise skipped.</li>
-								<li><strong>Shop sidebar</strong> — None / Left / Right. Assign WooCommerce Layered Nav, Price Filter, etc. to <strong>Appearance → Widgets → Themezur Shop Sidebar</strong>. On mobile the sidebar opens as a filter drawer.</li>
+								<li><strong>New badge</strong> — day window (0–90; 0 = off) for recently published products. Sale <code>-X%</code> uses Single → Sale percent.</li>
+								<li><strong>Shop sidebar</strong> — None / Left / Right. Assign widgets to <strong>Appearance → Widgets → Themezur Shop Sidebar</strong>. On mobile the sidebar opens as a filter drawer (widget content only).</li>
 							</ul>
-							<p>Styles use Themezur design tokens (buttons, radius, accent). Set Shop styling to default to disable Themezur polish.</p>',
+							<p>Styles use Themezur design tokens. Set Shop styling to default to disable Themezur polish. Assets load only on WooCommerce contexts (plus mini-cart CSS when the header drawer is on).</p>',
 							'themezur'
 						),
 					),
@@ -262,27 +269,29 @@ class Themezur_Docs {
 						'body'  => __(
 							'<p>Same tab → <strong>Single product</strong>:</p>
 							<ul>
-								<li><strong>Layout</strong> — Classic (WooCommerce columns), Wide gallery + sticky summary, or Stacked (gallery above).</li>
-								<li><strong>Sale percent badge</strong> — shows <code>-X%</code> instead of a plain Sale label (also on shop cards).</li>
+								<li><strong>Layout</strong> — Classic, Wide gallery (sticky summary), or Stacked (gallery above). Body classes + CSS only.</li>
+								<li><strong>Sale percent badge</strong> — shows <code>-X%</code> instead of a plain Sale label (shop cards + single).</li>
 								<li><strong>Rating / SKU / stock</strong> — toggles for summary meta.</li>
-								<li><strong>Sticky add to cart</strong> — desktop bar when the main button scrolls out of view (loads <code>woocommerce.js</code> only on product pages).</li>
+								<li><strong>Sticky Add to Cart</strong> — option key <code>sticky_cart</code>; desktop-only bar when the main button scrolls away. Lives in <code>woocommerce.js</code> (independent of Quick View).</li>
+								<li><strong>Quantity stepper</strong> — +/− controls around the qty input (<code>quantity_stepper</code>).</li>
 								<li><strong>Trust / shipping note</strong> — optional text under add to cart.</li>
 								<li><strong>Related &amp; upsells</strong> — show/hide plus counts (0–8).</li>
 							</ul>
-							<p>Uses hooks + CSS (no heavy template overrides). Elementor Theme Builder single templates still take priority when assigned.</p>',
+							<p>Uses hooks + CSS (no full WooCommerce template copies). Elementor Theme Builder single templates still take priority when assigned.</p>',
 							'themezur'
 						),
 					),
 					array(
 						'title' => __( 'Cart, checkout &amp; account', 'themezur' ),
 						'body'  => __(
-							'<p>Under <strong>Themezur → WooCommerce</strong>:</p>
+							'<p>Under <strong>Themezur → WooCommerce</strong> and <strong>Header → Middle</strong>:</p>
 							<ul>
-								<li><strong>Mini-cart drawer</strong> — header cart icon opens a side drawer (qty ± / remove via AJAX fragments). Optional auto-open after add to cart. Disabled on the cart &amp; checkout pages themselves.</li>
-								<li><strong>Cart / checkout polish</strong> — token styling for tables, totals, fields, and Place order. Optional sticky order review (desktop) and a checkout trust note above Place order.</li>
-								<li><strong>My Account density</strong> — Comfortable or Compact navigation/content spacing, plus form &amp; orders table polish.</li>
+								<li><strong>Mini-cart drawer</strong> — enable under Header → Mini cart. Qty ± / remove via AJAX (<code>themezur_mini_cart</code>) inside the existing header drawer. Fragment root is <code>div.widget_shopping_cart_content</code>.</li>
+								<li><strong>Open on add</strong> — <code>woocommerce.cart.open_on_add</code> opens the drawer after add-to-cart (requires header mini-cart).</li>
+								<li><strong>Cart / checkout polish</strong> — token styling for tables, totals, fields, and Place order. Optional sticky order review (desktop) and checkout trust note above Place order.</li>
+								<li><strong>My Account</strong> — welcome banner, Comfortable / Compact density, plus form &amp; orders table polish.</li>
 							</ul>
-							<p>Requires Header → Show cart icon for the drawer trigger. No full WooCommerce template copies.</p>',
+							<p>No full WooCommerce template copies.</p>',
 							'themezur'
 						),
 					),

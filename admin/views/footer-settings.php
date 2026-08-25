@@ -69,6 +69,98 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		</div>
 
+		<div class="tz-group">
+			<div class="tz-group__head">
+				<div>
+					<h3 class="tz-group__title"><?php esc_html_e( 'Column order & widths', 'themezur' ); ?></h3>
+					<p class="tz-group__desc"><?php esc_html_e( 'Reorder columns and pick a width preset. Disabled columns are skipped on the front end.', 'themezur' ); ?></p>
+				</div>
+			</div>
+			<div class="tz-group__body">
+				<div class="tz-field">
+					<label><?php esc_html_e( 'Width preset', 'themezur' ); ?></label>
+					<select x-model="options.footer.column_widths">
+						<option value="equal"><?php esc_html_e( 'Equal', 'themezur' ); ?></option>
+						<option value="2-1-1-1"><?php esc_html_e( '2-1-1-1 (first wider)', 'themezur' ); ?></option>
+						<option value="1-1-1-2"><?php esc_html_e( '1-1-1-2 (last wider)', 'themezur' ); ?></option>
+						<option value="about_wide"><?php esc_html_e( 'About wide (column 1)', 'themezur' ); ?></option>
+					</select>
+				</div>
+				<ul class="tz-ft-order">
+					<template x-for="(colKey, index) in options.footer.column_order" :key="colKey">
+						<li class="tz-ft-order__item">
+							<strong class="tz-ft-order__key" x-text="'Col ' + colKey"></strong>
+							<span class="tz-muted" x-text="(options.footer.columns[colKey] && options.footer.columns[colKey].title) || '—'"></span>
+							<span class="tz-ft-order__actions">
+								<button type="button" class="button" @click="moveFooterColumn(index, -1)" :disabled="index === 0">↑</button>
+								<button type="button" class="button" @click="moveFooterColumn(index, 1)" :disabled="index === options.footer.column_order.length - 1">↓</button>
+							</span>
+						</li>
+					</template>
+				</ul>
+			</div>
+		</div>
+
+		<div class="tz-group">
+			<div class="tz-group__head">
+				<div>
+					<h3 class="tz-group__title"><?php esc_html_e( 'Store locator row', 'themezur' ); ?></h3>
+					<p class="tz-group__desc"><?php esc_html_e( 'Optional map / find-a-store CTA above the columns.', 'themezur' ); ?></p>
+				</div>
+				<label class="tz-field--row" style="margin:0;padding:0;border:0;">
+					<input type="checkbox" x-model="options.footer.store_row.enabled">
+				</label>
+			</div>
+			<div class="tz-group__body" x-show="options.footer.store_row.enabled">
+				<div class="tz-field-grid">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Button label', 'themezur' ); ?></label>
+						<input type="text" x-model="options.footer.store_row.label">
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Map / store URL', 'themezur' ); ?></label>
+						<input type="url" x-model="options.footer.store_row.map_url" placeholder="https://">
+					</div>
+					<div class="tz-field" style="grid-column:1/-1;">
+						<label><?php esc_html_e( 'Address text', 'themezur' ); ?></label>
+						<input type="text" x-model="options.footer.store_row.address_text">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="tz-group">
+			<div class="tz-group__head">
+				<div>
+					<h3 class="tz-group__title"><?php esc_html_e( 'App download badges + QR', 'themezur' ); ?></h3>
+					<p class="tz-group__desc"><?php esc_html_e( 'Play Store / App Store links and an optional QR image from the Media Library.', 'themezur' ); ?></p>
+				</div>
+				<label class="tz-field--row" style="margin:0;padding:0;border:0;">
+					<input type="checkbox" x-model="options.footer.app_badges.enabled">
+				</label>
+			</div>
+			<div class="tz-group__body" x-show="options.footer.app_badges.enabled">
+				<div class="tz-field-grid">
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Title', 'themezur' ); ?></label>
+						<input type="text" x-model="options.footer.app_badges.title">
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Google Play URL', 'themezur' ); ?></label>
+						<input type="url" x-model="options.footer.app_badges.play_url">
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'App Store URL', 'themezur' ); ?></label>
+						<input type="url" x-model="options.footer.app_badges.appstore_url">
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'QR image attachment ID', 'themezur' ); ?></label>
+						<input type="number" x-model.number="options.footer.app_badges.qr_image_id" min="0">
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Trust Badges (Pre-Footer Bar) -->
 		<div class="tz-group">
 			<div class="tz-group__head">
@@ -83,15 +175,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="tz-group__body" x-show="options.footer.trust_badges.enabled">
 				<template x-for="(badge, idx) in options.footer.trust_badges.items" :key="'tb-' + idx">
-					<div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
-						<select x-model="badge.icon" style="width:140px;">
-							<option value="shipping"><?php esc_html_e( '🚚 Shipping', 'themezur' ); ?></option>
-							<option value="return"><?php esc_html_e( '🔄 Return', 'themezur' ); ?></option>
-							<option value="secure"><?php esc_html_e( '🛡️ Secure', 'themezur' ); ?></option>
-							<option value="support"><?php esc_html_e( '💬 Support', 'themezur' ); ?></option>
+					<div class="tz-trust-row">
+						<select class="tz-trust-row__icon" x-model="badge.icon">
+							<option value="shipping"><?php esc_html_e( 'Shipping', 'themezur' ); ?></option>
+							<option value="return"><?php esc_html_e( 'Return', 'themezur' ); ?></option>
+							<option value="secure"><?php esc_html_e( 'Secure', 'themezur' ); ?></option>
+							<option value="support"><?php esc_html_e( 'Support', 'themezur' ); ?></option>
 						</select>
-						<input type="text" x-model="badge.title" placeholder="Title" style="flex:1;">
-						<input type="text" x-model="badge.subtitle" placeholder="Subtitle" style="flex:1.5;">
+						<input type="text" class="tz-trust-row__title" x-model="badge.title" placeholder="<?php esc_attr_e( 'Title', 'themezur' ); ?>">
+						<input type="text" class="tz-trust-row__subtitle" x-model="badge.subtitle" placeholder="<?php esc_attr_e( 'Subtitle', 'themezur' ); ?>">
 					</div>
 				</template>
 			</div>
@@ -120,8 +212,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<input type="text" x-model="options.footer.newsletter_row.subtitle" placeholder="Get 10% off your first order!">
 					</div>
 					<div class="tz-field">
-						<label><?php esc_html_e( 'Form Action URL (Mailchimp / CPT)', 'themezur' ); ?></label>
+						<label><?php esc_html_e( 'Form Action URL (Mailchimp / FluentCRM)', 'themezur' ); ?></label>
 						<input type="text" x-model="options.footer.newsletter_row.action" placeholder="https://...">
+						<p class="tz-hint"><?php esc_html_e( 'AJAX posts the email to this URL (no Themezur subscriber list).', 'themezur' ); ?></p>
+					</div>
+					<div class="tz-field">
+						<label><?php esc_html_e( 'Email field name', 'themezur' ); ?></label>
+						<input type="text" x-model="options.footer.newsletter_row.email_name" placeholder="EMAIL">
 					</div>
 					<div class="tz-field">
 						<label><?php esc_html_e( 'Button Text', 'themezur' ); ?></label>

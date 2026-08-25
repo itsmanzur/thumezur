@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'THEMEZUR_VERSION', '2.10.2' );
+define( 'THEMEZUR_VERSION', '2.10.6' );
 define( 'THEMEZUR_DIR', get_stylesheet_directory() );
 define( 'THEMEZUR_URI', get_stylesheet_directory_uri() );
 

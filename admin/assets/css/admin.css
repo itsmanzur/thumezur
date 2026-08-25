@@ -26,6 +26,8 @@
 	--tz-danger: #f87171;
 	--tz-radius: 14px;
 	--tz-input: #0a1220;
+	--tz-label: #d0daf0;
+	--tz-scheme: dark;
 	--tz-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 	--tz-fs-xs: 0.75rem;
 	--tz-fs-sm: 0.8125rem;
@@ -48,6 +50,7 @@
 	border: 1px solid var(--tz-border);
 	border-radius: var(--tz-radius);
 	color: var(--tz-text);
+	color-scheme: var(--tz-scheme, dark);
 	overflow: hidden;
 	box-shadow:
 		0 1px 0 rgba(255, 255, 255, 0.04) inset,
@@ -59,6 +62,19 @@
 .tz-panel select,
 .tz-panel textarea {
 	font-family: inherit;
+}
+
+/* Prevent WP admin light defaults from bleeding into dark panel controls */
+.tz-panel input[type="text"],
+.tz-panel input[type="url"],
+.tz-panel input[type="search"],
+.tz-panel input[type="number"],
+.tz-panel input[type="email"],
+.tz-panel textarea {
+	background-color: var(--tz-input);
+	border-color: var(--tz-border);
+	color: var(--tz-text);
+	color-scheme: var(--tz-scheme, dark);
 }
 
 .tz-panel [x-cloak] {
@@ -121,6 +137,47 @@
 	align-items: center;
 	gap: 12px;
 	flex-shrink: 0;
+}
+
+.tz-admin-theme-toggle {
+	appearance: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border-radius: 10px;
+	border: 1px solid var(--tz-border);
+	background: var(--tz-input);
+	color: var(--tz-text);
+	cursor: pointer;
+	transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.tz-admin-theme-toggle:hover,
+.tz-admin-theme-toggle:focus {
+	outline: none;
+	border-color: rgba(59, 130, 246, 0.55);
+	background: rgba(59, 130, 246, 0.12);
+	color: #fff;
+}
+
+.tz-admin-theme-toggle svg {
+	display: block;
+	flex-shrink: 0;
+}
+
+.tz-admin-theme-toggle__sun {
+	display: none;
+}
+
+.tz-panel[data-tz-admin-theme="dark"] .tz-admin-theme-toggle__moon {
+	display: none;
+}
+
+.tz-panel[data-tz-admin-theme="dark"] .tz-admin-theme-toggle__sun {
+	display: block;
 }
 
 .tz-toast {
@@ -491,7 +548,113 @@
 	border-radius: 9px;
 	padding: 8px 10px;
 	min-height: 40px;
-	color-scheme: light;
+	color-scheme: dark;
+}
+
+/* Footer column reorder list */
+.tz-ft-order {
+	list-style: none;
+	margin: 12px 0 0;
+	padding: 0;
+	display: grid;
+	gap: 8px;
+	max-width: 560px;
+}
+
+.tz-ft-order__item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border: 1px solid var(--tz-border);
+	border-radius: 10px;
+	background: var(--tz-input);
+	color: var(--tz-text);
+}
+
+.tz-ft-order__key {
+	font-size: var(--tz-fs-sm);
+	font-weight: 600;
+	color: var(--tz-text);
+	min-width: 3.2rem;
+}
+
+.tz-ft-order__actions {
+	margin-left: auto;
+	display: inline-flex;
+	gap: 4px;
+}
+
+.tz-ft-order__actions .button {
+	min-width: 34px;
+	height: 34px !important;
+	padding: 0 8px !important;
+	line-height: 1 !important;
+	background: var(--tz-surface-2) !important;
+	border: 1px solid var(--tz-border) !important;
+	color: var(--tz-text) !important;
+	border-radius: 8px !important;
+	box-shadow: none !important;
+}
+
+.tz-ft-order__actions .button:hover:not(:disabled),
+.tz-ft-order__actions .button:focus:not(:disabled) {
+	background: rgba(59, 130, 246, 0.18) !important;
+	border-color: rgba(59, 130, 246, 0.55) !important;
+	color: #fff !important;
+}
+
+.tz-ft-order__actions .button:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+/* Trust badge rows (bare inputs outside .tz-field) */
+.tz-trust-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 10px;
+	align-items: center;
+}
+
+.tz-trust-row__icon {
+	width: 140px;
+	max-width: 100%;
+	flex: 0 0 140px;
+}
+
+.tz-trust-row__title,
+.tz-trust-row__subtitle {
+	flex: 1 1 140px;
+	min-width: 120px;
+	max-width: none !important;
+	width: auto !important;
+	font-family: inherit;
+	font-size: var(--tz-fs-md);
+	font-weight: 400;
+	line-height: var(--tz-lh);
+	background: var(--tz-input) !important;
+	border: 1px solid var(--tz-border) !important;
+	color: var(--tz-text) !important;
+	border-radius: 9px;
+	padding: 10px 12px;
+	min-height: 42px;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+	color-scheme: dark;
+}
+
+.tz-trust-row__title:focus,
+.tz-trust-row__subtitle:focus {
+	outline: none;
+	border-color: rgba(59, 130, 246, 0.65) !important;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.tz-trust-row__title::placeholder,
+.tz-trust-row__subtitle::placeholder {
+	color: var(--tz-muted);
+	opacity: 0.85;
 }
 
 .tz-link-row__actions {
@@ -1245,4 +1408,119 @@
 
 .tz-weight-check:hover {
 	border-color: var(--tz-accent);
+}
+
+/* —— Admin light theme (toggle) —— */
+.tz-panel[data-tz-admin-theme="light"] {
+	--tz-bg: #f3f6fb;
+	--tz-surface: #ffffff;
+	--tz-surface-2: #eef2f8;
+	--tz-border: #d0dae8;
+	--tz-border-soft: #e2e8f0;
+	--tz-text: #0f172a;
+	--tz-muted: #64748b;
+	--tz-accent: #2563eb;
+	--tz-accent-2: #0ea5e9;
+	--tz-ok: #059669;
+	--tz-warn: #d97706;
+	--tz-danger: #dc2626;
+	--tz-input: #ffffff;
+	--tz-label: #334155;
+	--tz-scheme: light;
+	background:
+		radial-gradient(1200px 420px at 10% -10%, rgba(37, 99, 235, 0.08), transparent 55%),
+		radial-gradient(900px 360px at 100% 0%, rgba(14, 165, 233, 0.06), transparent 50%),
+		linear-gradient(165deg, #f8fafc 0%, #eef2f7 48%, #f5f7fb 100%);
+	box-shadow:
+		0 1px 0 rgba(255, 255, 255, 0.85) inset,
+		0 18px 42px rgba(15, 23, 42, 0.08);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-panel__header {
+	background: rgba(255, 255, 255, 0.72);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-nav {
+	background: rgba(15, 23, 42, 0.03);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-nav__item:hover {
+	background: rgba(15, 23, 42, 0.05);
+	color: var(--tz-text);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-admin-theme-toggle:hover,
+.tz-panel[data-tz-admin-theme="light"] .tz-admin-theme-toggle:focus {
+	color: var(--tz-accent);
+	background: rgba(37, 99, 235, 0.1);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-card,
+.tz-panel[data-tz-admin-theme="light"] .tz-group,
+.tz-panel[data-tz-admin-theme="light"] .tz-cond-card,
+.tz-panel[data-tz-admin-theme="light"] .tz-accordion__item,
+.tz-panel[data-tz-admin-theme="light"] .tz-ft-overview__card,
+.tz-panel[data-tz-admin-theme="light"] .tz-type-card {
+	background: rgba(255, 255, 255, 0.88);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-field label,
+.tz-panel[data-tz-admin-theme="light"] .tz-color label {
+	color: var(--tz-label);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-toggle,
+.tz-panel[data-tz-admin-theme="light"] .tz-logo-source__opt,
+.tz-panel[data-tz-admin-theme="light"] .tz-logo-picker__preview,
+.tz-panel[data-tz-admin-theme="light"] .tz-field--row {
+	border-color: var(--tz-border);
+	background: rgba(15, 23, 42, 0.02);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-toggle:hover,
+.tz-panel[data-tz-admin-theme="light"] .tz-field--row:hover {
+	border-color: #94a3b8;
+	background: rgba(37, 99, 235, 0.05);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-help__tabs,
+.tz-panel[data-tz-admin-theme="light"] .tz-subtabs {
+	background: rgba(15, 23, 42, 0.04);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-help__tab.is-active,
+.tz-panel[data-tz-admin-theme="light"] .tz-subtabs__btn.is-active {
+	color: #fff;
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-link-row input[type="text"],
+.tz-panel[data-tz-admin-theme="light"] .tz-link-row input[type="url"],
+.tz-panel[data-tz-admin-theme="light"] .tz-trust-row__title,
+.tz-panel[data-tz-admin-theme="light"] .tz-trust-row__subtitle,
+.tz-panel[data-tz-admin-theme="light"] .tz-ft-order__item {
+	color-scheme: light;
+	background: var(--tz-input) !important;
+	border-color: var(--tz-border) !important;
+	color: var(--tz-text) !important;
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-ft-order__actions .button {
+	background: var(--tz-surface-2) !important;
+	border-color: var(--tz-border) !important;
+	color: var(--tz-text) !important;
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-toolbar,
+.tz-panel[data-tz-admin-theme="light"] .tz-preset-row,
+.tz-panel[data-tz-admin-theme="light"] .tz-social-row {
+	background: rgba(255, 255, 255, 0.7);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-audit-table th,
+.tz-panel[data-tz-admin-theme="light"] .tz-audit-table td {
+	border-color: var(--tz-border-soft);
+}
+
+.tz-panel[data-tz-admin-theme="light"] .tz-panel__mark {
+	color: #04101f;
 }

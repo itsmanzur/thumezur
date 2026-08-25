@@ -54,6 +54,9 @@
 		var closeBtns = drawer.querySelectorAll('[data-tz-drawer-close]');
 		var panel     = drawer.querySelector('.tz-mobile-drawer__panel');
 		var nav       = drawer.querySelector('.tz-mobile-drawer__nav');
+		var cfg       = window.themezurFront || {};
+		var lastFocus = null;
+		var toggleLabel = cfg.i18nToggleSubmenu || 'Toggle sub-menu';
 
 		// Attach accordion arrow buttons to parent menu items inside mobile drawer.
 		if (nav) {
@@ -63,7 +66,8 @@
 					var arrowBtn = document.createElement('button');
 					arrowBtn.type = 'button';
 					arrowBtn.className = 'tz-menu-arrow';
-					arrowBtn.setAttribute('aria-label', 'Toggle sub-menu');
+					arrowBtn.setAttribute('aria-label', toggleLabel);
+					arrowBtn.setAttribute('aria-expanded', 'false');
 					arrowBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>';
 
 					link.after(arrowBtn);
@@ -73,9 +77,22 @@
 						e.stopPropagation();
 						var open = li.classList.toggle('sub-menu-open');
 						arrowBtn.classList.toggle('is-open', open);
+						arrowBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+						var mega = li.querySelector(':scope > .tz-mega-dropdown');
+						if (mega) {
+							mega.hidden = !open;
+						}
 					});
 				}
 			});
+		}
+
+		function focusableInDrawer() {
+			if (!panel) return [];
+			return Array.prototype.filter.call(
+				panel.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+				function (el) { return el.offsetParent !== null; }
+			);
 		}
 
 		function setOpen(open) {
@@ -84,15 +101,20 @@
 			document.body.classList.toggle('tz-drawer-open', open);
 
 			if (open) {
+				lastFocus = document.activeElement;
 				drawer.removeAttribute('hidden');
 				requestAnimationFrame(function () {
 					drawer.classList.add('is-open');
-					if (panel) panel.focus();
+					var focusable = focusableInDrawer();
+					(focusable[0] || panel || toggle).focus();
 				});
 			} else {
 				drawer.classList.remove('is-open');
 				setTimeout(function () {
 					drawer.setAttribute('hidden', '');
+					if (lastFocus && typeof lastFocus.focus === 'function') {
+						lastFocus.focus();
+					}
 				}, 260);
 			}
 		}
@@ -156,9 +178,31 @@
 			}
 		});
 
-		document.addEventListener('keydown', function (event) {
-			if (event.key === 'Escape' && !drawer.hasAttribute('hidden')) {
+		drawer.addEventListener('keydown', function (event) {
+			if (drawer.hasAttribute('hidden')) return;
+
+			if ('Escape' === event.key) {
+				event.preventDefault();
 				setOpen(false);
+				return;
+			}
+
+			if ('Tab' !== event.key || !panel) return;
+
+			var focusable = focusableInDrawer();
+			if (!focusable.length) {
+				event.preventDefault();
+				panel.focus();
+				return;
+			}
+			var first = focusable[0];
+			var last  = focusable[focusable.length - 1];
+			if (event.shiftKey && document.activeElement === first) {
+				event.preventDefault();
+				last.focus();
+			} else if (!event.shiftKey && document.activeElement === last) {
+				event.preventDefault();
+				first.focus();
 			}
 		});
 
@@ -582,15 +626,22 @@
 	}
 
 	function initMiniCart() {
-		var drawer       = document.querySelector('[data-tz-mini-cart]');
-		var toggle       = document.querySelector('[data-tz-mini-cart-toggle]');
-		if (!drawer || !toggle) return;
+		var drawer  = document.querySelector('[data-tz-mini-cart]');
+		var toggles = document.querySelectorAll('[data-tz-mini-cart-toggle]');
+		if (!drawer || !toggles.length) return;
 		var panel        = drawer.querySelector('[data-tz-mini-cart-panel]');
 		var closeButtons = drawer.querySelectorAll('[data-tz-mini-cart-close]');
 		var lastFocus    = null;
-		var closeTimer  = null;
+		var closeTimer   = null;
+		var cfg          = window.themezurFront || {};
 
 		if (!panel) return;
+
+		function setTogglesExpanded(expanded) {
+			toggles.forEach(function (toggle) {
+				toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+			});
+		}
 
 		function focusableElements() {
 			return Array.prototype.filter.call(
@@ -603,7 +654,7 @@
 			clearTimeout(closeTimer);
 			lastFocus = document.activeElement;
 			drawer.hidden = false;
-			toggle.setAttribute('aria-expanded', 'true');
+			setTogglesExpanded(true);
 			document.body.classList.add('tz-mini-cart-open');
 
 			window.requestAnimationFrame(function () {
@@ -616,7 +667,7 @@
 		function closeDrawer() {
 			if (drawer.hidden) return;
 			drawer.classList.remove('is-open');
-			toggle.setAttribute('aria-expanded', 'false');
+			setTogglesExpanded(false);
 			document.body.classList.remove('tz-mini-cart-open');
 
 			closeTimer = setTimeout(function () {
@@ -625,10 +676,12 @@
 			}, 260);
 		}
 
-		toggle.addEventListener('click', function (event) {
-			event.preventDefault();
-			if (drawer.hidden) openDrawer();
-			else closeDrawer();
+		toggles.forEach(function (toggle) {
+			toggle.addEventListener('click', function (event) {
+				event.preventDefault();
+				if (drawer.hidden) openDrawer();
+				else closeDrawer();
+			});
 		});
 
 		closeButtons.forEach(function (button) {
@@ -657,6 +710,24 @@
 			} else if (!event.shiftKey && document.activeElement === last) {
 				event.preventDefault();
 				first.focus();
+			}
+		});
+
+		if (cfg.miniCartOpenOnAdd && typeof jQuery !== 'undefined') {
+			jQuery(document.body).on('added_to_cart', function () {
+				openDrawer();
+			});
+		}
+
+		document.body.addEventListener('themezur_mini_cart_updated', function (event) {
+			var detail = event.detail || {};
+			if (typeof detail.count !== 'undefined') {
+				var badge = document.querySelector('[data-tz-cart-count]');
+				if (!badge) return;
+				var visual = badge.querySelector('[aria-hidden="true"]');
+				var accessible = badge.querySelector('.screen-reader-text');
+				if (visual) visual.textContent = String(detail.count);
+				if (accessible && detail.label) accessible.textContent = detail.label;
 			}
 		});
 	}

@@ -94,12 +94,17 @@ class Themezur_Frontend {
 	 * @return string
 	 */
 	public static function mini_cart_markup() {
-		if ( ! function_exists( 'woocommerce_mini_cart' ) ) {
+		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
 			return '<div class="widget_shopping_cart_content"></div>';
 		}
 
+		$template = THEMEZUR_DIR . '/template-parts/woocommerce/mini-cart.php';
 		ob_start();
-		woocommerce_mini_cart();
+		if ( file_exists( $template ) ) {
+			include $template;
+		} elseif ( function_exists( 'woocommerce_mini_cart' ) ) {
+			woocommerce_mini_cart();
+		}
 		$content = ob_get_clean();
 
 		return '<div class="widget_shopping_cart_content">' . $content . '</div>';
@@ -232,6 +237,10 @@ class Themezur_Frontend {
 			return 'front_page';
 		}
 
+		if ( function_exists( 'is_checkout' ) && is_checkout() && ( ! function_exists( 'is_wc_endpoint_url' ) || ! is_wc_endpoint_url( 'order-received' ) ) ) {
+			return 'checkout';
+		}
+
 		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() || is_product() ) ) {
 			return 'shop';
 		}
@@ -331,26 +340,66 @@ class Themezur_Frontend {
 	 * @param string $part header|footer.
 	 * @return string theme|elementor|none
 	 */
+	/**
+	 * Resolved footer mode + Elementor template for the current request.
+	 *
+	 * @return array{mode:string,template_id:int}
+	 */
+	public static function resolve_footer_config() {
+		static $cache = null;
+		if ( null !== $cache ) {
+			return $cache;
+		}
+
+		$mode        = Themezur_Options::get( 'footer.mode', 'theme' );
+		$template_id = (int) Themezur_Options::get( 'footer.template_id', 0 );
+
+		if ( ! self::assignments_match() ) {
+			$cache = array(
+				'mode'        => 'theme',
+				'template_id' => 0,
+			);
+			return $cache;
+		}
+
+		$ctx       = self::get_current_context();
+		$overrides = Themezur_Options::get( 'assignments.footer_overrides', array() );
+		if ( in_array( $ctx, array( 'front_page', 'shop', 'blog', 'checkout' ), true ) && ! empty( $overrides[ $ctx ]['enabled'] ) ) {
+			$om = isset( $overrides[ $ctx ]['mode'] ) ? sanitize_key( $overrides[ $ctx ]['mode'] ) : 'inherit';
+			if ( in_array( $om, array( 'theme', 'elementor', 'none' ), true ) ) {
+				$mode = $om;
+				if ( 'elementor' === $mode ) {
+					$template_id = isset( $overrides[ $ctx ]['template_id'] ) ? (int) $overrides[ $ctx ]['template_id'] : 0;
+				}
+			}
+		}
+
+		if ( 'elementor' === $mode ) {
+			if ( ! Themezur_Elementor::is_active() || ! Themezur_Elementor::is_valid_template( $template_id ) ) {
+				$mode        = 'theme';
+				$template_id = 0;
+			}
+		}
+
+		$cache = array(
+			'mode'        => $mode,
+			'template_id' => $template_id,
+		);
+		return $cache;
+	}
+
 	public static function resolve_mode( $part ) {
 		if ( 'header' === $part ) {
 			$config = self::resolve_header_config();
 			return $config['mode'];
 		}
 
-		$mode = Themezur_Options::get( $part . '.mode', 'theme' );
-
-		if ( ! self::assignments_match() ) {
-			return 'theme';
+		if ( 'footer' === $part ) {
+			$config = self::resolve_footer_config();
+			return $config['mode'];
 		}
 
-		if ( 'elementor' === $mode ) {
-			$template_id = (int) Themezur_Options::get( $part . '.template_id', 0 );
-			if ( ! Themezur_Elementor::is_active() || ! Themezur_Elementor::is_valid_template( $template_id ) ) {
-				return 'theme';
-			}
-		}
-
-		return $mode;
+		return 'theme';
 	}
 
 	/**
@@ -388,14 +437,15 @@ class Themezur_Frontend {
 	 * @return void
 	 */
 	public static function render_footer() {
-		$mode = self::resolve_mode( 'footer' );
+		$config = self::resolve_footer_config();
+		$mode   = $config['mode'];
 
 		if ( 'none' === $mode ) {
 			return;
 		}
 
 		if ( 'elementor' === $mode ) {
-			$template_id = (int) Themezur_Options::get( 'footer.template_id', 0 );
+			$template_id = (int) $config['template_id'];
 			$html        = Themezur_Elementor::render_template( $template_id );
 			if ( $html ) {
 				echo '<div id="themezur-footer" class="themezur-footer themezur-footer--elementor">';

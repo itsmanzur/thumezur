@@ -21,6 +21,7 @@
 				saving: false,
 				toast: '',
 				toastTimer: null,
+				adminTheme: 'dark',
 				elementor: !!cfg.elementor,
 				i18n: cfg.i18n || {},
 				options: deepClone(cfg.options || {}),
@@ -45,6 +46,7 @@
 				socialNetworks: cfg.socialNetworks || [],
 
 				init() {
+					this.initAdminTheme();
 					this.ensureHeaderScroll();
 					this.ensureAnnounce();
 					this.ensureSpacing();
@@ -56,6 +58,33 @@
 					this.ensurePages();
 					this.ensureWoo();
 					this.ensureGeneralDesign();
+				},
+
+				initAdminTheme: function () {
+					try {
+						var stored = localStorage.getItem('themezur_admin_theme');
+						if (stored === 'light' || stored === 'dark') {
+							this.adminTheme = stored;
+						}
+					} catch (e) {}
+					this.applyAdminTheme();
+				},
+
+				applyAdminTheme: function () {
+					var theme = this.adminTheme === 'light' ? 'light' : 'dark';
+					this.adminTheme = theme;
+					var el = this.$el;
+					if (el && el.setAttribute) {
+						el.setAttribute('data-tz-admin-theme', theme);
+					}
+				},
+
+				toggleAdminTheme: function () {
+					this.adminTheme = this.adminTheme === 'light' ? 'dark' : 'light';
+					try {
+						localStorage.setItem('themezur_admin_theme', this.adminTheme);
+					} catch (e) {}
+					this.applyAdminTheme();
 				},
 
 				ensureGeneralDesign: function () {
@@ -89,6 +118,18 @@
 					}
 					if (typeof this.options.header.middle.menu_id === 'undefined') {
 						this.options.header.middle.menu_id = 0;
+					}
+					if (typeof this.options.header.middle.menu_position === 'undefined') {
+						this.options.header.middle.menu_position = 'center';
+					}
+					if (typeof this.options.header.middle.show_hamburger === 'undefined') {
+						this.options.header.middle.show_hamburger = true;
+					}
+					if (typeof this.options.header.middle.hide_mobile_hamburger === 'undefined') {
+						this.options.header.middle.hide_mobile_hamburger = false;
+					}
+					if (typeof this.options.header.middle.hide_desktop_hamburger === 'undefined') {
+						this.options.header.middle.hide_desktop_hamburger = false;
 					}
 					if (typeof this.options.header.middle.show_button === 'undefined') {
 						this.options.header.middle.show_button = false;
